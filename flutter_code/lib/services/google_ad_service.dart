@@ -25,7 +25,10 @@ class GoogleAdService {
 
   Future<bool> loadRewardedAd(BuildContext context) async {
     final adProvider = Provider.of<AdProvider>(context, listen: false);
-    if (!adProvider.adsEnabled || adProvider.admobRewardedId == null) return false;
+    if (!adProvider.adsEnabled || adProvider.admobRewardedId == null) {
+      print("⚠️ Ads disabled or ID missing in loadRewardedAd");
+      return false;
+    }
 
     // Check if a load is already in progress
     if (_rewardedAdLoadFuture != null) {
@@ -35,6 +38,7 @@ class GoogleAdService {
             print("⚠️ Previous ad load seems stuck (>20s). Resetting...");
             _rewardedAdLoadFuture = null;
         } else {
+            print("⏳ Ad load already in progress, returning existing future");
             return _rewardedAdLoadFuture!;
         }
     }
@@ -59,13 +63,13 @@ class GoogleAdService {
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {
-          print("✅ Rewarded Ad Loaded");
+          print("✅ Rewarded Ad Loaded Successfully");
           _rewardedAd = ad;
           _rewardedAdLoadFuture = null;
           if (!completer.isCompleted) completer.complete(true);
         },
         onAdFailedToLoad: (error) {
-          print("❌ Rewarded Ad Failed to Load: $error");
+          print("❌ Rewarded Ad Failed to Load: ${error.message} (Code: ${error.code})");
           _rewardedAd = null;
           _rewardedAdLoadFuture = null;
           if (!completer.isCompleted) completer.complete(false);
@@ -88,8 +92,17 @@ class GoogleAdService {
 
     if (_rewardedAd == null) {
       print("⚠️ Rewarded Ad not ready, attempting to load...");
+      
+      // Wait for the load to complete
       bool loaded = await loadRewardedAd(context);
-      if (!loaded || _rewardedAd == null) {
+      
+      // Wait a small bit more just in case the ad object assignment needs a tick
+      if (loaded && _rewardedAd == null) {
+         await Future.delayed(const Duration(milliseconds: 500));
+      }
+
+      if (_rewardedAd == null) {
+        print("❌ Rewarded Ad still null after load attempt");
         onFailure();
         return false;
       }

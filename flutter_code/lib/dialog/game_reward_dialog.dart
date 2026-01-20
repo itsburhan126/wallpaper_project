@@ -51,7 +51,17 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(24, 50, 24, 24),
-            // removed background color and shadow as requested
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -121,23 +131,9 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                       padding: EdgeInsets.zero,
                     ),
                     child: _is2xLoading 
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(
-                                width: 20, height: 20,
-                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                              ),
-                              const SizedBox(width: 10),
-                              Text(
-                                "Loading Ad...",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
+                        ? const SizedBox(
+                            width: 24, height: 24,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                           )
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.center,

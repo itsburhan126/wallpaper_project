@@ -4,7 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wallpaper_app/providers/app_provider.dart';
 import 'package:wallpaper_app/services/google_ad_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../dialog/reward_dialog.dart';
+import '../widgets/coin_animation_overlay.dart';
+import '../widgets/animated_coin_balance.dart';
+import '../widgets/toast/professional_toast.dart';
 
 class LuckyWheelDialog extends StatefulWidget {
   const LuckyWheelDialog({Key? key}) : super(key: key);
@@ -23,6 +27,9 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
   // For the Spin Button pulse effect
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
+  
+  // Coin Animation Target
+  final GlobalKey _coinIconKey = GlobalKey();
 
   bool _isSpinning = false;
   final GoogleAdService _adService = GoogleAdService();
@@ -146,23 +153,51 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
           final appProvider = Provider.of<AppProvider>(context, listen: false);
           
           // Show Ad before giving reward
-          await _adService.showRewardedAd(
+          // We don't add coins in callbacks anymore to ensure correct animation timing
+          bool earned = await _adService.showRewardedAd(
             context,
             onReward: (_) {
-              appProvider.addCoins(reward);
-              appProvider.incrementLuckyWheelSpinsCount(); // Spin deducted only after reward
+               // Marked as earned internally
             },
             onFailure: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Ad failed. Claiming normal reward.")),
-              );
-              appProvider.addCoins(reward);
-              appProvider.incrementLuckyWheelSpinsCount(); // Spin deducted fallback
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Ad failed. Claiming normal reward.")),
+                );
+              }
             },
           );
           
-          if (mounted) {
+          // Close the dialog first
+          if (mounted && ctx.mounted) {
             Navigator.pop(ctx);
+          }
+          
+          // Show animation and add coins (whether ad was shown or failed fallback)
+          if (mounted) {
+             // Small delay to let dialog close smoothly
+             await Future.delayed(const Duration(milliseconds: 200));
+             
+             if (mounted) {
+               CoinAnimationOverlay.show(
+                  context, 
+                  _coinIconKey, 
+                  coinCount: 10,
+                  onComplete: () {
+                     appProvider.addCoins(reward);
+                     appProvider.incrementLuckyWheelSpinsCount();
+                     if (mounted) {
+                        ProfessionalToast.showSuccess(
+                           context, 
+                           message: "You won $reward coins!",
+                        );
+                     }
+                  }
+               );
+             }
+          }
+          
+          if (mounted) {
             // Preload next ad
             _adService.loadRewardedAd(context);
           }
@@ -200,6 +235,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
           // Main Content
           Center(
             child: SingleChildScrollView(
+              clipBehavior: Clip.none,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -468,15 +504,18 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
                             ),
                           ],
                         ),
-                        Row(
-                          children: [
-                            const Icon(Icons.monetization_on, color: Colors.amber, size: 20),
-                            const SizedBox(width: 8),
-                            Text(
-                              "${appProvider.coins}",
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                            ),
-                          ],
+                        Container(
+                          key: _coinIconKey,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.monetization_on, color: Colors.amber, size: 20),
+                              const SizedBox(width: 8),
+                              AnimatedCoinBalance(
+                                balance: appProvider.coins,
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

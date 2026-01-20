@@ -2,40 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class GameRewardDialog extends StatefulWidget {
-  final int baseReward;
+class LuckyWheelWinDialog extends StatefulWidget {
+  final int rewardAmount;
   final Future<void> Function() onClaim;
   final Future<void> Function() onClaim2x;
   final VoidCallback onClose;
-  final String currencySymbol;
 
-  const GameRewardDialog({
+  const LuckyWheelWinDialog({
     super.key,
-    required this.baseReward,
+    required this.rewardAmount,
     required this.onClaim,
     required this.onClaim2x,
     required this.onClose,
-    this.currencySymbol = '\$',
   });
 
   @override
-  State<GameRewardDialog> createState() => _GameRewardDialogState();
+  State<LuckyWheelWinDialog> createState() => _LuckyWheelWinDialogState();
 }
 
-class _GameRewardDialogState extends State<GameRewardDialog> {
+class _LuckyWheelWinDialogState extends State<LuckyWheelWinDialog> {
   bool _isLoading = false;
   bool _is2xLoading = false;
 
   void _handleClaim() async {
     setState(() => _isLoading = true);
     await widget.onClaim();
-    if (mounted) setState(() => _isLoading = false);
+    if (mounted) {
+      setState(() => _isLoading = false);
+      widget.onClose();
+    }
   }
 
   void _handleClaim2x() async {
     setState(() => _is2xLoading = true);
     await widget.onClaim2x();
-    if (mounted) setState(() => _is2xLoading = false);
+    if (mounted) {
+      setState(() => _is2xLoading = false);
+      widget.onClose();
+    }
   }
 
   @override
@@ -47,76 +51,102 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
         alignment: Alignment.center,
         clipBehavior: Clip.none,
         children: [
-          // Main Card
+          // Main Card (Dark/Gold Theme for Lucky Wheel)
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 50, 24, 24),
-            // removed background color and shadow as requested
+            padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF263238), Color(0xFF212121)], // Dark gradient
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: const Color(0xFFFFD54F), width: 2), // Gold Border
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+                BoxShadow(
+                  color: Colors.amber.withOpacity(0.2),
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  "Level Completed!",
+                  "JACKPOT!",
                   style: GoogleFonts.poppins(
-                    fontSize: 22,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Colors.white,
+                    letterSpacing: 1.5,
+                    shadows: [
+                      const Shadow(color: Colors.amber, blurRadius: 10),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 8),
                 Text(
-                  "You've earned coins",
+                  "You've won amazing rewards!",
+                  textAlign: TextAlign.center,
                   style: GoogleFonts.poppins(
                     fontSize: 14,
-                    color: Colors.black54,
+                    color: Colors.white70,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 24),
                 
-                // Coin Icon & Amount
+                // Reward Display
                 Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.1),
+                    color: Colors.black45,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                    border: Border.all(color: Colors.amber.withOpacity(0.5)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.monetization_on_rounded, size: 40, color: Colors.amber)
+                      const Icon(Icons.monetization_on_rounded, size: 48, color: Colors.amber)
                           .animate(onPlay: (c) => c.repeat(reverse: true))
-                          .scale(duration: 1000.ms, begin: const Offset(0.9, 0.9), end: const Offset(1.1, 1.1)),
-                      const SizedBox(width: 12),
+                          .scale(duration: 800.ms, begin: const Offset(0.9, 0.9), end: const Offset(1.1, 1.1))
+                          .shimmer(duration: 1500.ms, color: Colors.white),
+                      const SizedBox(width: 16),
                       Text(
-                        "+${widget.baseReward}",
+                        "+${widget.rewardAmount}",
                         style: GoogleFonts.poppins(
-                          fontSize: 36,
+                          fontSize: 42,
                           fontWeight: FontWeight.w900,
-                          color: Colors.orange.shade800,
-                          letterSpacing: -1,
+                          color: const Color(0xFFFFD54F),
+                          shadows: [
+                            const Shadow(color: Colors.orange, blurRadius: 8, offset: Offset(0, 2)),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
 
                 // 2x Button (Primary)
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  height: 60,
                   child: ElevatedButton(
                     onPressed: (_isLoading || _is2xLoading) ? null : _handleClaim2x,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: const Color(0xFFFF6F00), // Amber Dark
                       foregroundColor: Colors.white,
-                      disabledBackgroundColor: Colors.deepPurple,
-                      disabledForegroundColor: Colors.white,
-                      elevation: 4,
-                      shadowColor: Colors.deepPurple.withOpacity(0.4),
+                      elevation: 8,
+                      shadowColor: Colors.amber.withOpacity(0.5),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       padding: EdgeInsets.zero,
                     ),
@@ -125,16 +155,15 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const SizedBox(
-                                width: 20, height: 20,
+                                width: 24, height: 24,
                                 child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 12),
                               Text(
                                 "Loading Ad...",
                                 style: GoogleFonts.poppins(
-                                  fontSize: 16,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
                                 ),
                               ),
                             ],
@@ -142,8 +171,8 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(Icons.play_circle_fill, size: 24),
-                              const SizedBox(width: 8),
+                              const Icon(Icons.play_circle_fill, size: 28),
+                              const SizedBox(width: 12),
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,16 +180,16 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                                   Text(
                                     "CLAIM 2X",
                                     style: GoogleFonts.poppins(
-                                      fontSize: 16,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                       height: 1,
                                     ),
                                   ),
                                   Text(
-                                    "+${widget.baseReward * 2} Coins",
+                                    "+${widget.rewardAmount * 2} Coins",
                                     style: GoogleFonts.poppins(
-                                      fontSize: 10,
-                                      color: Colors.white70,
+                                      fontSize: 12,
+                                      color: Colors.white.withOpacity(0.9),
                                       height: 1,
                                     ),
                                   ),
@@ -170,9 +199,9 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                           ),
                   ),
                 ).animate(onPlay: (c) => c.repeat(reverse: true))
-                .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.2)),
+                .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.4)),
 
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
                 // Normal Claim Button (Secondary)
                 SizedBox(
@@ -181,16 +210,16 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                   child: TextButton(
                     onPressed: (_isLoading || _is2xLoading) ? null : _handleClaim,
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.grey.shade600,
+                      foregroundColor: Colors.white54,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
                     child: _isLoading
                         ? const SizedBox(
                             width: 20, height: 20,
-                            child: CircularProgressIndicator(color: Colors.grey, strokeWidth: 2),
+                            child: CircularProgressIndicator(color: Colors.white54, strokeWidth: 2),
                           )
                         : Text(
-                            "No thanks, claim ${widget.baseReward}",
+                            "No thanks, claim ${widget.rewardAmount}",
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -204,26 +233,27 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
 
           // Ribbon Header
           Positioned(
-            top: -20,
+            top: -25,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.blue.shade400, Colors.purple.shade400],
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFD50000), Color(0xFFB71C1C)], // Red Ribbon
                 ),
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.purple.withOpacity(0.3),
+                    color: Colors.black.withOpacity(0.4),
                     blurRadius: 10,
-                    offset: const Offset(0, 4),
+                    offset: const Offset(0, 5),
                   ),
                 ],
+                border: Border.all(color: const Color(0xFFFFD54F), width: 2),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.star, color: Colors.yellow, size: 20),
+                  const Icon(Icons.star, color: Colors.yellow, size: 24),
                   const SizedBox(width: 8),
                   Text(
                     "CONGRATULATIONS",
@@ -231,11 +261,11 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      letterSpacing: 1,
+                      letterSpacing: 1.2,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(Icons.star, color: Colors.yellow, size: 20),
+                  const Icon(Icons.star, color: Colors.yellow, size: 24),
                 ],
               ),
             )

@@ -46,9 +46,9 @@ class GoogleAdService {
     _rewardedAdLoadStartTime = DateTime.now();
 
     // Internal Safety Timeout to prevent stuck loading state
-    Timer(const Duration(seconds: 15), () {
+    Timer(const Duration(seconds: 30), () {
       if (!completer.isCompleted) {
-        print("⚠️ Rewarded Ad Load Timed Out (Internal 15s limit) - Resetting state");
+        print("⚠️ Rewarded Ad Load Timed Out (Internal 30s limit) - Resetting state");
         _rewardedAdLoadFuture = null; // Allow new load attempts
         completer.complete(false);
       }

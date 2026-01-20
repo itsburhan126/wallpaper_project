@@ -94,6 +94,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('settings/game', [\App\Http\Controllers\Admin\SettingController::class, 'game'])->name('settings.game');
             Route::post('settings/game', [\App\Http\Controllers\Admin\SettingController::class, 'updateGame'])->name('settings.game.update');
 
+            Route::get('settings/watch-ads', [\App\Http\Controllers\Admin\SettingController::class, 'watchAds'])->name('settings.watch_ads');
+            Route::post('settings/watch-ads', [\App\Http\Controllers\Admin\SettingController::class, 'updateWatchAds'])->name('settings.watch_ads.update');
+
+            Route::get('settings/lucky-wheel', [\App\Http\Controllers\Admin\SettingController::class, 'luckyWheel'])->name('settings.lucky_wheel');
+            Route::post('settings/lucky-wheel', [\App\Http\Controllers\Admin\SettingController::class, 'updateLuckyWheel'])->name('settings.lucky_wheel.update');
+
             Route::get('settings/shorts', [\App\Http\Controllers\Admin\SettingController::class, 'shorts'])->name('settings.shorts');
             Route::post('settings/shorts', [\App\Http\Controllers\Admin\SettingController::class, 'updateShorts'])->name('settings.shorts.update');
 

@@ -18,8 +18,30 @@ class AppProvider with ChangeNotifier {
   String _currencySymbol = '\$';
   int _coinRate = 1000;
 
+  // Watch Ads Settings
+  int _watchAdsLimit = 10;
+  int _watchAdsReward = 50;
+  List<String> _watchAdsPriorities = ['admob', 'admob', 'admob'];
+  int _watchedAdsCount = 0;
+
+  // Lucky Wheel Settings
+  int _luckyWheelLimit = 10;
+  List<int> _luckyWheelRewards = [10, 20, 30, 40, 50, 60, 70, 80];
+  List<String> _luckyWheelPriorities = ['admob', 'admob', 'admob'];
+  int _luckyWheelSpinsCount = 0;
+
   String get currencySymbol => _currencySymbol;
   int get coinRate => _coinRate;
+  
+  int get watchAdsLimit => _watchAdsLimit;
+  int get watchAdsReward => _watchAdsReward;
+  List<String> get watchAdsPriorities => _watchAdsPriorities;
+  int get watchedAdsCount => _watchedAdsCount;
+
+  int get luckyWheelLimit => _luckyWheelLimit;
+  List<int> get luckyWheelRewards => _luckyWheelRewards;
+  List<String> get luckyWheelPriorities => _luckyWheelPriorities;
+  int get luckyWheelSpinsCount => _luckyWheelSpinsCount;
 
   List<Wallpaper> _wallpapers = [];
   List<Category> _categories = [];
@@ -57,6 +79,27 @@ class AppProvider with ChangeNotifier {
     // Load Local Coins
     final prefs = await SharedPreferences.getInstance();
     _coins = prefs.getInt('coins') ?? 0;
+
+    // Load Watch Ads Count (Reset if new day)
+    String today = DateTime.now().toIso8601String().split('T')[0];
+    String? lastAdDate = prefs.getString('last_ad_date');
+    if (lastAdDate != today) {
+      _watchedAdsCount = 0;
+      await prefs.setString('last_ad_date', today);
+      await prefs.setInt('watched_ads_count', 0);
+    } else {
+      _watchedAdsCount = prefs.getInt('watched_ads_count') ?? 0;
+    }
+
+    // Load Lucky Wheel Count
+    String? lastSpinDate = prefs.getString('last_spin_date');
+    if (lastSpinDate != today) {
+      _luckyWheelSpinsCount = 0;
+      await prefs.setString('last_spin_date', today);
+      await prefs.setInt('lucky_wheel_spins_count', 0);
+    } else {
+      _luckyWheelSpinsCount = prefs.getInt('lucky_wheel_spins_count') ?? 0;
+    }
 
     // Fetch API Data
     await Future.wait([
@@ -102,6 +145,45 @@ class AppProvider with ChangeNotifier {
     if (settings.containsKey('coin_rate')) {
       _coinRate = int.tryParse(settings['coin_rate'].toString()) ?? 1000;
     }
+
+    if (settings.containsKey('watch_ads_limit')) {
+      _watchAdsLimit = int.tryParse(settings['watch_ads_limit'].toString()) ?? 10;
+    }
+    if (settings.containsKey('watch_ads_reward')) {
+      _watchAdsReward = int.tryParse(settings['watch_ads_reward'].toString()) ?? 50;
+    }
+    
+    // Parse Watch Ads priorities
+    List<String> priorities = [];
+    if (settings.containsKey('watch_ads_priority_1')) priorities.add(settings['watch_ads_priority_1'].toString());
+    if (settings.containsKey('watch_ads_priority_2')) priorities.add(settings['watch_ads_priority_2'].toString());
+    if (settings.containsKey('watch_ads_priority_3')) priorities.add(settings['watch_ads_priority_3'].toString());
+    
+    if (priorities.isNotEmpty) {
+        _watchAdsPriorities = priorities;
+    }
+
+    // Lucky Wheel Parsing
+    if (settings.containsKey('lucky_wheel_limit')) {
+      _luckyWheelLimit = int.tryParse(settings['lucky_wheel_limit'].toString()) ?? 10;
+    }
+    
+    List<int> rewards = [];
+    for (int i = 1; i <= 8; i++) {
+        if (settings.containsKey('lucky_wheel_reward_$i')) {
+            rewards.add(int.tryParse(settings['lucky_wheel_reward_$i'].toString()) ?? (i * 10));
+        } else {
+            rewards.add(i * 10);
+        }
+    }
+    if (rewards.isNotEmpty) _luckyWheelRewards = rewards;
+
+    List<String> wheelPriorities = [];
+    if (settings.containsKey('lucky_wheel_priority_1')) wheelPriorities.add(settings['lucky_wheel_priority_1'].toString());
+    if (settings.containsKey('lucky_wheel_priority_2')) wheelPriorities.add(settings['lucky_wheel_priority_2'].toString());
+    if (settings.containsKey('lucky_wheel_priority_3')) wheelPriorities.add(settings['lucky_wheel_priority_3'].toString());
+    if (wheelPriorities.isNotEmpty) _luckyWheelPriorities = wheelPriorities;
+
     notifyListeners();
   }
 
@@ -152,6 +234,20 @@ class AppProvider with ChangeNotifier {
 
     // Sync with Server
     await _apiService.updateBalance(amount);
+  }
+
+  Future<void> incrementWatchedAdsCount() async {
+    _watchedAdsCount++;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('watched_ads_count', _watchedAdsCount);
+    notifyListeners();
+  }
+
+  Future<void> incrementLuckyWheelSpinsCount() async {
+    _luckyWheelSpinsCount++;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('lucky_wheel_spins_count', _luckyWheelSpinsCount);
+    notifyListeners();
   }
 
   // Admin Actions removed from Provider as they are now handled via Admin Panel

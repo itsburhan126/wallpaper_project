@@ -21,7 +21,11 @@ class SettingController extends Controller
 
     public function general()
     {
-        $settings = Setting::where('group', 'general')->pluck('value', 'key');
+        $general = Setting::where('group', 'general')->pluck('value', 'key');
+        $watchAds = Setting::where('group', 'watch_ads')->pluck('value', 'key');
+        $luckyWheel = Setting::where('group', 'lucky_wheel')->pluck('value', 'key');
+        
+        $settings = $general->merge($watchAds)->merge($luckyWheel);
         
         return response()->json([
             'success' => true,

@@ -195,6 +195,59 @@ class SettingController extends Controller
         return redirect()->back()->with('success', 'Game settings updated successfully.');
     }
 
+    public function watchAds()
+    {
+        $keys = [
+            'watch_ads_limit', 
+            'watch_ads_reward',
+            'watch_ads_priority_1',
+            'watch_ads_priority_2',
+            'watch_ads_priority_3',
+        ];
+        $settings = Setting::whereIn('key', $keys)->pluck('value', 'key');
+        return view('admin.settings.watch_ads', compact('settings'));
+    }
+
+    public function updateWatchAds(Request $request)
+    {
+        $data = $request->except('_token');
+        
+        foreach ($data as $key => $value) {
+            Setting::set($key, $value, 'watch_ads');
+        }
+
+        return redirect()->back()->with('success', 'Watch Ads settings updated successfully.');
+    }
+
+    public function luckyWheel()
+    {
+        $keys = [
+            'lucky_wheel_limit', 
+            'lucky_wheel_priority_1',
+            'lucky_wheel_priority_2',
+            'lucky_wheel_priority_3',
+        ];
+        
+        // Add keys for 8 segments
+        for ($i = 1; $i <= 8; $i++) {
+            $keys[] = 'lucky_wheel_reward_' . $i;
+        }
+
+        $settings = Setting::whereIn('key', $keys)->pluck('value', 'key');
+        return view('admin.settings.lucky_wheel', compact('settings'));
+    }
+
+    public function updateLuckyWheel(Request $request)
+    {
+        $data = $request->except('_token');
+        
+        foreach ($data as $key => $value) {
+            Setting::set($key, $value, 'lucky_wheel');
+        }
+
+        return redirect()->back()->with('success', 'Lucky Wheel settings updated successfully.');
+    }
+
     public function deepLink()
     {
         $keys = [

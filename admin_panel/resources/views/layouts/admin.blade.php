@@ -204,11 +204,23 @@
                     <span>Game Settings</span>
                 </a>
 
-                <a href="{{ route('admin.settings.shorts') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.settings.shorts') ? 'nav-item-active' : 'text-slate-400' }}">
+                <a href="{{ route('admin.settings.watch_ads') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.settings.watch_ads') ? 'nav-item-active' : 'text-slate-400' }}">
                      <div class="w-6 flex justify-center mr-0">
-                        <i class="fas fa-cog {{ request()->routeIs('admin.settings.shorts') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                        <i class="fas fa-play-circle {{ request()->routeIs('admin.settings.watch_ads') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
                     </div>
-                    <span>Shorts Settings</span>
+                    <span>Watch Ads Settings</span>
+                </a>
+
+                <a href="{{ route('admin.settings.lucky_wheel') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.settings.lucky_wheel') ? 'nav-item-active' : 'text-slate-400' }}">
+                     <div class="w-6 flex justify-center mr-0">
+                        <i class="fas fa-dharmachakra {{ request()->routeIs('admin.settings.lucky_wheel') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                    </div>
+                    <span>Lucky Wheel Settings</span>
+                </a>
+
+                <a href="{{ route('admin.settings.shorts') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.settings.shorts') ? 'nav-item-active' : 'text-slate-400' }}">
+                    <i class="fas fa-video w-6 {{ request()->routeIs('admin.settings.shorts') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                    <span>Shorts Config</span>
                 </a>
 
                 <p class="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-8 mb-3">System Configuration</p>

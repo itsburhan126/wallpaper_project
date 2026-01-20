@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:wallpaper_app/widgets/lucky_wheel_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -29,14 +30,20 @@ class TaskScreen extends StatefulWidget {
 
 class _TaskScreenState extends State<TaskScreen> {
   final GlobalKey _coinIconKey = GlobalKey();
+  bool _isWatchAdLoading = false;
 
   @override
   void initState() {
     super.initState();
     // Fetch user coin balance and games
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<AppProvider>(context, listen: false).fetchUserBalance();
-      Provider.of<AppProvider>(context, listen: false).fetchGames();
+      final appProvider = Provider.of<AppProvider>(context, listen: false);
+      appProvider.fetchUserBalance();
+      appProvider.fetchGames();
+      
+      // Preload Ads for smoother experience
+      GoogleAdService().loadRewardedAd(context);
+      GoogleAdService().loadInterstitialAd(context);
     });
   }
 
@@ -254,32 +261,95 @@ class _TaskScreenState extends State<TaskScreen> {
                   const SizedBox(height: 16),
 
                   // 4. Task List
-                  _buildTaskItem(
-                    context,
-                    title: "Watch Ads",
-                    subtitle: "1/6",
-                    progress: 0.16,
-                    reward: 10,
-                    icon: Icons.play_circle_fill,
-                    iconColor: Colors.blueAccent,
-                    actionLabel: "7S",
-                    onTap: () {
-                      // Trigger Ad
+                  Consumer<AppProvider>(
+                    builder: (context, provider, child) {
+                      return _buildTaskItem(
+                        context,
+                        title: "Watch Ads",
+                        subtitle: "${provider.watchedAdsCount}/${provider.watchAdsLimit}",
+                        progress: provider.watchAdsLimit > 0 
+                            ? (provider.watchedAdsCount / provider.watchAdsLimit).clamp(0.0, 1.0) 
+                            : 0.0,
+                        reward: provider.watchAdsReward,
+                        icon: Icons.play_circle_fill,
+                        iconColor: Colors.blueAccent,
+                        actionLabel: "WATCH",
+                        isLoading: _isWatchAdLoading,
+                        onTap: () async {
+                          if (provider.watchedAdsCount >= provider.watchAdsLimit) {
+                            ProfessionalToast.showError(context, message: "Daily limit reached! Come back tomorrow.");
+                            return;
+                          }
+
+                          if (_isWatchAdLoading) return;
+
+                          setState(() {
+                            _isWatchAdLoading = true;
+                          });
+
+                          try {
+                            bool success = await AdManager.showAdWithFallback(
+                              context,
+                              provider.watchAdsPriorities,
+                              () {}, // Handled below
+                            );
+
+                            if (success) {
+                              if (context.mounted) {
+                                 // Show Animation first
+                                 CoinAnimationOverlay.show(
+                                   context, 
+                                   _coinIconKey, 
+                                   coinCount: 10,
+                                   onComplete: () async {
+                                      await provider.addCoins(provider.watchAdsReward);
+                                      await provider.incrementWatchedAdsCount();
+                                      if (context.mounted) {
+                                        ProfessionalToast.showSuccess(context, message: "You earned ${provider.watchAdsReward} coins!");
+                                      }
+                                   }
+                                 );
+                              }
+                            } else {
+                              if (context.mounted) ProfessionalToast.showError(context, message: "No ads available. Try again later.");
+                            }
+                          } finally {
+                            if (mounted) {
+                              setState(() {
+                                _isWatchAdLoading = false;
+                              });
+                            }
+                          }
+                        },
+                      );
                     },
                   ),
                   const SizedBox(height: 12),
-                  _buildTaskItem(
-                    context,
-                    title: "Play Lucky Wheel",
-                    subtitle: "0/5",
-                    progress: 0.0,
-                    reward: 50,
-                    icon: Icons.casino,
-                    iconColor: Colors.orangeAccent,
-                    actionLabel: "GO",
-                    onTap: () {
-                      // Navigate to Wheel
-                    },
+                  Consumer<AppProvider>(
+                    builder: (context, provider, child) {
+                      int maxReward = provider.luckyWheelRewards.isNotEmpty 
+                          ? provider.luckyWheelRewards.reduce((curr, next) => curr > next ? curr : next) 
+                          : 100;
+                          
+                      return _buildTaskItem(
+                        context,
+                        title: "Play Lucky Wheel",
+                        subtitle: "${provider.luckyWheelSpinsCount}/${provider.luckyWheelLimit}",
+                        progress: provider.luckyWheelLimit > 0 
+                            ? (provider.luckyWheelSpinsCount / provider.luckyWheelLimit).clamp(0.0, 1.0) 
+                            : 0.0,
+                        reward: maxReward,
+                        icon: Icons.casino,
+                        iconColor: Colors.orangeAccent,
+                        actionLabel: "SPIN",
+                        onTap: () {
+                           showDialog(
+                             context: context,
+                             builder: (context) => const LuckyWheelDialog(),
+                           );
+                        },
+                      );
+                    }
                   ),
                   const SizedBox(height: 12),
                   _buildTaskItem(
@@ -887,6 +957,7 @@ class _TaskScreenState extends State<TaskScreen> {
     required Color iconColor,
     required String actionLabel,
     required VoidCallback onTap,
+    bool isLoading = false,
   }) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -986,6 +1057,7 @@ class _TaskScreenState extends State<TaskScreen> {
                 borderRadius: BorderRadius.circular(20),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  constraints: const BoxConstraints(minWidth: 60),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
                       colors: [Color(0xFFFF7551), Color(0xFFFF512F)],
@@ -999,14 +1071,23 @@ class _TaskScreenState extends State<TaskScreen> {
                       ),
                     ],
                   ),
-                  child: Text(
-                    actionLabel,
-                    style: GoogleFonts.poppins(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : Text(
+                          actionLabel,
+                          style: GoogleFonts.poppins(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                 ),
               ),
             ],

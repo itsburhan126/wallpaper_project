@@ -123,7 +123,7 @@ class _TaskScreenState extends State<TaskScreen> {
             // Custom App Bar with User Profile
           SliverAppBar(
             backgroundColor: const Color(0xFF120C24),
-            expandedHeight: 100.0,
+            expandedHeight: 65.0,
             floating: true,
             pinned: true,
             elevation: 0,
@@ -131,97 +131,182 @@ class _TaskScreenState extends State<TaskScreen> {
               background: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFF2A1B4E), Color(0xFF120C24)],
+                    colors: [Color(0xFF2E1C59), Color(0xFF120C24)],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
                 ),
               ),
-              titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               title: Row(
                 children: [
-                  // Avatar
+                  // 1. Professional Avatar with Gradient Border (Extra Small)
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 32,
+                    height: 32,
+                    padding: const EdgeInsets.all(1.5),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.amber, width: 2),
-                      color: Colors.deepPurpleAccent,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFFD700), Color(0xFFFFA000)], // Gold Gradient
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.amber.withOpacity(0.3),
-                          blurRadius: 8,
+                          color: Colors.amber.withOpacity(0.4),
+                          blurRadius: 6,
                           spreadRadius: 1,
                         )
                       ],
                     ),
-                    child: const Icon(Icons.person, color: Colors.white, size: 24),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFF2A1B4E),
+                      ),
+                      child: const Icon(Icons.person, color: Colors.white, size: 20),
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                  // User Info
+                  const SizedBox(width: 8),
+
+                  // 2. User Info (Very Compact)
                   Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Guest User", // Dynamic name later
-                          style: GoogleFonts.poppins(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Row(
+                    child: Consumer<AppProvider>(
+                      builder: (context, provider, child) {
+                        if (provider.isUserLoading && provider.userName == "Guest User") {
+                           return Column(
+                             mainAxisSize: MainAxisSize.min,
+                             crossAxisAlignment: CrossAxisAlignment.start,
+                             children: [
+                               Container(
+                                 width: 80, 
+                                 height: 14, 
+                                 decoration: BoxDecoration(
+                                   color: Colors.white.withOpacity(0.1),
+                                   borderRadius: BorderRadius.circular(4)
+                                 )
+                               ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms, color: Colors.white.withOpacity(0.2)),
+                               const SizedBox(height: 3),
+                               Container(
+                                 width: 40, 
+                                 height: 10, 
+                                 decoration: BoxDecoration(
+                                   color: Colors.white.withOpacity(0.1),
+                                   borderRadius: BorderRadius.circular(8)
+                                 )
+                               ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms, color: Colors.white.withOpacity(0.2)),
+                             ],
+                           );
+                        }
+
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.shield, color: Colors.amber, size: 12),
-                            const SizedBox(width: 4),
                             Text(
-                              "Level 1",
+                              provider.userName.isNotEmpty ? provider.userName : "Guest Player",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.poppins(
-                                fontSize: 10,
-                                color: Colors.white70,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                shadows: [
+                                  const Shadow(color: Colors.black54, offset: Offset(0, 1), blurRadius: 2)
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 1),
+                            // Level Badge (Extra Small)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFFFFA000), Color(0xFFFF6F00)],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.orange.withOpacity(0.4),
+                                    blurRadius: 1,
+                                    offset: const Offset(0, 1),
+                                  )
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.stars_rounded, color: Colors.white, size: 8),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    "Lvl ${provider.userLevel}",
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ),
-                  // Coin Balance
+
+                  // 3. Coin Balance (Extra Compact Wallet Style)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.fromLTRB(8, 3, 3, 3),
                     decoration: BoxDecoration(
-                      color: Colors.black45,
+                      color: Colors.black.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.amber.withOpacity(0.5)),
+                      border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.5), width: 1.0),
+                      boxShadow: [
+                         BoxShadow(
+                           color: Colors.black.withOpacity(0.3),
+                           blurRadius: 2,
+                           offset: const Offset(0, 1),
+                         )
+                      ],
                     ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.monetization_on, color: Colors.amber, size: 16, key: _coinIconKey),
-                        const SizedBox(width: 6),
+                        Icon(Icons.monetization_on_rounded, color: const Color(0xFFFFD700), size: 14, key: _coinIconKey),
+                        const SizedBox(width: 5),
                         Consumer<AppProvider>(
                           builder: (context, provider, _) {
                             return AnimatedCoinBalance(
                               balance: provider.coins,
                               style: GoogleFonts.poppins(
-                                fontSize: 14,
+                                fontSize: 11,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.amber,
+                                color: const Color(0xFFFFD700),
+                                shadows: [
+                                  Shadow(color: Colors.amber.withOpacity(0.5), blurRadius: 2)
+                                ]
                               ),
                             );
                           },
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 5),
                         Container(
-                          width: 16,
-                          height: 16,
+                          width: 18,
+                          height: 18,
                           decoration: const BoxDecoration(
-                            color: Colors.amber,
+                            gradient: LinearGradient(
+                              colors: [Color(0xFF00E676), Color(0xFF00C853)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.add, color: Colors.black, size: 12),
+                          child: const Icon(Icons.add, color: Colors.white, size: 12),
                         )
                       ],
                     ),

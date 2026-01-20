@@ -204,31 +204,41 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
                   const SizedBox(height: 16),
-                  Text(
-                    "Guest User",
-                    style: GoogleFonts.poppins(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ).animate().fadeIn().slideY(begin: 0.5, end: 0),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
-                    ),
-                    child: Text(
-                      "ID: 8839201",
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Colors.white70,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                  ).animate().fadeIn(delay: 200.ms),
+                  
+                  Consumer<AppProvider>(
+                    builder: (context, provider, child) {
+                      return Column(
+                        children: [
+                          Text(
+                            provider.userName.isNotEmpty ? provider.userName : "Guest User",
+                            style: GoogleFonts.poppins(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ).animate().fadeIn().slideY(begin: 0.5, end: 0),
+                          const SizedBox(height: 4),
+                          if (provider.userId.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: Colors.white.withOpacity(0.2)),
+                            ),
+                            child: Text(
+                              "ID: ${provider.userId}",
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: Colors.white70,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ).animate().fadeIn(delay: 200.ms),
+                        ],
+                      );
+                    }
+                  ),
                 ],
               ),
             ),
@@ -267,7 +277,7 @@ class ProfileScreen extends StatelessWidget {
               Container(width: 1, height: 40, color: Colors.white10),
               _buildStatItem(
                 "Level",
-                "12",
+                "${provider.userLevel}",
                 Icons.shield_rounded,
                 Colors.blueAccent,
               ),

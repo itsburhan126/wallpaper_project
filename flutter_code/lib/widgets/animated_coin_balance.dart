@@ -14,8 +14,9 @@ class AnimatedCoinBalance extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<int>(
-      tween: IntTween(begin: balance, end: balance),
-      duration: const Duration(seconds: 1), // 1 second to count up
+      tween: IntTween(begin: 0, end: balance),
+      duration: const Duration(milliseconds: 1500), 
+      curve: Curves.easeOutExpo,
       builder: (context, value, child) {
         return Text(
           "$value",

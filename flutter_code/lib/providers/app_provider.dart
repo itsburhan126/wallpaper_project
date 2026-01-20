@@ -12,6 +12,12 @@ class AppProvider with ChangeNotifier {
   int _coins = 0;
   int get coins => _coins;
 
+  String _userName = "Guest User";
+  String get userName => _userName;
+
+  int _userLevel = 1;
+  int get userLevel => _userLevel;
+
   int _wallpaperViewTime = 10;
   int get wallpaperViewTime => _wallpaperViewTime;
 
@@ -72,6 +78,9 @@ class AppProvider with ChangeNotifier {
     _loadInitialData();
   }
 
+  bool _isUserLoading = false;
+  bool get isUserLoading => _isUserLoading;
+
   Future<void> _loadInitialData() async {
     _isLoading = true;
     notifyListeners();
@@ -79,6 +88,9 @@ class AppProvider with ChangeNotifier {
     // Load Local Coins
     final prefs = await SharedPreferences.getInstance();
     _coins = prefs.getInt('coins') ?? 0;
+    
+    // Check if user is logged in
+    final token = prefs.getString('auth_token');
 
     // Load Watch Ads Count (Reset if new day)
     String today = DateTime.now().toIso8601String().split('T')[0];
@@ -108,6 +120,7 @@ class AppProvider with ChangeNotifier {
       fetchWallpapers(),
       fetchGeneralSettings(),
       fetchDailyRewards(),
+      if (token != null) fetchUserBalance(), // Fetch user data if logged in
     ]);
 
     _isLoading = false;
@@ -187,14 +200,62 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  String _userEmail = "";
+  String get userEmail => _userEmail;
+
+  String _userId = "";
+  String get userId => _userId;
+
   Future<void> fetchUserBalance() async {
-    final result = await _apiService.getUserDetails();
-    if (result['success'] == true) {
-      final data = result['data'];
-      if (data != null && data['coins'] != null) {
-        _coins = int.tryParse(data['coins'].toString()) ?? _coins;
-        notifyListeners();
+    _isUserLoading = true;
+    notifyListeners();
+    
+    try {
+      final result = await _apiService.getUserDetails();
+      if (result['success'] == true) {
+        final data = result['data'];
+        if (data != null) {
+          // Coins/Balance
+          if (data['coins'] != null) {
+            _coins = int.tryParse(data['coins'].toString()) ?? _coins;
+          } else if (data['balance'] != null) {
+            _coins = int.tryParse(data['balance'].toString()) ?? _coins;
+          } else if (data['wallet'] != null) {
+            _coins = int.tryParse(data['wallet'].toString()) ?? _coins;
+          }
+
+          // Name/Username
+          if (data['name'] != null) {
+            _userName = data['name'].toString();
+          } else if (data['username'] != null) {
+            _userName = data['username'].toString();
+          }
+
+          // Level
+          if (data['level'] != null) {
+             _userLevel = int.tryParse(data['level'].toString()) ?? 1;
+          }
+
+          // Email
+          if (data['email'] != null) {
+            _userEmail = data['email'].toString();
+          }
+
+          // ID
+          if (data['id'] != null) {
+            _userId = data['id'].toString();
+          }
+          
+          // Save updated coins locally
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('coins', _coins);
+        }
       }
+    } catch (e) {
+      print("Error fetching user balance: $e");
+    } finally {
+      _isUserLoading = false;
+      notifyListeners();
     }
   }
 

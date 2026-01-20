@@ -14,6 +14,7 @@ import '../providers/ad_provider.dart';
 import '../services/ad_manager_service.dart';
 import '../widgets/user_avatar.dart';
 import '../dialog/reward_dialog.dart';
+import '../widgets/toast/professional_toast.dart';
 import '../dialog/ad_error_dialog.dart';
 
 class ShortsScreen extends StatefulWidget {
@@ -408,9 +409,14 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
         rewardAmount: widget.rewardAmount,
         currencySymbol: appProvider.currencySymbol,
         coinRate: appProvider.coinRate,
-        onReceive: () {
-          Navigator.pop(context);
-          _processAdFallback();
+        onReceive: () async {
+          // Delay for button loading effect
+          await Future.delayed(const Duration(milliseconds: 1000));
+          
+          if (context.mounted) {
+            Navigator.pop(context);
+            _processAdFallback(showLoading: false);
+          }
         },
         onClose: () => Navigator.pop(context),
       ),
@@ -420,13 +426,15 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
   }
   
   // Ad Fallback Logic
-  void _processAdFallback() async {
+  void _processAdFallback({bool showLoading = true}) async {
     // Show Loading
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
-    );
+    if (showLoading) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     final provider = Provider.of<ShortsProvider>(context, listen: false);
     
@@ -443,7 +451,7 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
     }
     
     // Close Loading Dialog before showing ads
-    if (mounted) Navigator.pop(context);
+    if (showLoading && mounted) Navigator.pop(context);
 
     // Call AdManager (which now internally forces AdMob only as requested)
     bool success = await AdManager.showAdWithFallback(
@@ -453,7 +461,7 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
     );
 
     if (!success) {
-      _showErrorDialog();
+      ProfessionalToast.showError(context, message: "Ads not ready. Please try again later.");
     }
   }
 
@@ -467,51 +475,11 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
                 _rewardClaimed = true;
                 _showRewardButton = false;
               });
-              _showSuccessToast(widget.rewardAmount);
+              ProfessionalToast.show(context, coinAmount: widget.rewardAmount);
             }
         }
       });
       _controller?.play();
-  }
-
-  void _showSuccessToast(int coins) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(color: Colors.white24, shape: BoxShape.circle),
-              child: const Icon(Icons.check_rounded, color: Colors.white, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text("Reward Claimed!", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                  Text("You earned $coins coins", style: const TextStyle(fontSize: 12)),
-                ],
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.green.shade600,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(16),
-        elevation: 4,
-        duration: const Duration(seconds: 3),
-      ),
-    );
-  }
-
-  void _showErrorDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => const AdErrorDialog(),
-    );
   }
 
   @override

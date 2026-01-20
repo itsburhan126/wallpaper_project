@@ -8,6 +8,10 @@ import 'package:url_launcher/url_launcher.dart';
 import '../providers/app_provider.dart';
 import '../services/ad_manager_service.dart';
 import '../utils/constants.dart';
+import '../dialog/reward_dialog.dart';
+import '../widgets/coin_animation_overlay.dart';
+import '../services/google_ad_service.dart';
+import '../widgets/toast/professional_toast.dart';
 import 'all_games_screen.dart';
 
 class TaskScreen extends StatefulWidget {
@@ -18,6 +22,8 @@ class TaskScreen extends StatefulWidget {
 }
 
 class _TaskScreenState extends State<TaskScreen> {
+  final GlobalKey _coinIconKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -124,7 +130,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.monetization_on, color: Colors.amber, size: 16),
+                        Icon(Icons.monetization_on, color: Colors.amber, size: 16, key: _coinIconKey),
                         const SizedBox(width: 6),
                         Consumer<AppProvider>(
                           builder: (context, provider, _) {
@@ -419,40 +425,48 @@ class _TaskScreenState extends State<TaskScreen> {
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xFF2D1F42),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    const Color(0xFF6C63FF).withOpacity(0.2),
+                                    const Color(0xFF6C63FF).withOpacity(0.1),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
                                 borderRadius: BorderRadius.circular(18),
-                                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                                border: Border.all(color: const Color(0xFF6C63FF).withOpacity(0.3)),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 4,
-                                    offset: const Offset(0, 2),
+                                    color: const Color(0xFF6C63FF).withOpacity(0.1),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
                                   ),
                                 ],
                               ),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.05),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.grid_view_rounded, color: Colors.white70, size: 20),
+                              child: Center(
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF6C63FF).withOpacity(0.2),
+                                    shape: BoxShape.circle,
                                   ),
-                                ],
+                                  child: const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "More",
+                            "View All",
                             textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(
                               fontSize: 11,
-                              color: Colors.white70,
-                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
@@ -524,6 +538,109 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
+  void _showCheckInDialog(BuildContext context, AppProvider provider) {
+    // Find the reward amount for the current day
+    final currentRewardItem = provider.dailyRewards.firstWhere(
+      (item) => item['day'] == provider.currentDay, 
+      orElse: () => {'reward': {'coins': 0}},
+    );
+    final coins = currentRewardItem != null && currentRewardItem['reward'] != null 
+        ? (currentRewardItem['reward']['coins'] ?? 0)
+        : 0;
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => RewardDialog(
+        rewardAmount: coins,
+        currencySymbol: provider.currencySymbol,
+        coinRate: provider.coinRate,
+        onReceive: () async {
+            // Check if Ad is ready, if not load it while showing loading spinner
+            bool isReady = GoogleAdService().isRewardedAdReady();
+            if (!isReady) {
+               // Load Rewarded Ad with timeout
+               debugPrint("⏳ Rewarded Ad not ready, attempting to load with 15s timeout...");
+               try {
+                 isReady = await GoogleAdService().loadRewardedAd(context).timeout(
+                    const Duration(seconds: 15), 
+                    onTimeout: () {
+                      debugPrint("⏰ Rewarded Ad Load Timeout (15s)");
+                      return false;
+                    }
+                 );
+               } catch (e) {
+                 debugPrint("❌ Rewarded Ad Load Error: $e");
+                 isReady = false;
+               }
+
+               // Fallback: If Rewarded failed to load, try Interstitial
+               if (!isReady) {
+                  debugPrint("⚠️ Rewarded Ad failed. Checking Interstitial fallback...");
+                  if (GoogleAdService().isInterstitialAdReady()) {
+                     isReady = true;
+                     debugPrint("✅ Interstitial Ad is ready as fallback.");
+                  } else {
+                     debugPrint("⏳ Interstitial not ready, attempting to load...");
+                     isReady = await GoogleAdService().loadInterstitialAd(context);
+                  }
+               }
+            }
+            
+            if (context.mounted) {
+              Navigator.pop(ctx); // Close Dialog
+              
+              if (isReady) {
+                  // Show Ad immediately (AdManager will handle Rewarded vs Interstitial logic)
+                  _handleClaimReward(context, provider, coins, showLoading: false);
+              } else {
+                  // Ad failed to load
+                  ProfessionalToast.showError(context, message: "Ads not available right now. Please try again.");
+                  debugPrint("❌ Final Status: No Ads ready after wait.");
+              }
+            }
+        },
+        onClose: () => Navigator.pop(ctx),
+      ),
+    );
+  }
+
+  void _handleClaimReward(BuildContext context, AppProvider provider, int rewardAmount, {bool showLoading = true}) async {
+    // Show Loading only if requested
+    if (showLoading) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+      // Wait a bit to ensure UI updates
+      await Future.delayed(const Duration(milliseconds: 500));
+      // Close Loading
+      if (context.mounted) Navigator.pop(context);
+    }
+
+    if (!context.mounted) return;
+
+    // Show Ad
+    bool adShown = await AdManager.showAdWithFallback(
+      context,
+      provider.dailyRewardAdPriorities,
+      () async {
+        // On Ad Success
+        final success = await provider.claimDailyReward();
+        if (success && context.mounted) {
+           // Show Animations
+           CoinAnimationOverlay.show(context, _coinIconKey);
+           ProfessionalToast.show(context, coinAmount: rewardAmount);
+        }
+      }
+    );
+
+    if (!adShown && context.mounted) {
+      ProfessionalToast.showError(context, message: "Ads not ready. Please try again later.");
+    }
+  }
+
   Widget _buildDailyCheckIn(BuildContext context) {
     return Consumer<AppProvider>(
       builder: (context, provider, child) {
@@ -566,44 +683,9 @@ class _TaskScreenState extends State<TaskScreen> {
                     ],
                   ),
                   GestureDetector(
-                    onTap: () async {
+                    onTap: () {
                       if (!provider.canClaimDailyReward) return;
-
-                      // Show Loading
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (_) => const Center(child: CircularProgressIndicator()),
-                      );
-
-                      // Close Loading
-                      if (context.mounted) Navigator.pop(context);
-
-                      // Show Ad with Fallback
-                      await AdManager.showAdWithFallback(
-                        context,
-                        provider.dailyRewardAdPriorities, // Use dynamic priorities from Admin
-                        () async {
-                          // On Ad Success
-                          final success = await provider.claimDailyReward();
-                          if (success && context.mounted) {
-                            showDialog(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                backgroundColor: const Color(0xFF2A1B4E),
-                                title: Text("Success!", style: GoogleFonts.poppins(color: Colors.white)),
-                                content: Text("You received your daily reward!", style: GoogleFonts.poppins(color: Colors.white70)),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(ctx),
-                                    child: const Text("Awesome"),
-                                  )
-                                ],
-                              ),
-                            );
-                          }
-                        }
-                      );
+                      _showCheckInDialog(context, provider);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

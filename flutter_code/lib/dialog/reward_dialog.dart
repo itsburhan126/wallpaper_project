@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 class RewardDialog extends StatefulWidget {
   final int rewardAmount;
-  final VoidCallback onReceive;
+  final Future<void> Function() onReceive;
   final VoidCallback onClose;
   final String currencySymbol;
   final int coinRate;
@@ -30,14 +30,15 @@ class _RewardDialogState extends State<RewardDialog> {
       _isLoading = true;
     });
     
-    // Slight delay to show loading animation before triggering the callback
-    // which might close the dialog or show ads
-    await Future.delayed(const Duration(milliseconds: 500));
+    // Call the async callback
+    await widget.onReceive();
     
-    widget.onReceive();
-    
-    // Note: We don't set isLoading false here because the dialog will likely be closed 
-    // or covered by an ad. If it stays open, the parent should handle it.
+    // Only reset if still mounted (though usually the dialog is closed by then)
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -125,6 +126,8 @@ class _RewardDialogState extends State<RewardDialog> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepOrange,
                       foregroundColor: Colors.white,
+                      disabledBackgroundColor: Colors.deepOrange, // Keep background color when loading
+                      disabledForegroundColor: Colors.white, // Keep text color when loading
                       elevation: 4,
                       shadowColor: Colors.deepOrange.withOpacity(0.4),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),

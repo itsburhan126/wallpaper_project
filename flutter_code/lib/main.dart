@@ -14,6 +14,11 @@ void main() async {
   // Initialize AdMob SDK
   await MobileAds.instance.initialize();
 
+  // Set Test Device IDs
+  MobileAds.instance.updateRequestConfiguration(
+    RequestConfiguration(testDeviceIds: ["152DBBC170F24DADADA7525FC86F3175"]),
+  );
+
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,

@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/constants.dart';
 import 'intro_screen.dart';
 import 'main_screen.dart';
+import '../providers/ad_provider.dart';
+import '../services/google_ad_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -22,9 +25,31 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _checkAuthAndNavigate() async {
-    // Minimum splash duration
-    await Future.delayed(const Duration(seconds: 2));
+    // Start fetching ad settings immediately
+    final adProvider = Provider.of<AdProvider>(context, listen: false);
+    // Wait for settings to be loaded if they are not yet
+    if (adProvider.isLoading) {
+       // Just a small delay to allow provider to start fetching if it hasn't
+       await Future.delayed(const Duration(milliseconds: 100));
+       // We can't easily await the provider's internal future unless we expose it, 
+       // but fetchAdSettings is called in constructor.
+       // We can wait a bit or just proceed. 
+       // Better approach: ensure we have settings before preloading.
+    }
     
+    // Preload Ads (Fire and forget, but try to ensure settings are loaded)
+    // We will wait for splash duration anyway.
+    
+    final startTime = DateTime.now();
+    
+    // Wait for minimum splash duration and data loading
+    await Future.wait([
+      Future.delayed(const Duration(seconds: 3)), // Increased to 3s to give time for ad load
+      _initializeData(),
+    ]);
+
+    if (!mounted) return;
+
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
     
@@ -40,6 +65,25 @@ class _SplashScreenState extends State<SplashScreen> {
           MaterialPageRoute(builder: (context) => const IntroScreen()),
         );
       }
+    }
+  }
+
+  Future<void> _initializeData() async {
+    // Ensure Ad Settings are loaded
+    final adProvider = Provider.of<AdProvider>(context, listen: false);
+    
+    // Simple polling to wait for ad settings (since we don't have a future to await on provider)
+    int retries = 0;
+    while (adProvider.isLoading && retries < 20) {
+      await Future.delayed(const Duration(milliseconds: 100));
+      retries++;
+    }
+
+    if (mounted) {
+       // Trigger Ad Preload
+       print("🚀 Splash: Preloading Ads...");
+       GoogleAdService().loadRewardedAd(context);
+       GoogleAdService().loadInterstitialAd(context);
     }
   }
 

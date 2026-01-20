@@ -11,15 +11,48 @@ class GoogleAdService {
 
   RewardedAd? _rewardedAd;
   InterstitialAd? _interstitialAd;
-  bool _isRewardedLoading = false;
-  bool _isInterstitialLoading = false;
+  Future<bool>? _rewardedAdLoadFuture;
+  DateTime? _rewardedAdLoadStartTime;
+  Future<bool>? _interstitialAdLoadFuture;
 
-  Future<void> loadRewardedAd(BuildContext context) async {
+  bool isRewardedAdReady() {
+    return _rewardedAd != null;
+  }
+
+  bool isInterstitialAdReady() {
+    return _interstitialAd != null;
+  }
+
+  Future<bool> loadRewardedAd(BuildContext context) async {
     final adProvider = Provider.of<AdProvider>(context, listen: false);
-    if (!adProvider.adsEnabled || adProvider.admobRewardedId == null || _isRewardedLoading) return;
+    if (!adProvider.adsEnabled || adProvider.admobRewardedId == null) return false;
 
-    _isRewardedLoading = true;
+    // Check if a load is already in progress
+    if (_rewardedAdLoadFuture != null) {
+        // If it's been loading for more than 20 seconds, assume it's stuck and force reload
+        if (_rewardedAdLoadStartTime != null && 
+            DateTime.now().difference(_rewardedAdLoadStartTime!) > const Duration(seconds: 20)) {
+            print("⚠️ Previous ad load seems stuck (>20s). Resetting...");
+            _rewardedAdLoadFuture = null;
+        } else {
+            return _rewardedAdLoadFuture!;
+        }
+    }
+
     print("🎬 Loading Rewarded Ad: ${adProvider.admobRewardedId}");
+
+    final completer = Completer<bool>();
+    _rewardedAdLoadFuture = completer.future;
+    _rewardedAdLoadStartTime = DateTime.now();
+
+    // Internal Safety Timeout to prevent stuck loading state
+    Timer(const Duration(seconds: 15), () {
+      if (!completer.isCompleted) {
+        print("⚠️ Rewarded Ad Load Timed Out (Internal 15s limit) - Resetting state");
+        _rewardedAdLoadFuture = null; // Allow new load attempts
+        completer.complete(false);
+      }
+    });
 
     await RewardedAd.load(
       adUnitId: adProvider.admobRewardedId!,
@@ -28,15 +61,19 @@ class GoogleAdService {
         onAdLoaded: (ad) {
           print("✅ Rewarded Ad Loaded");
           _rewardedAd = ad;
-          _isRewardedLoading = false;
+          _rewardedAdLoadFuture = null;
+          if (!completer.isCompleted) completer.complete(true);
         },
         onAdFailedToLoad: (error) {
           print("❌ Rewarded Ad Failed to Load: $error");
           _rewardedAd = null;
-          _isRewardedLoading = false;
+          _rewardedAdLoadFuture = null;
+          if (!completer.isCompleted) completer.complete(false);
         },
       ),
     );
+    
+    return completer.future;
   }
 
   Future<bool> showRewardedAd(BuildContext context, {required Function(int) onReward, required VoidCallback onFailure}) async {
@@ -51,8 +88,8 @@ class GoogleAdService {
 
     if (_rewardedAd == null) {
       print("⚠️ Rewarded Ad not ready, attempting to load...");
-      await loadRewardedAd(context);
-      if (_rewardedAd == null) {
+      bool loaded = await loadRewardedAd(context);
+      if (!loaded || _rewardedAd == null) {
         onFailure();
         return false;
       }
@@ -89,12 +126,16 @@ class GoogleAdService {
   }
 
   // Interstitial Ads
-  Future<void> loadInterstitialAd(BuildContext context) async {
+  Future<bool> loadInterstitialAd(BuildContext context) async {
     final adProvider = Provider.of<AdProvider>(context, listen: false);
-    if (!adProvider.interstitialEnabled || adProvider.admobInterstitialId == null || _isInterstitialLoading) return;
+    if (!adProvider.interstitialEnabled || adProvider.admobInterstitialId == null) return false;
 
-    _isInterstitialLoading = true;
+    if (_interstitialAdLoadFuture != null) return _interstitialAdLoadFuture!;
+
     print("🎬 Loading Interstitial Ad: ${adProvider.admobInterstitialId}");
+
+    final completer = Completer<bool>();
+    _interstitialAdLoadFuture = completer.future;
 
     await InterstitialAd.load(
       adUnitId: adProvider.admobInterstitialId!,
@@ -103,40 +144,55 @@ class GoogleAdService {
         onAdLoaded: (ad) {
           print("✅ Interstitial Ad Loaded");
           _interstitialAd = ad;
-          _isInterstitialLoading = false;
+          _interstitialAdLoadFuture = null;
+          if (!completer.isCompleted) completer.complete(true);
         },
         onAdFailedToLoad: (error) {
           print("❌ Interstitial Ad Failed to Load: $error");
           _interstitialAd = null;
-          _isInterstitialLoading = false;
+          _interstitialAdLoadFuture = null;
+          if (!completer.isCompleted) completer.complete(false);
         },
       ),
     );
+    
+    return completer.future;
   }
 
-  Future<void> showInterstitialAd(BuildContext context) async {
+  Future<bool> showInterstitialAd(BuildContext context, {VoidCallback? onAdDismissed}) async {
     final adProvider = Provider.of<AdProvider>(context, listen: false);
 
-    if (!adProvider.interstitialEnabled) return;
+    if (!adProvider.interstitialEnabled) return false;
 
     if (_interstitialAd == null) {
-      await loadInterstitialAd(context);
-      if (_interstitialAd == null) return;
+      bool loaded = await loadInterstitialAd(context);
+      if (!loaded || _interstitialAd == null) return false;
     }
+
+    final completer = Completer<bool>();
 
     _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
+        print("🛑 Interstitial Ad dismissed");
         ad.dispose();
         _interstitialAd = null;
         loadInterstitialAd(context);
+        if (onAdDismissed != null) onAdDismissed();
+        if (!completer.isCompleted) completer.complete(true);
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
+        print("❌ Interstitial Ad failed to show: $error");
         ad.dispose();
         _interstitialAd = null;
         loadInterstitialAd(context);
+        if (!completer.isCompleted) completer.complete(false);
+      },
+      onAdShowedFullScreenContent: (ad) {
+        print("🎬 Interstitial Ad showed fullscreen");
       },
     );
 
     _interstitialAd!.show();
+    return completer.future;
   }
 }

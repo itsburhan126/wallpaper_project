@@ -26,65 +26,9 @@
             </div>
         </div>
 
-        <!-- Daily Check-in Rewards (Moved to dedicated page) -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-800">Daily Check-in Rewards</h3>
-                            <p class="text-sm text-slate-500">Manage daily rewards in the dedicated section</p>
-                        </div>
-                    </div>
-                    <a href="{{ route('admin.daily_rewards.index') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
-                        Go to Daily Rewards
-                    </a>
-                </div>
-            </div>
-        </div>
 
-        <!-- Native Ad Settings -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-6 border-b border-slate-100 bg-slate-50/50">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-                        <i class="fas fa-ad"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-800">Native Ad Settings</h3>
-                        <p class="text-sm text-slate-500">Configure native ads for game completion dialog</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="p-8 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Native Ad Network</label>
-                        <select name="native_ad_network" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all bg-slate-50">
-                            @foreach(config('ad_networks') as $key => $name)
-                                <option value="{{ $key }}" {{ ($settings['native_ad_network'] ?? '') == $key ? 'selected' : '' }}>{{ $name }}</option>
-                            @endforeach
-                        </select>
-                        <p class="text-xs text-slate-500 mt-2">Select which network to use for native ads.</p>
-                    </div>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">AdMob Native ID</label>
-                        <input type="text" name="admob_native_id" value="{{ $settings['admob_native_id'] ?? '' }}" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all bg-slate-50 placeholder-slate-400" placeholder="ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Facebook Native ID</label>
-                        <input type="text" name="facebook_native_id" value="{{ $settings['facebook_native_id'] ?? '' }}" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all bg-slate-50 placeholder-slate-400" placeholder="YOUR_PLACEMENT_ID">
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Ad Network Priority (Fallback System) -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">

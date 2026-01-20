@@ -96,6 +96,7 @@ class GoogleAdService {
     }
 
     final completer = Completer<bool>();
+    bool rewardEarned = false;
 
     _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (ad) => print("🎬 Ad showed fullscreen"),
@@ -104,7 +105,7 @@ class GoogleAdService {
         ad.dispose();
         _rewardedAd = null;
         loadRewardedAd(context); // Preload next ad
-        if (!completer.isCompleted) completer.complete(false);
+        if (!completer.isCompleted) completer.complete(rewardEarned);
       },
       onAdFailedToShowFullScreenContent: (ad, error) {
         print("❌ Ad failed to show: $error");
@@ -118,8 +119,8 @@ class GoogleAdService {
 
     _rewardedAd!.show(onUserEarnedReward: (ad, reward) {
       print("💰 User earned reward: ${reward.amount} ${reward.type}");
+      rewardEarned = true;
       onReward(reward.amount.toInt());
-      if (!completer.isCompleted) completer.complete(true);
     });
 
     return completer.future;

@@ -44,50 +44,38 @@ class AdManager {
   }
 
   static Future<bool> _tryAdMob(BuildContext context, VoidCallback onSuccess) async {
-    final completer = Completer<bool>();
-    
-    // 1. Try Rewarded Ad
-    if (GoogleAdService().isRewardedAdReady()) {
-      debugPrint("🔹 Showing AdMob Rewarded Ad");
-      await GoogleAdService().showRewardedAd(
-        context,
-        onReward: (amount) {
-          onSuccess();
-          if (!completer.isCompleted) completer.complete(true);
-        },
-        onFailure: () {
-          // If Rewarded fails, we can fall through or just return false
-          // But wait, showRewardedAd returns logic. 
-          // If failure happens, we might want to try Interstitial?
-          // For now, let's keep it simple. If show fails, we fail.
-          // But if we want robust fallback:
-          if (!completer.isCompleted) completer.complete(false);
-        },
-      );
-    } 
-    // 2. Fallback to Interstitial Ad if Rewarded is not ready (or failed to load)
-    else if (GoogleAdService().isInterstitialAdReady()) {
-       debugPrint("🔹 Rewarded Ad not ready. Showing AdMob Interstitial Ad as Fallback");
-       await GoogleAdService().showInterstitialAd(
-         context, 
-         onAdDismissed: () {
-            // For Interstitial, we treat dismissal as "Success" for the purpose of the reward flow
-            // assuming the user watched it.
-            onSuccess();
-            if (!completer.isCompleted) completer.complete(true);
-         }
-       );
-    }
-    else {
-      debugPrint("❌ No AdMob Ads Ready (Rewarded or Interstitial)");
-      if (!completer.isCompleted) completer.complete(false);
+    // 1. Try Rewarded Ad (Loads if needed)
+    debugPrint("🔹 Attempting AdMob Rewarded Ad");
+    bool rewardedSuccess = await GoogleAdService().showRewardedAd(
+      context,
+      onReward: (amount) {
+        // Reward tracked internally in GoogleAdService, returned as true
+      },
+      onFailure: () {
+         debugPrint("❌ AdMob Rewarded Ad Failed to Show/Load");
+      },
+    );
+
+    if (rewardedSuccess) {
+       onSuccess();
+       return true;
     }
 
-    // Ensure completer is completed
-    if (!completer.isCompleted) {
-      completer.complete(false);
+    // 2. Fallback to Interstitial Ad if Rewarded failed
+    debugPrint("🔹 Rewarded Ad failed/not ready. Showing AdMob Interstitial Ad as Fallback");
+    bool interstitialSuccess = await GoogleAdService().showInterstitialAd(
+      context, 
+      onAdDismissed: () {
+         // Interstitial dismissed
+      }
+    );
+
+    if (interstitialSuccess) {
+       onSuccess();
+       return true;
     }
 
-    return completer.future;
+    debugPrint("❌ No AdMob Ads Ready (Rewarded or Interstitial)");
+    return false;
   }
 }

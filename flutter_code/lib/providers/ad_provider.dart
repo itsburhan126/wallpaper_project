@@ -34,6 +34,9 @@ class AdProvider with ChangeNotifier {
   String? get admobRewardedId => _admobRewardedId;
   String? get admobNativeId => _admobNativeId;
 
+  List<String> _adPriorities = ['admob'];
+  List<String> get adPriorities => _adPriorities;
+
   AdProvider() {
     fetchAdSettings();
   }
@@ -57,6 +60,29 @@ class AdProvider with ChangeNotifier {
         _admobInterstitialId = settings['admob_android_interstitial_id'];
         _admobRewardedId = settings['admob_android_rewarded_id'];
         _admobNativeId = settings['admob_android_native_id'];
+
+        // Parse Ad Priorities
+        List<String> priorities = [];
+        if (settings['ad_priority_1'] != null && settings['ad_priority_1'].toString().isNotEmpty) {
+          priorities.add(settings['ad_priority_1'].toString().toLowerCase());
+        }
+        if (settings['ad_priority_2'] != null && settings['ad_priority_2'].toString().isNotEmpty) {
+          priorities.add(settings['ad_priority_2'].toString().toLowerCase());
+        }
+        if (settings['ad_priority_3'] != null && settings['ad_priority_3'].toString().isNotEmpty) {
+          priorities.add(settings['ad_priority_3'].toString().toLowerCase());
+        }
+        
+        // Also check for fallback keys just in case
+        if (priorities.isEmpty) {
+             if (settings['fallback_priority_1'] != null) priorities.add(settings['fallback_priority_1'].toString().toLowerCase());
+             if (settings['fallback_priority_2'] != null) priorities.add(settings['fallback_priority_2'].toString().toLowerCase());
+             if (settings['fallback_priority_3'] != null) priorities.add(settings['fallback_priority_3'].toString().toLowerCase());
+        }
+
+        if (priorities.isNotEmpty) {
+          _adPriorities = priorities;
+        }
       }
     } catch (e) {
       print('Error loading ad settings: $e');

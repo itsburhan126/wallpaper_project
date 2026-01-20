@@ -5,6 +5,7 @@ class GameModel {
   final String image;
   final String url;
   final int winReward;
+  final int playTime;
   final bool isFeatured;
 
   GameModel({
@@ -14,6 +15,7 @@ class GameModel {
     required this.image,
     required this.url,
     required this.winReward,
+    required this.playTime,
     required this.isFeatured,
   });
 
@@ -25,6 +27,7 @@ class GameModel {
       image: json['image'] ?? '',
       url: json['url'] ?? '',
       winReward: int.tryParse(json['win_reward'].toString()) ?? 0,
+      playTime: int.tryParse(json['play_time'].toString()) ?? 60,
       isFeatured: json['is_featured'] == 1 || json['is_featured'] == true,
     );
   }

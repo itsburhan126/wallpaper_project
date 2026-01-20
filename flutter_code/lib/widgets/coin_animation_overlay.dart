@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 class CoinAnimationOverlay {
-  static void show(BuildContext context, GlobalKey targetKey, {int coinCount = 10}) {
+  static void show(BuildContext context, GlobalKey targetKey, {int coinCount = 10, VoidCallback? onComplete}) {
     final overlay = Overlay.of(context);
     final renderBox = targetKey.currentContext?.findRenderObject() as RenderBox?;
     
-    if (renderBox == null) return;
+    if (renderBox == null) {
+      onComplete?.call();
+      return;
+    }
 
     final targetPosition = renderBox.localToGlobal(Offset.zero);
     final targetSize = renderBox.size;
@@ -18,7 +21,16 @@ class CoinAnimationOverlay {
 
     // Create multiple coins
     for (int i = 0; i < coinCount; i++) {
-      _animateCoin(context, overlay, startPosition, targetCenter, i * 100);
+      // Pass onComplete only to the last coin
+      final isLast = i == coinCount - 1;
+      _animateCoin(
+        context, 
+        overlay, 
+        startPosition, 
+        targetCenter, 
+        i * 100, 
+        isLast ? onComplete : null
+      );
     }
   }
 
@@ -27,7 +39,8 @@ class CoinAnimationOverlay {
     OverlayState overlay, 
     Offset startPos, 
     Offset endPos, 
-    int delayMs
+    int delayMs,
+    VoidCallback? onComplete,
   ) async {
     late OverlayEntry entry;
     
@@ -46,13 +59,16 @@ class CoinAnimationOverlay {
           controlOffset: controlPointOffset,
           onComplete: () {
             entry.remove();
+            onComplete?.call();
           },
         );
       },
     );
 
     await Future.delayed(Duration(milliseconds: delayMs));
-    overlay.insert(entry);
+    if (overlay.mounted) {
+       overlay.insert(entry);
+    }
   }
 }
 

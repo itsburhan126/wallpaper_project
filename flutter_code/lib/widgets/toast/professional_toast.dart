@@ -7,8 +7,16 @@ class ProfessionalToast {
     _showToast(context, _ToastWidget(coinAmount: coinAmount, type: ToastType.success));
   }
 
+  static void showSuccess(BuildContext context, {required String message}) {
+    _showToast(context, _ToastWidget(message: message, type: ToastType.success));
+  }
+
   static void showError(BuildContext context, {required String message}) {
     _showToast(context, _ToastWidget(message: message, type: ToastType.error));
+  }
+
+  static void showLoading(BuildContext context, {required String message}) {
+    _showToast(context, _ToastWidget(message: message, type: ToastType.loading));
   }
 
   static void _showToast(BuildContext context, Widget child) {
@@ -39,7 +47,7 @@ class ProfessionalToast {
   }
 }
 
-enum ToastType { success, error }
+enum ToastType { success, error, loading }
 
 class _ToastWidget extends StatelessWidget {
   final int? coinAmount;
@@ -55,9 +63,10 @@ class _ToastWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isError = type == ToastType.error;
-    final primaryColor = isError ? Colors.redAccent : Colors.amber;
-    final icon = isError ? Icons.error_outline_rounded : Icons.check_rounded;
-    final title = isError ? "Oops!" : "Reward Claimed!";
+    final isLoading = type == ToastType.loading;
+    final primaryColor = isError ? Colors.redAccent : (isLoading ? Colors.blueAccent : Colors.amber);
+    final icon = isError ? Icons.error_outline_rounded : (isLoading ? Icons.hourglass_empty_rounded : Icons.check_rounded);
+    final title = isError ? "Oops!" : (isLoading ? "Please Wait" : (message != null && coinAmount == null ? "Success!" : "Reward Claimed!"));
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -116,7 +125,7 @@ class _ToastWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                if (isError)
+                if (isError || (message != null && coinAmount == null))
                   Text(
                     message ?? "Something went wrong",
                     style: GoogleFonts.poppins(

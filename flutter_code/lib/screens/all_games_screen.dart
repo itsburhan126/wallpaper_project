@@ -4,8 +4,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../providers/app_provider.dart';
+import 'game_webview_screen.dart';
+import '../dialog/game_reward_dialog.dart';
+import '../dialog/game_warning_dialog.dart';
+import '../services/google_ad_service.dart';
+import '../widgets/toast/professional_toast.dart';
+import '../widgets/coin_animation_overlay.dart';
+import '../providers/ad_provider.dart';
+import '../services/ad_manager_service.dart';
+import '../widgets/animated_coin_balance.dart';
 
 class AllGamesScreen extends StatefulWidget {
   const AllGamesScreen({super.key});
@@ -15,13 +23,70 @@ class AllGamesScreen extends StatefulWidget {
 }
 
 class _AllGamesScreenState extends State<AllGamesScreen> {
+  final GlobalKey _coinIconKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
-    // Ensure we have the latest games
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<AppProvider>(context, listen: false).fetchGames();
     });
+  }
+
+  Future<void> _showGameRewardDialog(BuildContext context, int rewardAmount) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => GameRewardDialog(
+        baseReward: rewardAmount,
+        onClaim: () async {
+          if (context.mounted) Navigator.pop(ctx);
+          await Future.delayed(const Duration(milliseconds: 300));
+          if (context.mounted) await _claimGameReward(context, rewardAmount, 1);
+        },
+        onClaim2x: () async {
+          // Don't pop immediately, let the button show loading state
+          
+          final adProvider = Provider.of<AdProvider>(context, listen: false);
+          bool adShown = await AdManager.showAdWithFallback(
+            context, 
+            adProvider.adPriorities, 
+            () async {
+               if (ctx.mounted) Navigator.pop(ctx);
+               await Future.delayed(const Duration(milliseconds: 500));
+               if (context.mounted) await _claimGameReward(context, rewardAmount, 2);
+            }
+          );
+
+          if (!adShown && context.mounted) {
+             ProfessionalToast.showError(context, message: "Failed to load ad. Please try again later.");
+          }
+        },
+        onClose: () {
+          Navigator.pop(ctx);
+        },
+      ),
+    );
+  }
+
+  Future<void> _claimGameReward(BuildContext context, int baseReward, int multiplier) async {
+    final provider = Provider.of<AppProvider>(context, listen: false);
+    final totalReward = baseReward * multiplier;
+    
+    // Show animation first, then add coins
+    if (context.mounted) {
+      CoinAnimationOverlay.show(
+        context, 
+        _coinIconKey, 
+        coinCount: 10,
+        onComplete: () async {
+           await provider.addCoins(totalReward);
+           if (context.mounted) {
+             ProfessionalToast.showSuccess(context, message: "You earned $totalReward coins!");
+           }
+        }
+      );
+    }
   }
 
   @override
@@ -43,6 +108,26 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
             color: Colors.white,
           ),
         ),
+        actions: [
+             Container(
+                key: _coinIconKey,
+                margin: const EdgeInsets.only(right: 16),
+                child: Consumer<AppProvider>(
+                  builder: (context, provider, child) {
+                     return Row(
+                       children: [
+                         const Icon(Icons.monetization_on, color: Colors.amber, size: 20),
+                         const SizedBox(width: 4),
+                         AnimatedCoinBalance(
+                           balance: provider.coins,
+                           style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold),
+                         ),
+                       ],
+                     );
+                  }
+                ),
+             )
+        ],
       ),
       body: Consumer<AppProvider>(
         builder: (context, provider, child) {
@@ -68,18 +153,49 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
             padding: const EdgeInsets.all(16),
             physics: const BouncingScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 4,
+              crossAxisCount: 3,
               childAspectRatio: 0.75,
               crossAxisSpacing: 12,
-              mainAxisSpacing: 24,
+              mainAxisSpacing: 16,
             ),
             itemCount: games.length,
             itemBuilder: (context, index) {
               final game = games[index];
               return GestureDetector(
                 onTap: () async {
-                  if (await canLaunchUrl(Uri.parse(game.url))) {
-                    await launchUrl(Uri.parse(game.url), mode: LaunchMode.externalApplication);
+                  final result = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GameWebViewScreen(
+                        url: game.url,
+                        title: game.title,
+                        rewardAmount: game.winReward > 0 ? game.winReward : 50,
+                        durationSeconds: game.playTime > 0 ? game.playTime : 60,
+                      ),
+                    ),
+                  );
+
+                  if (result != null && result is Map && mounted) {
+                    final bool rewardClaimed = result['rewardClaimed'] ?? false;
+                    final bool isTimerComplete = result['isTimerComplete'] ?? false;
+                    final int playedSeconds = result['playedSeconds'] ?? 0;
+                    final int requiredSeconds = game.playTime > 0 ? game.playTime : 60;
+                    
+                    if (!rewardClaimed) {
+                        if (isTimerComplete) {
+                            _showGameRewardDialog(context, game.winReward > 0 ? game.winReward : 50);
+                        } else if (playedSeconds < requiredSeconds) {
+                            showDialog(
+                                context: context,
+                                builder: (context) => GameWarningDialog(
+                                playedSeconds: playedSeconds,
+                                requiredSeconds: requiredSeconds,
+                                rewardAmount: game.winReward > 0 ? game.winReward : 50,
+                                onClose: () => Navigator.pop(context),
+                                ),
+                            );
+                        }
+                    }
                   }
                 },
                 child: Column(
@@ -87,7 +203,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18), // Rounded corners like iOS
+                          borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.3),
@@ -97,7 +213,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                           ],
                         ),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(12),
                           child: CachedNetworkImage(
                             imageUrl: game.image,
                             fit: BoxFit.cover,
@@ -122,7 +238,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
-                        fontSize: 11,
+                        fontSize: 12,
                         color: Colors.white,
                         fontWeight: FontWeight.w500,
                       ),

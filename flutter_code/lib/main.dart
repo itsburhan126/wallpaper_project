@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'providers/app_provider.dart';
+import 'providers/shorts_provider.dart';
+import 'providers/ad_provider.dart';
 import 'screens/splash_screen.dart';
 import 'utils/constants.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize AdMob SDK
+  await MobileAds.instance.initialize();
+
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
@@ -25,6 +32,8 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppProvider()),
+        ChangeNotifierProvider(create: (_) => ShortsProvider()),
+        ChangeNotifierProvider(create: (_) => AdProvider()),
       ],
       child: MaterialApp(
         title: 'Pro Wallpaper & Games',

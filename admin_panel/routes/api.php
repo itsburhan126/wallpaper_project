@@ -48,6 +48,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Transactions
     Route::get('/transactions', [TransactionController::class, 'index']);
+
+    // Shorts Interactions
+    Route::post('/shorts/{id}/like', [\App\Http\Controllers\Api\ShortController::class, 'toggleLike']);
+    Route::post('/shorts/{id}/comments', [\App\Http\Controllers\Api\ShortController::class, 'storeComment']);
+    Route::post('/shorts/{id}/reward', [\App\Http\Controllers\Api\ShortController::class, 'reward']);
 });
 
 // Public APIs for App
@@ -67,6 +72,11 @@ Route::get('/settings/general', [SettingController::class, 'general']);
 Route::get('/settings/game', [SettingController::class, 'game']);
 Route::get('/settings/api', [SettingController::class, 'api']);
 Route::get('/settings/offerwall', [SettingController::class, 'offerwall']);
+Route::get('/settings/shorts', [SettingController::class, 'shorts']);
+
+// Shorts
+Route::get('/shorts', [\App\Http\Controllers\Api\ShortController::class, 'index']);
+Route::get('/shorts/{id}/comments', [\App\Http\Controllers\Api\ShortController::class, 'getComments']);
 
 // Pages
 Route::get('/pages/{slug}', [PageController::class, 'show']);

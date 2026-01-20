@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/constants.dart';
@@ -10,87 +9,78 @@ class IntroScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.light,
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF1A237E), // Deep Blue
+            Color(0xFF311B92), // Deep Purple
+            Color(0xFF000000), // Black
+          ],
+        ),
       ),
       child: Scaffold(
-        extendBody: true,
         backgroundColor: Colors.transparent,
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF1A237E), // Deep Blue
-                Color(0xFF311B92), // Deep Purple
-                Color(0xFF000000), // Black
+        body: IntroductionScreen(
+          globalBackgroundColor: Colors.transparent,
+          pages: [
+            PageViewModel(
+              title: "Premium 4K Wallpapers",
+              body: "Discover thousands of high-quality wallpapers to make your phone stand out.",
+              image: _buildImage(context, Icons.wallpaper, Colors.cyanAccent),
+              decoration: _pageDecoration(),
+            ),
+            PageViewModel(
+              title: "Play Games & Earn",
+              body: "Play fun mini-games and earn coins to unlock premium content.",
+              image: _buildImage(context, Icons.gamepad, Colors.purpleAccent),
+              decoration: _pageDecoration(),
+            ),
+            PageViewModel(
+              title: "Daily Rewards",
+              body: "Come back every day to claim your rewards and discover new wallpapers.",
+              image: _buildImage(context, Icons.card_giftcard, Colors.amberAccent),
+              decoration: _pageDecoration(),
+            ),
+          ],
+          onDone: () => _onIntroEnd(context),
+          onSkip: () => _onIntroEnd(context),
+          showSkipButton: true,
+          skipOrBackFlex: 0,
+          nextFlex: 0,
+          showBackButton: false,
+          back: const Icon(Icons.arrow_back, color: Colors.white),
+          skip: const Text('Skip', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white70)),
+          next: const Icon(Icons.arrow_forward, color: Colors.white),
+          done: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.accent,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.accent.withOpacity(0.4),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
               ],
             ),
+            child: const Text('Get Started', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
           ),
-          child: IntroductionScreen(
-            globalBackgroundColor: Colors.transparent,
-            pages: [
-              PageViewModel(
-                title: "Premium 4K Wallpapers",
-                body: "Discover thousands of high-quality wallpapers to make your phone stand out.",
-                image: _buildImage(context, Icons.wallpaper, Colors.cyanAccent),
-                decoration: _pageDecoration(),
-              ),
-              PageViewModel(
-                title: "Play Games & Earn",
-                body: "Play fun mini-games and earn coins to unlock premium content.",
-                image: _buildImage(context, Icons.gamepad, Colors.purpleAccent),
-                decoration: _pageDecoration(),
-              ),
-              PageViewModel(
-                title: "Daily Rewards",
-                body: "Come back every day to claim your rewards and discover new wallpapers.",
-                image: _buildImage(context, Icons.card_giftcard, Colors.amberAccent),
-                decoration: _pageDecoration(),
-              ),
-            ],
-            onDone: () => _onIntroEnd(context),
-            onSkip: () => _onIntroEnd(context),
-            showSkipButton: true,
-            skipOrBackFlex: 0,
-            nextFlex: 0,
-            showBackButton: false,
-            back: const Icon(Icons.arrow_back, color: Colors.white),
-            skip: const Text('Skip', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white70)),
-            next: const Icon(Icons.arrow_forward, color: Colors.white),
-            done: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.accent,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.accent.withOpacity(0.4),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: const Text('Get Started', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
+          curve: Curves.fastLinearToSlowEaseIn,
+          controlsMargin: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+          controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+          safeAreaList: [true, true, true, true],
+          dotsDecorator: DotsDecorator(
+            size: const Size(10.0, 10.0),
+            color: Colors.white24,
+            activeSize: const Size(22.0, 10.0),
+            activeShape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(25.0)),
             ),
-            curve: Curves.fastLinearToSlowEaseIn,
-            controlsMargin: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
-            safeAreaList: [true, true, true, true],
-            dotsDecorator: DotsDecorator(
-              size: const Size(10.0, 10.0),
-              color: Colors.white24,
-              activeSize: const Size(22.0, 10.0),
-              activeShape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(25.0)),
-              ),
-              activeColor: AppColors.accent,
-            ),
+            activeColor: AppColors.accent,
           ),
         ),
       ),

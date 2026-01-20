@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+class ApiConfig {
+  static const String baseUrl = "http://192.168.1.120:8000/api"; // Updated to match your local network IP
+}
+
 class AppColors {
   static const Color primary = Color(0xFF6C63FF);
   static const Color secondary = Color(0xFF2A2D3E);

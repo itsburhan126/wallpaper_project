@@ -46,6 +46,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
         Route::resource('games', \App\Http\Controllers\Admin\GameController::class);
         Route::resource('wallpapers', \App\Http\Controllers\Admin\WallpaperController::class);
+        Route::resource('shorts', \App\Http\Controllers\Admin\ShortController::class);
 
         Route::post('logout', [AuthController::class, 'logout'])->name('logout');
         
@@ -65,9 +66,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Settings
         Route::middleware('admin.permission:manage_settings')->group(function () {
-            // Daily Rewards (Under Settings or separate? Let's keep it here or separate. User wants control.)
+            // Daily Rewards
             Route::get('daily-rewards', [DailyRewardController::class, 'index'])->name('daily_rewards.index');
-            Route::put('daily-rewards/{id}', [DailyRewardController::class, 'update'])->name('daily_rewards.update');
+            Route::post('daily-rewards', [DailyRewardController::class, 'store'])->name('daily_rewards.store');
 
             Route::get('settings/general', [\App\Http\Controllers\Admin\SettingController::class, 'general'])->name('settings.general');
             Route::post('settings/general', [\App\Http\Controllers\Admin\SettingController::class, 'updateGeneral'])->name('settings.general.update');
@@ -92,6 +93,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
             Route::get('settings/game', [\App\Http\Controllers\Admin\SettingController::class, 'game'])->name('settings.game');
             Route::post('settings/game', [\App\Http\Controllers\Admin\SettingController::class, 'updateGame'])->name('settings.game.update');
+
+            Route::get('settings/shorts', [\App\Http\Controllers\Admin\SettingController::class, 'shorts'])->name('settings.shorts');
+            Route::post('settings/shorts', [\App\Http\Controllers\Admin\SettingController::class, 'updateShorts'])->name('settings.shorts.update');
 
             Route::get('settings/deep-link', [\App\Http\Controllers\Admin\SettingController::class, 'deepLink'])->name('settings.deep_link');
             Route::post('settings/deep-link', [\App\Http\Controllers\Admin\SettingController::class, 'updateDeepLink'])->name('settings.deep_link.update');

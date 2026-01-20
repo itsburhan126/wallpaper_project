@@ -58,4 +58,14 @@ class SettingController extends Controller
             'data' => $settings
         ]);
     }
+
+    public function shorts()
+    {
+        $settings = Setting::where('group', 'shorts')->pluck('value', 'key');
+        
+        return response()->json([
+            'success' => true,
+            'data' => $settings
+        ]);
+    }
 }

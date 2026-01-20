@@ -7,11 +7,11 @@ class ApiConfig {
   
   static const String banners = "$apiUrl/banners";
   static const String categories = "$apiUrl/categories";
-  static const String games = "$apiUrl/games";
   static const String wallpapers = "$apiUrl/wallpapers";
   
   static const String login = "$apiUrl/login";
   static const String register = "$apiUrl/register";
   static const String user = "$apiUrl/user";
+  static const String games = "$apiUrl/games";
   static const String updateBalance = "$apiUrl/game/update-balance";
 }

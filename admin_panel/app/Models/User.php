@@ -74,4 +74,15 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function getAvatarAttribute($value)
+    {
+        if ($value === 'default.png') {
+            return null;
+        }
+        if ($value && !str_starts_with($value, 'http')) {
+            return asset('storage/' . $value);
+        }
+        return $value;
+    }
 }

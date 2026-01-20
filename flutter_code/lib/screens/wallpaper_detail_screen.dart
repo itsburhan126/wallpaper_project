@@ -6,31 +6,48 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../models/wallpaper_model.dart';
 import '../providers/app_provider.dart';
 import '../utils/constants.dart';
-import '../services/mock_ad_service.dart';
+import '../services/ad_manager_service.dart';
 
 class WallpaperDetailScreen extends StatefulWidget {
   final Wallpaper wallpaper;
+  final String? heroTag;
 
-  const WallpaperDetailScreen({super.key, required this.wallpaper});
+  const WallpaperDetailScreen({super.key, required this.wallpaper, this.heroTag});
 
   @override
   State<WallpaperDetailScreen> createState() => _WallpaperDetailScreenState();
 }
 
-class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
-  bool _showEarnButton = false;
+class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  bool _isRewardReady = false;
 
   @override
   void initState() {
     super.initState();
-    // Show earn button after 2 seconds of viewing
-    Future.delayed(const Duration(seconds: 2), () {
+    
+    // Get duration from provider
+    final provider = Provider.of<AppProvider>(context, listen: false);
+    final durationSeconds = provider.wallpaperViewTime;
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: durationSeconds > 0 ? durationSeconds : 10), // Default fallback
+    );
+
+    _controller.forward().whenComplete(() {
       if (mounted) {
         setState(() {
-          _showEarnButton = true;
+          _isRewardReady = true;
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   void _showCoinDialog() {
@@ -95,12 +112,36 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
     );
   }
 
-  void _watchAd() {
-    MockAdService.showRewardedAd(context, () {
-      // On Ad Closed & Rewarded
-      Provider.of<AppProvider>(context, listen: false).addCoins(10);
-      _showCongratulationDialog();
-    });
+  void _watchAd() async {
+    // Show Loading
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    // Fallback order - forcing AdMob as per general preference for now
+    final fallbacks = ['admob'];
+    
+    // Close Loading
+    if (mounted) Navigator.pop(context);
+
+    bool success = await AdManager.showAdWithFallback(
+      context, 
+      fallbacks, 
+      () {
+        // On Ad Closed & Rewarded
+        Provider.of<AppProvider>(context, listen: false).addCoins(10);
+        _showCongratulationDialog();
+      }
+    );
+
+    if (!success) {
+      // Optional: Show error dialog or snackbar
+       ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to load ad")),
+      );
+    }
   }
 
   void _showCongratulationDialog() {
@@ -161,11 +202,14 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
         children: [
           // Full Screen Image
           Positioned.fill(
-            child: CachedNetworkImage(
-              imageUrl: widget.wallpaper.url,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
+            child: Hero(
+              tag: widget.heroTag ?? widget.wallpaper.url,
+              child: CachedNetworkImage(
+                imageUrl: widget.wallpaper.url,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
             ),
           ),
           
@@ -191,32 +235,52 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> {
             ),
           ),
 
-          // Floating Coin Button
-          if (_showEarnButton)
-            Positioned(
-              top: 100,
-              right: 20,
-              child: GestureDetector(
-                onTap: _showCoinDialog,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.amber,
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(color: Colors.amber.withOpacity(0.5), blurRadius: 10, spreadRadius: 2)
-                    ],
-                  ),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.monetization_on, color: Colors.white),
-                      SizedBox(width: 5),
-                      Text("Get Coins", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ).animate().fade().slideX(begin: 1.0, end: 0.0),
-              ),
+          // Reward Timer / Coin Button
+          Positioned(
+            top: 100,
+            right: 20,
+            child: AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return GestureDetector(
+                  onTap: _isRewardReady ? _showCoinDialog : null,
+                  child: Container(
+                    width: 60,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _isRewardReady ? Colors.amber : Colors.black54,
+                      boxShadow: _isRewardReady
+                          ? [BoxShadow(color: Colors.amber.withOpacity(0.6), blurRadius: 15, spreadRadius: 2)]
+                          : [],
+                      border: Border.all(color: Colors.white24, width: 1),
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        if (!_isRewardReady)
+                          SizedBox(
+                            width: 52,
+                            height: 52,
+                            child: CircularProgressIndicator(
+                              value: _controller.value,
+                              strokeWidth: 4,
+                              valueColor: const AlwaysStoppedAnimation<Color>(Colors.amber),
+                              backgroundColor: Colors.white10,
+                            ),
+                          ),
+                        Icon(
+                          _isRewardReady ? Icons.monetization_on : Icons.hourglass_bottom,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                      ],
+                    ),
+                  ).animate(target: _isRewardReady ? 1 : 0).shake(duration: 500.ms),
+                );
+              },
             ),
+          ),
         ],
       ),
     );

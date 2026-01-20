@@ -176,18 +176,18 @@
                     <span>Categories</span>
                 </a>
 
-                <a href="{{ route('admin.wallpapers.index') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.wallpapers.*') ? 'nav-item-active' : 'text-slate-400' }}">
-                    <div class="w-6 flex justify-center mr-0">
-                        <i class="fas fa-images {{ request()->routeIs('admin.wallpapers.*') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
-                    </div>
-                    <span>Wallpapers</span>
-                </a>
-
                 <a href="{{ route('admin.games.index') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.games.*') ? 'nav-item-active' : 'text-slate-400' }}">
                      <div class="w-6 flex justify-center mr-0">
                         <i class="fas fa-gamepad {{ request()->routeIs('admin.games.*') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
                     </div>
                     <span>Games Library</span>
+                </a>
+
+                <a href="{{ route('admin.shorts.index') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.shorts.*') ? 'nav-item-active' : 'text-slate-400' }}">
+                     <div class="w-6 flex justify-center mr-0">
+                        <i class="fas fa-video {{ request()->routeIs('admin.shorts.*') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                    </div>
+                    <span>Shorts Videos</span>
                 </a>
 
                 <a href="{{ route('admin.daily_rewards.index') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.daily_rewards.*') ? 'nav-item-active' : 'text-slate-400' }}">
@@ -202,6 +202,13 @@
                         <i class="fas fa-chess-board {{ request()->routeIs('admin.settings.game') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
                     </div>
                     <span>Game Settings</span>
+                </a>
+
+                <a href="{{ route('admin.settings.shorts') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.settings.shorts') ? 'nav-item-active' : 'text-slate-400' }}">
+                     <div class="w-6 flex justify-center mr-0">
+                        <i class="fas fa-cog {{ request()->routeIs('admin.settings.shorts') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                    </div>
+                    <span>Shorts Settings</span>
                 </a>
 
                 <p class="px-4 text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-8 mb-3">System Configuration</p>

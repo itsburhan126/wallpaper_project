@@ -1,107 +1,326 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:glassmorphism/glassmorphism.dart';
+import '../providers/app_provider.dart';
+import '../widgets/shimmer_loading.dart';
+import '../widgets/wallpaper_tab.dart';
+import '../models/category_model.dart';
 import '../utils/constants.dart';
 
 class CategoryScreen extends StatelessWidget {
   const CategoryScreen({super.key});
 
-  final List<String> categories = const [
-    "Abstract", "Nature", "Games", "Anime", "Cars", "Space", "Dark", "Minimal", "Cyberpunk", "Neon"
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF1A237E).withOpacity(0.2),
-              const Color(0xFF000000),
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Text(
-                  "Categories",
-                  style: GoogleFonts.poppins(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ).animate().fadeIn().slideX(),
-              ),
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 15,
-                    childAspectRatio: 1.5,
-                  ),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    return GlassmorphicContainer(
-                      width: double.infinity,
-                      height: double.infinity,
-                      borderRadius: 16,
-                      blur: 10,
-                      alignment: Alignment.center,
-                      border: 1,
-                      linearGradient: LinearGradient(
-                        colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.05)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+      backgroundColor: const Color(0xFF050505), // Ultra dark background
+      body: Consumer<AppProvider>(
+        builder: (context, provider, _) {
+          return RefreshIndicator(
+            backgroundColor: const Color(0xFF1E1E1E),
+            color: Colors.white,
+            displacement: 40,
+            strokeWidth: 3,
+            onRefresh: () async {
+              await provider.fetchCategories();
+            },
+            child: CustomScrollView(
+              physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+              slivers: [
+                // Premium Large Header
+              SliverAppBar(
+                backgroundColor: const Color(0xFF050505),
+                expandedHeight: 160.0,
+                floating: false,
+                pinned: true,
+                elevation: 0,
+                flexibleSpace: FlexibleSpaceBar(
+                  centerTitle: false,
+                  titlePadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  title: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Collections",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: 28,
+                          height: 1.0,
+                        ),
                       ),
-                      borderGradient: LinearGradient(
-                        colors: [Colors.white.withOpacity(0.2), Colors.white.withOpacity(0.1)],
+                      const SizedBox(height: 4),
+                      Text(
+                        "Curated for you",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w400,
+                          color: Colors.white54,
+                          fontSize: 10,
+                          letterSpacing: 1.2,
+                        ),
                       ),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          // Background Image Placeholder (Gradient for now)
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Colors.primaries[index % Colors.primaries.length].withOpacity(0.3),
-                                  Colors.transparent,
-                                ],
-                                begin: Alignment.bottomLeft,
-                                end: Alignment.topRight,
-                              ),
-                            ),
-                          ),
-                          Center(
-                            child: Text(
-                              categories[index],
-                              style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1,
-                              ),
-                            ),
-                          ),
+                    ],
+                  ),
+                  background: Container(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment.topRight,
+                        radius: 1.5,
+                        colors: [
+                          const Color(0xFF2A2A2A),
+                          const Color(0xFF050505),
                         ],
                       ),
-                    ).animate().scale(delay: (100 * index).ms, duration: 400.ms);
-                  },
+                    ),
+                  ),
                 ),
               ),
+
+              // Content
+              if (provider.isLoading && provider.categories.isEmpty)
+                SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.75,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) => const ShimmerLoading.rectangular(
+                        height: double.infinity,
+                        shapeBorder: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(24)),
+                        ),
+                      ),
+                      childCount: 6,
+                    ),
+                  ),
+                )
+              else if (provider.categories.isEmpty)
+                SliverFillRemaining(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.05),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.grid_view_rounded, size: 60, color: Colors.white.withOpacity(0.2)),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          "No collections found",
+                          style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 100),
+                  sliver: SliverGrid(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 0.75, // Modern aspect ratio
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                    ),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final category = provider.categories[index];
+                        return _buildUltraCategoryCard(context, category, index)
+                            .animate(delay: (50 * index).ms)
+                            .fadeIn(duration: 500.ms)
+                            .moveY(begin: 30, end: 0, curve: Curves.easeOutCubic);
+                      },
+                      childCount: provider.categories.length,
+                    ),
+                  ),
+                ),
             ],
           ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildUltraCategoryCard(BuildContext context, Category category, int index) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // 1. Background Image with Zoom capability (static for now, dynamic if we had state)
+            if (category.coverUrl.isNotEmpty)
+              CachedNetworkImage(
+                imageUrl: category.coverUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                memCacheHeight: 600,
+                placeholder: (context, url) => Container(
+                  color: const Color(0xFF1A1A1A),
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white.withOpacity(0.1),
+                    ),
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: const Color(0xFF1A1A1A),
+                  child: const Icon(Icons.broken_image_outlined, color: Colors.white24),
+                ),
+              )
+            else
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.primaries[index % Colors.primaries.length].shade900,
+                      Colors.black,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: const Icon(Icons.category_rounded, color: Colors.white10, size: 48),
+              ),
+
+            // 2. Subtle Dark Gradient at bottom for text readability
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 120,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.8),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // 3. Glassmorphism Label Container
+            Positioned(
+              bottom: 12,
+              left: 12,
+              right: 12,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.4),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.15),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            category.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.arrow_forward_rounded,
+                            color: Colors.white,
+                            size: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            // 4. Touch Ripple Overlay
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => Scaffold(
+                          backgroundColor: const Color(0xFF050505),
+                          appBar: AppBar(
+                            backgroundColor: const Color(0xFF050505),
+                            iconTheme: const IconThemeData(color: Colors.white),
+                            elevation: 0,
+                            centerTitle: true,
+                            title: Text(
+                              category.name,
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                          body: WallpaperTab(
+                            categoryId: category.id,
+                            withSliverOverlap: false,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  splashColor: Colors.white.withOpacity(0.1),
+                  highlightColor: Colors.white.withOpacity(0.05),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

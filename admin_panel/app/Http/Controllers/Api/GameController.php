@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\TransactionHistory;
 use App\Models\AdWatchLog;
+use App\Helpers\FilePath;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -32,6 +33,11 @@ class GameController extends Controller
 
         $games = $query->paginate(20);
 
+        $games->getCollection()->transform(function ($game) {
+            $game->image = FilePath::getUrl($game->image);
+            return $game;
+        });
+
         return response()->json([
             'status' => true,
             'data' => $games
@@ -48,6 +54,8 @@ class GameController extends Controller
                 'message' => 'Game not found'
             ], 404);
         }
+
+        $game->image = FilePath::getUrl($game->image);
 
         return response()->json([
             'status' => true,

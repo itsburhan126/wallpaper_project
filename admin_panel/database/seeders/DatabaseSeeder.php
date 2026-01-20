@@ -17,8 +17,6 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,
             PageSeeder::class,
             CategorySeeder::class,
-            WallpaperSeeder::class,
-            BannerSeeder::class,
             GameSeeder::class,
             RedeemSeeder::class,
             UserSeeder::class,

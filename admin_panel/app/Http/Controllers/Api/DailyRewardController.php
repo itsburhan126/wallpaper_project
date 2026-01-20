@@ -14,12 +14,11 @@ class DailyRewardController extends Controller
 {
     private function getRewards()
     {
-        $rewardsFromDb = DailyReward::orderBy('day')->get();
         $rewards = [];
-        foreach ($rewardsFromDb as $reward) {
-            $rewards[$reward->day] = [
-                'coins' => $reward->coins,
-                'gems' => $reward->gems
+        for ($i = 1; $i <= 7; $i++) {
+            $rewards[$i] = [
+                'coins' => (int) \App\Models\Setting::get('daily_reward_' . $i, $i * 10),
+                'gems' => 0 
             ];
         }
         return $rewards;
@@ -43,11 +42,11 @@ class DailyRewardController extends Controller
             if ($lastRewardAt->isToday()) {
                 $canClaim = false;
                 $nextDay = $currentStreak + 1;
-                if ($nextDay > 15) $nextDay = 1;
+                if ($nextDay > 7) $nextDay = 1;
             } elseif ($lastRewardAt->isYesterday()) {
                 $canClaim = true;
                 $nextDay = $currentStreak + 1;
-                if ($nextDay > 15) $nextDay = 1;
+                if ($nextDay > 7) $nextDay = 1;
             } else {
                 // Missed a day
                 $canClaim = true;
@@ -65,9 +64,9 @@ class DailyRewardController extends Controller
                 $effectiveStreak = 0;
             }
             
-            // Fix for cycle reset: If streak is 15 and we can claim (meaning it's the next day), 
+            // Fix for cycle reset: If streak is 7 and we can claim (meaning it's the next day), 
             // visually reset to 0 so Day 1 becomes claimable.
-            if ($currentStreak >= 15 && $canClaim) {
+            if ($currentStreak >= 7 && $canClaim) {
                 $effectiveStreak = 0;
             }
 
@@ -113,13 +112,22 @@ class DailyRewardController extends Controller
             ];
         }
 
+        $adPriorities = [
+            \App\Models\Setting::get('ad_priority_1', 'admob'),
+            \App\Models\Setting::get('ad_priority_2', ''),
+            \App\Models\Setting::get('ad_priority_3', ''),
+        ];
+        $adPriorities = array_values(array_filter($adPriorities));
+        if (empty($adPriorities)) $adPriorities = ['admob'];
+
         return response()->json([
             'status' => true,
             'data' => [
                 'can_claim' => $canClaim,
                 'current_streak' => $user->daily_streak,
                 'next_day' => $nextDay,
-                'rewards' => $rewardsList
+                'rewards' => $rewardsList,
+                'ad_config' => $adPriorities
             ]
         ]);
     }
@@ -148,7 +156,7 @@ class DailyRewardController extends Controller
         }
 
         // Cycle logic
-        if ($streak > 15) {
+        if ($streak > 7) {
             $streak = 1;
         }
 

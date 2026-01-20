@@ -26,6 +26,26 @@
             </div>
         </div>
 
+        <!-- Daily Check-in Rewards (Moved to dedicated page) -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800">Daily Check-in Rewards</h3>
+                            <p class="text-sm text-slate-500">Manage daily rewards in the dedicated section</p>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.daily_rewards.index') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                        Go to Daily Rewards
+                    </a>
+                </div>
+            </div>
+        </div>
+
         <!-- Native Ad Settings -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="p-6 border-b border-slate-100 bg-slate-50/50">
@@ -45,9 +65,9 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-2">Native Ad Network</label>
                         <select name="native_ad_network" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all bg-slate-50">
-                            <option value="none" {{ ($settings['native_ad_network'] ?? '') == 'none' ? 'selected' : '' }}>None</option>
-                            <option value="admob" {{ ($settings['native_ad_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
-                            <option value="facebook" {{ ($settings['native_ad_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                            @foreach(config('ad_networks') as $key => $name)
+                                <option value="{{ $key }}" {{ ($settings['native_ad_network'] ?? '') == $key ? 'selected' : '' }}>{{ $name }}</option>
+                            @endforeach
                         </select>
                         <p class="text-xs text-slate-500 mt-2">Select which network to use for native ads.</p>
                     </div>
@@ -86,10 +106,9 @@
                     <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">1st Priority (Primary)</label>
                         <select name="ad_priority_1" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all bg-white">
-                            <option value="admob" {{ ($settings['ad_priority_1'] ?? 'admob') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
-                            <option value="facebook" {{ ($settings['ad_priority_1'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
-                            <option value="unity" {{ ($settings['ad_priority_1'] ?? '') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
-                            <option value="none" {{ ($settings['ad_priority_1'] ?? '') == 'none' ? 'selected' : '' }}>None</option>
+                            @foreach(config('ad_networks') as $key => $name)
+                                <option value="{{ $key }}" {{ ($settings['ad_priority_1'] ?? 'admob') == $key ? 'selected' : '' }}>{{ $name }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -97,10 +116,9 @@
                     <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">2nd Priority (Fallback)</label>
                         <select name="ad_priority_2" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all bg-white">
-                            <option value="admob" {{ ($settings['ad_priority_2'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
-                            <option value="facebook" {{ ($settings['ad_priority_2'] ?? 'facebook') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
-                            <option value="unity" {{ ($settings['ad_priority_2'] ?? '') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
-                            <option value="none" {{ ($settings['ad_priority_2'] ?? '') == 'none' ? 'selected' : '' }}>None</option>
+                            @foreach(config('ad_networks') as $key => $name)
+                                <option value="{{ $key }}" {{ ($settings['ad_priority_2'] ?? '') == $key ? 'selected' : '' }}>{{ $name }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -108,10 +126,9 @@
                     <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">3rd Priority (Last Resort)</label>
                         <select name="ad_priority_3" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all bg-white">
-                            <option value="admob" {{ ($settings['ad_priority_3'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
-                            <option value="facebook" {{ ($settings['ad_priority_3'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
-                            <option value="unity" {{ ($settings['ad_priority_3'] ?? 'unity') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
-                            <option value="none" {{ ($settings['ad_priority_3'] ?? '') == 'none' ? 'selected' : '' }}>None</option>
+                            @foreach(config('ad_networks') as $key => $name)
+                                <option value="{{ $key }}" {{ ($settings['ad_priority_3'] ?? '') == $key ? 'selected' : '' }}>{{ $name }}</option>
+                            @endforeach
                         </select>
                     </div>
                 </div>

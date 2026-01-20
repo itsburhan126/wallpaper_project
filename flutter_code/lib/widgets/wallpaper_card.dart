@@ -6,11 +6,13 @@ import '../models/wallpaper_model.dart';
 class WallpaperCard extends StatelessWidget {
   final Wallpaper wallpaper;
   final VoidCallback onTap;
+  final String? heroTag;
 
   const WallpaperCard({
     super.key,
     required this.wallpaper,
     required this.onTap,
+    this.heroTag,
   });
 
   @override
@@ -18,7 +20,7 @@ class WallpaperCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Hero(
-        tag: wallpaper.url, // Assuming url is unique enough for this context
+        tag: heroTag ?? wallpaper.url,
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),

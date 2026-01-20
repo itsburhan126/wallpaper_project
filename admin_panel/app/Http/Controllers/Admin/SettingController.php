@@ -80,6 +80,23 @@ class SettingController extends Controller
         return view('admin.settings.api', compact('settings'));
     }
 
+    public function shorts()
+    {
+        $settings = Setting::where('group', 'shorts')->pluck('value', 'key');
+        return view('admin.settings.shorts', compact('settings'));
+    }
+
+    public function updateShorts(Request $request)
+    {
+        $data = $request->except('_token');
+        
+        foreach ($data as $key => $value) {
+            Setting::set($key, $value, 'shorts');
+        }
+
+        return redirect()->back()->with('success', 'Shorts settings updated successfully.');
+    }
+
     public function updateApi(Request $request)
     {
         $data = $request->except('_token');
@@ -161,7 +178,7 @@ class SettingController extends Controller
             'ad_priority_3',
             'native_ad_network',
             'admob_native_id',
-            'facebook_native_id'
+            'facebook_native_id',
         ];
         $settings = Setting::whereIn('key', $keys)->pluck('value', 'key');
         return view('admin.settings.game', compact('settings'));

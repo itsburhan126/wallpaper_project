@@ -34,6 +34,20 @@
                         <input type="text" name="currency_symbol" value="{{ $settings['currency_symbol'] ?? '$' }}" 
                             class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all placeholder-slate-400">
                     </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Coin Conversion Rate</label>
+                        <input type="number" name="coin_rate" value="{{ $settings['coin_rate'] ?? '1000' }}" 
+                            class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all placeholder-slate-400" placeholder="e.g. 1000">
+                        <p class="text-xs text-slate-500 mt-1">How many coins equal 1 currency unit (e.g., 1000 coins = $1).</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Wallpaper View Time (Seconds)</label>
+                        <input type="number" name="wallpaper_view_time" value="{{ $settings['wallpaper_view_time'] ?? '10' }}" 
+                            class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all placeholder-slate-400" placeholder="e.g. 15">
+                        <p class="text-xs text-slate-500 mt-1">Time required to view wallpaper before claiming coins.</p>
+                    </div>
                 </div>
 
                 <div>

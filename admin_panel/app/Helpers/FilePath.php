@@ -32,6 +32,11 @@ class FilePath
             return $path;
         }
 
+        // FIX: If path starts with 'img/', it is in public/img, not public/storage
+        if (str_starts_with($path, 'img/')) {
+            return asset($path);
+        }
+
         // Clean up path if it starts with storage/ or uploads/
         $cleanPath = self::cleanPath($path);
 

@@ -44,6 +44,7 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'referral_code' => Str::upper(Str::random(8)),
                 'avatar' => 'default.png',
+                'coins' => 0,
                 'coins' => $signupBonus,
                 'referred_by' => $request->referral_code,
             ]);

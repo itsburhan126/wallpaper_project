@@ -4,10 +4,15 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:glassmorphism/glassmorphism.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../utils/constants.dart';
 import 'signup_screen.dart';
 import '../main_screen.dart';
 import '../../services/api_service.dart';
+import '../../dialog/referral_dialog.dart';
+
+import 'package:provider/provider.dart';
+import '../../providers/app_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final _apiService = ApiService();
   bool _isLoading = false;
+  bool _isGoogleLoading = false;
 
   void _handleLogin() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
@@ -41,6 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (mounted) {
       if (result['success']) {
+          if (mounted) {
+            await Provider.of<AppProvider>(context, listen: false).setUser(result['data']);
+          }
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const MainScreen()),
         );
@@ -53,16 +62,59 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleGoogleLogin() async {
-    setState(() => _isLoading = true);
-    // Simulate Google Login
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _isLoading = false);
+    setState(() => _isGoogleLoading = true);
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-    if (mounted) {
-       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const MainScreen()),
-      );
+      if (googleUser != null) {
+        final result = await _apiService.googleLogin(
+          googleUser.email,
+          googleUser.displayName ?? 'User',
+          googleUser.id,
+          googleUser.photoUrl,
+        );
+
+        if (result['success']) {
+           bool isNewUser = result['data']['is_new_user'] ?? false;
+           
+           if (mounted) {
+             // Update Provider with User Data immediately
+             Provider.of<AppProvider>(context, listen: false).setUser(result['data']);
+
+             if (isNewUser) {
+               await _showReferralDialog();
+             }
+             
+             Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const MainScreen()),
+             );
+           }
+        } else {
+           if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(result['message'] ?? 'Google Login failed')),
+            );
+           }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Google Sign-In Error: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isGoogleLoading = false);
     }
+  }
+
+  Future<void> _showReferralDialog() async {
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const ReferralDialog(),
+    );
   }
 
   @override
@@ -72,19 +124,23 @@ class _LoginScreenState extends State<LoginScreen> {
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarContrastEnforced: false,
       ),
       child: Scaffold(
         extendBody: true,
         backgroundColor: Colors.transparent,
         body: Container(
+          width: double.infinity,
+          height: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
                 Color(0xFF1A237E), // Deep Blue
-                Color(0xFF000000), // Black
+                Color(0xFF000000), // Black - Matches Navigation Bar
               ],
             ),
           ),
@@ -210,7 +266,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: double.infinity,
                         height: 55,
                         child: OutlinedButton.icon(
-                          onPressed: _isLoading ? null : _handleGoogleLogin,
+                          onPressed: _isGoogleLoading || _isLoading ? null : _handleGoogleLogin,
                           style: OutlinedButton.styleFrom(
                             side: BorderSide(color: Colors.grey[800]!),
                             shape: RoundedRectangleBorder(
@@ -218,9 +274,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          icon: const Icon(FontAwesomeIcons.google, color: Colors.white),
+                          icon: _isGoogleLoading 
+                              ? const SizedBox(
+                                  width: 24, 
+                                  height: 24, 
+                                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)
+                                ) 
+                              : const Icon(FontAwesomeIcons.google, color: Colors.white),
                           label: Text(
-                            "Continue with Google",
+                            _isGoogleLoading ? "  Loading..." : "Continue with Google",
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

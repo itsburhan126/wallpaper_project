@@ -461,7 +461,7 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
     );
 
     if (!success) {
-      ProfessionalToast.showError(context, message: "Ads not ready. Please try again later.");
+      ProfessionalToast.showError(context, message: "Ads not available");
     }
   }
 

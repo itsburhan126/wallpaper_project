@@ -85,10 +85,17 @@ class AppProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Load Local Coins
+    // Load Local Data
     final prefs = await SharedPreferences.getInstance();
     _coins = prefs.getInt('coins') ?? 0;
     
+    // Load User Data
+    _userName = prefs.getString('user_name') ?? "Guest User";
+    _userAvatar = prefs.getString('user_avatar') ?? "";
+    _userEmail = prefs.getString('user_email') ?? "";
+    _userId = prefs.getString('user_id') ?? "";
+    _userLevel = prefs.getInt('user_level') ?? 1;
+
     // Check if user is logged in
     final token = prefs.getString('auth_token');
 
@@ -206,6 +213,95 @@ class AppProvider with ChangeNotifier {
   String _userId = "";
   String get userId => _userId;
 
+  String _userAvatar = "";
+  String get userAvatar => _userAvatar;
+
+  Future<void> setUser(Map<String, dynamic> data) async {
+    print("------- PROVIDER SET USER DEBUG -------");
+    print("Received Data: $data");
+    
+    final prefs = await SharedPreferences.getInstance();
+
+    if (data['user'] != null) {
+      final userData = data['user'];
+      
+      if (userData['coins'] != null) {
+        _coins = int.tryParse(userData['coins'].toString()) ?? _coins;
+      }
+      
+      if (userData['name'] != null) {
+        _userName = userData['name'].toString();
+        await prefs.setString('user_name', _userName);
+      }
+      
+      if (userData['level'] != null) {
+        _userLevel = int.tryParse(userData['level'].toString()) ?? 1;
+        await prefs.setInt('user_level', _userLevel);
+      }
+      
+      if (userData['email'] != null) {
+        _userEmail = userData['email'].toString();
+        await prefs.setString('user_email', _userEmail);
+      }
+      
+      if (userData['id'] != null) {
+        _userId = userData['id'].toString();
+        await prefs.setString('user_id', _userId);
+      }
+      
+      if (userData['avatar'] != null) {
+        _userAvatar = userData['avatar'].toString();
+        await prefs.setString('user_avatar', _userAvatar);
+      }
+      
+      // Also update directly if fields exist in root (fallback)
+      if (data['coins'] != null) _coins = int.tryParse(data['coins'].toString()) ?? _coins;
+    } else {
+      // Original logic for flat structure
+      if (data['coins'] != null) {
+        _coins = int.tryParse(data['coins'].toString()) ?? _coins;
+      } else if (data['balance'] != null) {
+        _coins = int.tryParse(data['balance'].toString()) ?? _coins;
+      } else if (data['wallet'] != null) {
+        _coins = int.tryParse(data['wallet'].toString()) ?? _coins;
+      }
+      
+      if (data['name'] != null) {
+        _userName = data['name'].toString();
+        await prefs.setString('user_name', _userName);
+      } else if (data['username'] != null) {
+        _userName = data['username'].toString();
+        await prefs.setString('user_name', _userName);
+      }
+      
+      if (data['level'] != null) {
+        _userLevel = int.tryParse(data['level'].toString()) ?? 1;
+        await prefs.setInt('user_level', _userLevel);
+      }
+      
+      if (data['email'] != null) {
+        _userEmail = data['email'].toString();
+        await prefs.setString('user_email', _userEmail);
+      }
+      
+      if (data['id'] != null) {
+        _userId = data['id'].toString();
+        await prefs.setString('user_id', _userId);
+      }
+      
+      if (data['avatar'] != null) {
+        _userAvatar = data['avatar'].toString();
+        await prefs.setString('user_avatar', _userAvatar);
+      } else if (data['image'] != null) {
+        _userAvatar = data['image'].toString();
+        await prefs.setString('user_avatar', _userAvatar);
+      }
+    }
+    
+    await prefs.setInt('coins', _coins);
+    notifyListeners();
+  }
+
   Future<void> fetchUserBalance() async {
     _isUserLoading = true;
     notifyListeners();
@@ -215,36 +311,7 @@ class AppProvider with ChangeNotifier {
       if (result['success'] == true) {
         final data = result['data'];
         if (data != null) {
-          // Coins/Balance
-          if (data['coins'] != null) {
-            _coins = int.tryParse(data['coins'].toString()) ?? _coins;
-          } else if (data['balance'] != null) {
-            _coins = int.tryParse(data['balance'].toString()) ?? _coins;
-          } else if (data['wallet'] != null) {
-            _coins = int.tryParse(data['wallet'].toString()) ?? _coins;
-          }
-
-          // Name/Username
-          if (data['name'] != null) {
-            _userName = data['name'].toString();
-          } else if (data['username'] != null) {
-            _userName = data['username'].toString();
-          }
-
-          // Level
-          if (data['level'] != null) {
-             _userLevel = int.tryParse(data['level'].toString()) ?? 1;
-          }
-
-          // Email
-          if (data['email'] != null) {
-            _userEmail = data['email'].toString();
-          }
-
-          // ID
-          if (data['id'] != null) {
-            _userId = data['id'].toString();
-          }
+          await setUser(data);
           
           // Save updated coins locally
           final prefs = await SharedPreferences.getInstance();

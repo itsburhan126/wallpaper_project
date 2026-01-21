@@ -59,7 +59,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
           );
 
           if (!adShown && context.mounted) {
-             ProfessionalToast.showError(context, message: "Failed to load ad. Please try again later.");
+             ProfessionalToast.showError(context, message: "Ads not available");
           }
         },
         onClose: () {

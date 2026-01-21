@@ -18,6 +18,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _referralController = TextEditingController();
   final _apiService = ApiService();
   bool _isLoading = false;
 
@@ -35,6 +36,7 @@ class _SignupScreenState extends State<SignupScreen> {
       _nameController.text.trim(),
       _emailController.text.trim(),
       _passwordController.text.trim(),
+      referralCode: _referralController.text.trim(),
     );
 
     setState(() => _isLoading = false);
@@ -59,7 +61,9 @@ class _SignupScreenState extends State<SignupScreen> {
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarDividerColor: Colors.transparent,
         systemNavigationBarIconBrightness: Brightness.light,
+        systemNavigationBarContrastEnforced: false,
       ),
       child: Scaffold(
         extendBody: true,
@@ -74,13 +78,15 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         ),
         body: Container(
+          width: double.infinity,
+          height: double.infinity,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
                 Color(0xFF1A237E), // Deep Blue
-                Color(0xFF000000), // Black
+                Color(0xFF000000), // Black - Matches Navigation Bar
               ],
             ),
           ),
@@ -147,6 +153,10 @@ class _SignupScreenState extends State<SignupScreen> {
                       _buildTextField(_passwordController, "Password", Icons.lock_outline, isPassword: true)
                           .animate().fadeIn(delay: 800.ms, duration: 500.ms).slideY(begin: 0.2, end: 0),
                       
+                      const SizedBox(height: 20),
+                      _buildTextField(_referralController, "Referral Code (Optional)", Icons.card_giftcard)
+                          .animate().fadeIn(delay: 900.ms, duration: 500.ms).slideY(begin: 0.2, end: 0),
+
                       const SizedBox(height: 40),
                       
                       SizedBox(

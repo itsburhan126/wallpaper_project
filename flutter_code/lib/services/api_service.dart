@@ -184,9 +184,14 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> register(String name, String email, String password) async {
+  Future<Map<String, dynamic>> register(String name, String email, String password, {String? referralCode}) async {
     const url = ApiConfig.register;
-    final body = {'name': name, 'email': email, 'password': password};
+    final body = {
+      'name': name,
+      'email': email,
+      'password': password,
+      if (referralCode != null && referralCode.isNotEmpty) 'referral_code': referralCode,
+    };
     try {
       _logRequest('POST', url, body: body);
       final response = await http.post(
@@ -203,6 +208,61 @@ class ApiService {
         return {'success': true, 'data': data['data']};
       } else {
         return {'success': false, 'message': data['message'] ?? 'Registration failed'};
+      }
+    } catch (e) {
+      _logError('POST', url, e);
+      return {'success': false, 'message': 'Connection error: $e'};
+    }
+  }
+
+  Future<Map<String, dynamic>> googleLogin(String email, String name, String googleId, String? avatar) async {
+    const url = ApiConfig.googleLogin;
+    final body = {
+      'email': email,
+      'name': name,
+      'google_id': googleId,
+      if (avatar != null) 'avatar': avatar,
+    };
+    try {
+      _logRequest('POST', url, body: body);
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        body: json.encode(body),
+      );
+      _logResponse('POST', url, response);
+
+      final data = json.decode(response.body);
+      if (response.statusCode == 200 && data['status'] == true) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', data['data']['token']);
+        return {'success': true, 'data': data['data']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Google Login failed'};
+      }
+    } catch (e) {
+      _logError('POST', url, e);
+      return {'success': false, 'message': 'Connection error: $e'};
+    }
+  }
+
+  Future<Map<String, dynamic>> addReferrer(String referralCode) async {
+    const url = ApiConfig.addReferrer;
+    final body = {'referral_code': referralCode};
+    try {
+      _logRequest('POST', url, body: body);
+      final response = await http.post(
+        Uri.parse(url),
+        headers: await _getHeaders(),
+        body: json.encode(body),
+      );
+      _logResponse('POST', url, response);
+
+      final data = json.decode(response.body);
+      if (response.statusCode == 200 && data['status'] == true) {
+        return {'success': true, 'message': data['message']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Failed to add referrer'};
       }
     } catch (e) {
       _logError('POST', url, e);

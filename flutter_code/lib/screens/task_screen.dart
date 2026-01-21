@@ -73,7 +73,7 @@ class _TaskScreenState extends State<TaskScreen> {
           );
 
           if (!adShown && context.mounted) {
-             ProfessionalToast.showError(context, message: "Failed to load ad. Please try again later.");
+             ProfessionalToast.showError(context, message: "Ads not available");
           }
         },
         onClose: () {
@@ -105,6 +105,14 @@ class _TaskScreenState extends State<TaskScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // DEBUG LOGS
+    final debugProvider = Provider.of<AppProvider>(context);
+    print("------- TASK SCREEN DEBUG -------");
+    print("Coins: ${debugProvider.coins}");
+    print("Name: ${debugProvider.userName}");
+    print("Avatar URL: ${debugProvider.userAvatar}");
+    print("---------------------------------");
+
     return Scaffold(
       backgroundColor: const Color(0xFF120C24), // Deep Purple/Black background
       body: RefreshIndicator(
@@ -141,32 +149,47 @@ class _TaskScreenState extends State<TaskScreen> {
               title: Row(
                 children: [
                   // 1. Professional Avatar with Gradient Border (Extra Small)
-                  Container(
-                    width: 32,
-                    height: 32,
-                    padding: const EdgeInsets.all(1.5),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFFD700), Color(0xFFFFA000)], // Gold Gradient
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.amber.withOpacity(0.4),
-                          blurRadius: 6,
-                          spreadRadius: 1,
-                        )
-                      ],
-                    ),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(0xFF2A1B4E),
-                      ),
-                      child: const Icon(Icons.person, color: Colors.white, size: 20),
-                    ),
+                  Consumer<AppProvider>(
+                    builder: (context, appProv, _) {
+                      return Container(
+                        width: 32,
+                        height: 32,
+                        padding: const EdgeInsets.all(1.5),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFFFFD700), Color(0xFFFFA000)], // Gold Gradient
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.amber.withOpacity(0.4),
+                              blurRadius: 6,
+                              spreadRadius: 1,
+                            )
+                          ],
+                        ),
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xFF2A1B4E),
+                          ),
+                          child: appProv.userAvatar.isNotEmpty
+                              ? ClipOval(
+                                  child: CachedNetworkImage(
+                                    imageUrl: appProv.userAvatar,
+                                    fit: BoxFit.cover,
+                                    width: 32,
+                                    height: 32,
+                                    placeholder: (context, url) => const Icon(Icons.person, color: Colors.white, size: 20),
+                                    errorWidget: (context, url, error) => const Icon(Icons.person, color: Colors.white, size: 20),
+                                  ),
+                                )
+                              : const Icon(Icons.person, color: Colors.white, size: 20),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(width: 8),
 
@@ -396,7 +419,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                  );
                               }
                             } else {
-                              if (context.mounted) ProfessionalToast.showError(context, message: "No ads available. Try again later.");
+                              if (context.mounted) ProfessionalToast.showError(context, message: "Ads not available");
                             }
                           } finally {
                             if (mounted) {
@@ -802,50 +825,61 @@ class _TaskScreenState extends State<TaskScreen> {
         currencySymbol: provider.currencySymbol,
         coinRate: provider.coinRate,
         onReceive: () async {
-            // Check if Ad is ready, if not load it while showing loading spinner
-            bool isReady = GoogleAdService().isRewardedAdReady();
-            if (!isReady) {
-               // Load Rewarded Ad with timeout
-               debugPrint("⏳ Rewarded Ad not ready, attempting to load with 15s timeout...");
-               try {
-                 isReady = await GoogleAdService().loadRewardedAd(context).timeout(
-                    const Duration(seconds: 15), 
-                    onTimeout: () {
-                      debugPrint("⏰ Rewarded Ad Load Timeout (15s)");
-                      return false;
-                    }
-                 );
-               } catch (e) {
-                 debugPrint("❌ Rewarded Ad Load Error: $e");
-                 isReady = false;
-               }
-
-               // Fallback: If Rewarded failed to load, try Interstitial
-               if (!isReady) {
-                  debugPrint("⚠️ Rewarded Ad failed. Checking Interstitial fallback...");
-                  if (GoogleAdService().isInterstitialAdReady()) {
-                     isReady = true;
-                     debugPrint("✅ Interstitial Ad is ready as fallback.");
-                  } else {
-                     debugPrint("⏳ Interstitial not ready, attempting to load...");
-                     isReady = await GoogleAdService().loadInterstitialAd(context);
-                  }
-               }
-            }
+            final adService = GoogleAdService();
             
-            if (context.mounted) {
-              Navigator.pop(ctx); // Close Dialog
+            // 1. INSTANT CHECK (Fast Path)
+            // If ANY ad is ready, proceed immediately.
+            if (adService.isRewardedAdReady() || adService.isInterstitialAdReady()) {
+               if (context.mounted) {
+                 Navigator.pop(ctx);
+                 _handleClaimReward(context, provider, coins, showLoading: false);
+               }
+               return;
+            }
+
+            // 2. PARALLEL LOAD (Smart Wait)
+            // If no ads ready, try loading BOTH in parallel and wait for the first one.
+            debugPrint("⏳ No ads ready. Racing Rewarded vs Interstitial...");
+            
+            try {
+              // Trigger both loads
+              final rewardFuture = adService.loadRewardedAd(context);
+              final interFuture = adService.loadInterstitialAd(context);
               
-              if (isReady) {
-                  // Show Ad immediately (AdManager will handle Rewarded vs Interstitial logic)
+              // Wait max 5 seconds for EITHER to be ready
+              // We check periodically to return as soon as ONE is ready
+              int checkCount = 0;
+              bool foundAd = false;
+              
+              while (checkCount < 10) { // 10 * 500ms = 5 seconds max
+                await Future.delayed(const Duration(milliseconds: 500));
+                if (adService.isRewardedAdReady() || adService.isInterstitialAdReady()) {
+                  foundAd = true;
+                  break;
+                }
+                checkCount++;
+              }
+              
+              if (foundAd) {
+                 debugPrint("✅ Ad found during wait!");
+              } else {
+                 debugPrint("⚠️ Timed out waiting for ads (5s).");
+              }
+            } catch (e) {
+              debugPrint("❌ Error waiting for ads: $e");
+            }
+
+            // 3. FINAL CHECK
+            if (context.mounted) {
+              if (adService.isRewardedAdReady() || adService.isInterstitialAdReady()) {
+                  Navigator.pop(ctx); // Close RewardDialog
                   _handleClaimReward(context, provider, coins, showLoading: false);
               } else {
-                  // Ad failed to load
-                  ProfessionalToast.showError(context, message: "Ads not available right now. Please try again.");
+                  ProfessionalToast.showError(context, message: "Ads not available");
                   debugPrint("❌ Final Status: No Ads ready after wait.");
               }
             }
-        },
+          },
         onClose: () => Navigator.pop(ctx),
       ),
     );
@@ -883,7 +917,7 @@ class _TaskScreenState extends State<TaskScreen> {
     );
 
     if (!adShown && context.mounted) {
-      ProfessionalToast.showError(context, message: "Ads not ready. Please try again later.");
+      ProfessionalToast.showError(context, message: "Ads not available");
     }
   }
 

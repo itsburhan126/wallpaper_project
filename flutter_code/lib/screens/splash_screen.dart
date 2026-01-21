@@ -9,6 +9,8 @@ import 'intro_screen.dart';
 import 'main_screen.dart';
 import '../providers/ad_provider.dart';
 import '../services/google_ad_service.dart';
+import '../services/api_service.dart';
+import 'auth/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,44 +29,57 @@ class _SplashScreenState extends State<SplashScreen> {
   _checkAuthAndNavigate() async {
     // Start fetching ad settings immediately
     final adProvider = Provider.of<AdProvider>(context, listen: false);
-    // Wait for settings to be loaded if they are not yet
-    if (adProvider.isLoading) {
-       // Just a small delay to allow provider to start fetching if it hasn't
-       await Future.delayed(const Duration(milliseconds: 100));
-       // We can't easily await the provider's internal future unless we expose it, 
-       // but fetchAdSettings is called in constructor.
-       // We can wait a bit or just proceed. 
-       // Better approach: ensure we have settings before preloading.
+    
+    // Define validation result
+    bool isTokenValid = false;
+
+    // Validation Task
+    Future<void> validateTokenTask() async {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      
+      if (token != null && token.isNotEmpty) {
+        try {
+          // Verify token with server
+          final result = await ApiService().getUserDetails().timeout(const Duration(seconds: 5));
+          if (result['success'] == true) {
+            isTokenValid = true;
+          } else {
+            // Invalid token, clear it
+            await prefs.remove('auth_token');
+            await prefs.remove('user_data');
+            isTokenValid = false;
+          }
+        } catch (e) {
+          print("Splash validation error: $e");
+          // If error (e.g. timeout), assume invalid to be safe and force login
+          isTokenValid = false;
+        }
+      } else {
+        isTokenValid = false;
+      }
     }
-    
-    // Preload Ads (Fire and forget, but try to ensure settings are loaded)
-    // We will wait for splash duration anyway.
-    
-    final startTime = DateTime.now();
-    
-    // Wait for minimum splash duration and data loading
+
+    // Wait for minimum splash duration, data loading, and token validation
     await Future.wait([
-      Future.delayed(const Duration(seconds: 3)), // Increased to 3s to give time for ad load
+      Future.delayed(const Duration(seconds: 3)), 
       _initializeData(),
+      validateTokenTask(),
     ]);
 
     if (!mounted) return;
 
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('auth_token');
-    
-    if (mounted) {
-      if (token != null && token.isNotEmpty) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainScreen()),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const IntroScreen()),
-        );
-      }
+    if (isTokenValid) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainScreen()),
+      );
+    } else {
+      // If not logged in or invalid token, force Login Page as requested
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
     }
   }
 
@@ -119,27 +134,29 @@ class _SplashScreenState extends State<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
             Container(
-              height: 120,
-              width: 120,
+              height: 150,
+              width: 150,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [AppColors.primary, AppColors.accent],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
                 boxShadow: [
+                  // Neon Glow Effect
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.5),
-                    blurRadius: 30,
+                    color: Colors.cyanAccent.withOpacity(0.6),
+                    blurRadius: 50,
                     spreadRadius: 10,
-                  )
+                  ),
+                  BoxShadow(
+                    color: Colors.purpleAccent.withOpacity(0.4),
+                    blurRadius: 30,
+                    spreadRadius: 5,
+                  ),
                 ],
               ),
-              child: const Icon(
-                Icons.wallpaper,
-                size: 60,
-                color: Colors.white,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/app_icon.png',
+                  fit: BoxFit.cover,
+                ),
               ),
             ).animate()
              .scale(duration: 800.ms, curve: Curves.elasticOut)
@@ -149,12 +166,19 @@ class _SplashScreenState extends State<SplashScreen> {
             const SizedBox(height: 30),
             
             Text(
-              "ProWall",
+              "Prime Walls",
               style: GoogleFonts.poppins(
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
                 letterSpacing: 2,
+                shadows: [
+                  Shadow(
+                    color: Colors.cyanAccent.withOpacity(0.8),
+                    blurRadius: 20,
+                    offset: const Offset(0, 0),
+                  ),
+                ],
               ),
             ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.5, end: 0),
             

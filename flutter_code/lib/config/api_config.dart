@@ -10,6 +10,8 @@ class ApiConfig {
   static const String wallpapers = "$apiUrl/wallpapers";
   
   static const String login = "$apiUrl/login";
+  static const String googleLogin = "$apiUrl/auth/google";
+  static const String addReferrer = "$apiUrl/add-referrer";
   static const String register = "$apiUrl/register";
   static const String user = "$apiUrl/user";
   static const String games = "$apiUrl/games";

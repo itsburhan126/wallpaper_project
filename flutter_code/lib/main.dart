@@ -23,7 +23,9 @@ void main() async {
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
     systemNavigationBarColor: Colors.transparent,
+    systemNavigationBarDividerColor: Colors.transparent,
     systemNavigationBarIconBrightness: Brightness.light,
+    systemNavigationBarContrastEnforced: false,
   ));
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   runApp(const MyApp());
@@ -41,7 +43,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AdProvider()),
       ],
       child: MaterialApp(
-        title: 'Pro Wallpaper & Games',
+        title: 'Prime Walls',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,

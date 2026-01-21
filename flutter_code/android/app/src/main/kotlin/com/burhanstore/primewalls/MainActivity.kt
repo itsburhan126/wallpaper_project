@@ -1,4 +1,4 @@
-package com.burhanstore.wallpaper_app
+package com.burhanstore.primewalls
 
 import io.flutter.embedding.android.FlutterActivity
 

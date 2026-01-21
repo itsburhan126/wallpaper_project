@@ -1,0 +1,179 @@
+{
+  "project_info": {
+    "project_number": "365111036824",
+    "project_id": "quiz-earning-app-11fec",
+    "storage_bucket": "quiz-earning-app-11fec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:365111036824:android:b5b4451ce6103f350b79ed",
+        "android_client_info": {
+          "package_name": "com.burhan.appearning"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "365111036824-q9ico0ode1r1lntnkjai12lnhe3q5io6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.burhan.appearning",
+            "certificate_hash": "c4267c350398408449cbdb8e09182d3adc99a280"
+          }
+        },
+        {
+          "client_id": "365111036824-jv70k18nvud6vnjnot0otv41d4n0v30m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtOcKXw2KCaceRkRY6t-maWwwHLyuwnjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "365111036824-jv70k18nvud6vnjnot0otv41d4n0v30m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:365111036824:android:18faa91e1d7f949c0b79ed",
+        "android_client_info": {
+          "package_name": "com.burhanstore.earnifypro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "365111036824-n16dto8g0ud25vfpd5ri36p3o8red56o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.burhanstore.earnifypro",
+            "certificate_hash": "2f005afdd4e8dd37f407893ac48e40c09de89432"
+          }
+        },
+        {
+          "client_id": "365111036824-jv70k18nvud6vnjnot0otv41d4n0v30m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtOcKXw2KCaceRkRY6t-maWwwHLyuwnjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "365111036824-jv70k18nvud6vnjnot0otv41d4n0v30m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:365111036824:android:16c27cda22574c1b0b79ed",
+        "android_client_info": {
+          "package_name": "com.burhanstore.hiregoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "365111036824-jv70k18nvud6vnjnot0otv41d4n0v30m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtOcKXw2KCaceRkRY6t-maWwwHLyuwnjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "365111036824-jv70k18nvud6vnjnot0otv41d4n0v30m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:365111036824:android:9eceb15f816369cf0b79ed",
+        "android_client_info": {
+          "package_name": "com.burhanstore.primewalls"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "365111036824-jv70k18nvud6vnjnot0otv41d4n0v30m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtOcKXw2KCaceRkRY6t-maWwwHLyuwnjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "365111036824-jv70k18nvud6vnjnot0otv41d4n0v30m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:365111036824:android:20203fde7a8ace070b79ed",
+        "android_client_info": {
+          "package_name": "com.burhanstore.testapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "365111036824-liogaavufaknfdhksp62p9oind3leus6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.burhanstore.testapp",
+            "certificate_hash": "2f005afdd4e8dd37f407893ac48e40c09de89432"
+          }
+        },
+        {
+          "client_id": "365111036824-jv70k18nvud6vnjnot0otv41d4n0v30m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCtOcKXw2KCaceRkRY6t-maWwwHLyuwnjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "365111036824-jv70k18nvud6vnjnot0otv41d4n0v30m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,6 +9,7 @@ import '../widgets/shimmer_loading.dart';
 import '../widgets/wallpaper_tab.dart';
 import '../models/category_model.dart';
 import '../utils/constants.dart';
+import '../utils/app_theme.dart';
 
 class CategoryScreen extends StatelessWidget {
   const CategoryScreen({super.key});
@@ -16,11 +17,11 @@ class CategoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF050505), // Ultra dark background
+      backgroundColor: AppTheme.darkBackgroundColor, // Ultra dark background
       body: Consumer<AppProvider>(
         builder: (context, provider, _) {
           return RefreshIndicator(
-            backgroundColor: const Color(0xFF1E1E1E),
+            backgroundColor: const Color(0xFF2A1B4E),
             color: Colors.white,
             displacement: 40,
             strokeWidth: 3,
@@ -32,7 +33,7 @@ class CategoryScreen extends StatelessWidget {
               slivers: [
                 // Premium Large Header
               SliverAppBar(
-                backgroundColor: const Color(0xFF050505),
+                backgroundColor: AppTheme.darkBackgroundColor,
                 expandedHeight: 160.0,
                 floating: false,
                 pinned: true,
@@ -67,16 +68,7 @@ class CategoryScreen extends StatelessWidget {
                     ],
                   ),
                   background: Container(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: Alignment.topRight,
-                        radius: 1.5,
-                        colors: [
-                          const Color(0xFF2A2A2A),
-                          const Color(0xFF050505),
-                        ],
-                      ),
-                    ),
+                    decoration: AppTheme.backgroundDecoration,
                   ),
                 ),
               ),

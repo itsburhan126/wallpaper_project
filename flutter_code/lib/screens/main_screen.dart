@@ -9,6 +9,7 @@ import 'shorts_screen.dart';
 import 'category_screen.dart';
 import 'task_screen.dart';
 import 'profile_screen.dart';
+import '../utils/app_theme.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -32,7 +33,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black, // Match the dark theme
+      backgroundColor: AppTheme.darkBackgroundColor, // Match the dark theme
       extendBody: true, // For glassmorphism effect on bottom nav
       body: IndexedStack( // Use IndexedStack to preserve state
         index: _currentIndex,
@@ -46,8 +47,8 @@ class _MainScreenState extends State<MainScreen> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Colors.black.withOpacity(0.8),
-            Colors.black.withOpacity(0.6),
+            AppTheme.darkBackgroundColor.withOpacity(0.9),
+            AppTheme.darkBackgroundColor.withOpacity(0.7),
           ],
         ),
         border: 0,

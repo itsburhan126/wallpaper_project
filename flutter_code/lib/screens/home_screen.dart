@@ -11,6 +11,7 @@ import '../widgets/wallpaper_tab.dart';
 import '../widgets/shimmer_loading.dart';
 import '../models/category_model.dart';
 import 'shorts_screen.dart';
+import '../utils/app_theme.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,19 +39,23 @@ class _HomeScreenState extends State<HomeScreen> {
         return DefaultTabController(
           length: tabs.length,
           child: Scaffold(
-            backgroundColor: Colors.black,
-            body: SafeArea(
-              child: NestedScrollView(
-                headerSliverBuilder: (context, innerBoxIsScrolled) {
+            backgroundColor: AppTheme.darkBackgroundColor,
+            body: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
                     SliverOverlapAbsorber(
                       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                       sliver: SliverAppBar(
-                        backgroundColor: Colors.black,
+                        backgroundColor: AppTheme.darkBackgroundColor,
                         floating: true,
                         pinned: true,
                         snap: true,
                         elevation: 0,
+                        flexibleSpace: FlexibleSpaceBar(
+                          background: Container(
+                            decoration: AppTheme.backgroundDecoration,
+                          ),
+                        ),
                         titleSpacing: 0,
                         toolbarHeight: 70,
                         title: Padding(
@@ -206,7 +211,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-          ),
         );
       },
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../utils/app_theme.dart';
 
 class LimitReachedSheet extends StatelessWidget {
   final String title;
@@ -24,7 +25,7 @@ class LimitReachedSheet extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF120C24),
+        color: AppTheme.darkBackgroundColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(25),
           topRight: Radius.circular(25),

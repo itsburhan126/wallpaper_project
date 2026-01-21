@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/app_provider.dart';
+import '../utils/app_theme.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -12,7 +13,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF120C24),
+      backgroundColor: AppTheme.darkBackgroundColor,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -120,7 +121,7 @@ class ProfileScreen extends StatelessWidget {
     return SliverAppBar(
       expandedHeight: 280,
       pinned: true,
-      backgroundColor: const Color(0xFF120C24),
+      backgroundColor: AppTheme.darkBackgroundColor,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
@@ -128,18 +129,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             // Background Gradient
             Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF4A00E0),
-                    Color(0xFF8E2DE2),
-                    Color(0xFF120C24),
-                  ],
-                  stops: [0.0, 0.6, 1.0],
-                ),
-              ),
+              decoration: AppTheme.backgroundDecoration,
             ),
             // Pattern Overlay
             Positioned.fill(

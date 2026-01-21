@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../providers/app_provider.dart';
 import '../utils/constants.dart';
+import '../utils/app_theme.dart';
 import '../widgets/toast/professional_toast.dart';
 
 class ReferralScreen extends StatelessWidget {
@@ -16,7 +17,7 @@ class ReferralScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF120C24), // Deep Purple/Black background
+      backgroundColor: AppTheme.darkBackgroundColor, // Deep Purple/Black background
       body: Stack(
         children: [
           // Gradient Header Background (Matches Task Screen AppBar)
@@ -26,13 +27,7 @@ class ReferralScreen extends StatelessWidget {
             right: 0,
             height: 300,
             child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF2E1C59), Color(0xFF120C24)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
+              decoration: AppTheme.backgroundDecoration,
             ),
           ),
           SafeArea(
@@ -236,7 +231,7 @@ class ReferralScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF120C24),
+                  color: AppTheme.darkBackgroundColor,
                   border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
                 ),
                 child: Consumer<AppProvider>(

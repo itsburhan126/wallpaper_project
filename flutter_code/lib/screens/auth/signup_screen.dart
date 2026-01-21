@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../utils/constants.dart';
 import '../main_screen.dart';
 import '../../services/api_service.dart';
+import '../../utils/app_theme.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -80,16 +81,7 @@ class _SignupScreenState extends State<SignupScreen> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF1A237E), // Deep Blue
-                Color(0xFF000000), // Black - Matches Navigation Bar
-              ],
-            ),
-          ),
+          decoration: AppTheme.backgroundDecoration,
           child: SafeArea(
             child: LayoutBuilder(
           builder: (context, constraints) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../utils/app_theme.dart';
 
 class AdLimitDialog extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -16,7 +17,7 @@ class AdLimitDialog extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: const Color(0xFF120C24),
+          color: AppTheme.darkBackgroundColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: Colors.white.withOpacity(0.1),

@@ -11,6 +11,7 @@ import '../providers/ad_provider.dart';
 import '../services/google_ad_service.dart';
 import '../services/api_service.dart';
 import 'auth/login_screen.dart';
+import '../utils/app_theme.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -117,16 +118,7 @@ class _SplashScreenState extends State<SplashScreen> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF1A237E), // Deep Blue
-                Color(0xFF000000), // Black
-              ],
-            ),
-          ),
+          decoration: AppTheme.backgroundDecoration,
           child: SafeArea(
             child: Center(
               child: SingleChildScrollView(

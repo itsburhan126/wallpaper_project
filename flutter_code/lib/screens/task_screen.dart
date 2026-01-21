@@ -24,6 +24,7 @@ import 'all_games_screen.dart';
 
 import '../widgets/animated_coin_balance.dart';
 import 'referral_screen.dart';
+import '../utils/app_theme.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -121,7 +122,7 @@ class _TaskScreenState extends State<TaskScreen> {
     print("---------------------------------");
 
     return Scaffold(
-      backgroundColor: const Color(0xFF120C24), // Deep Purple/Black background
+      backgroundColor: AppTheme.darkBackgroundColor, // Deep Purple/Black background
       body: RefreshIndicator(
         backgroundColor: const Color(0xFF2A1B4E),
         color: Colors.white,
@@ -137,20 +138,14 @@ class _TaskScreenState extends State<TaskScreen> {
           slivers: [
             // Custom App Bar with User Profile
           SliverAppBar(
-            backgroundColor: const Color(0xFF120C24),
+            backgroundColor: AppTheme.darkBackgroundColor,
             expandedHeight: 65.0,
             floating: true,
             pinned: true,
             elevation: 0,
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF2E1C59), Color(0xFF120C24)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
+                decoration: AppTheme.backgroundDecoration,
               ),
               titlePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               title: Row(

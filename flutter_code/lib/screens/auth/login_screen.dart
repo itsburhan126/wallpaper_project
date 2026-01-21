@@ -13,6 +13,7 @@ import '../../dialog/referral_dialog.dart';
 
 import 'package:provider/provider.dart';
 import '../../providers/app_provider.dart';
+import '../../utils/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -134,16 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
         body: Container(
           width: double.infinity,
           height: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF1A237E), // Deep Blue
-                Color(0xFF000000), // Black - Matches Navigation Bar
-              ],
-            ),
-          ),
+          decoration: AppTheme.backgroundDecoration,
           child: SafeArea(
             child: LayoutBuilder(
             builder: (context, constraints) {

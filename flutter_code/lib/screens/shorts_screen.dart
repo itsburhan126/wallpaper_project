@@ -16,6 +16,7 @@ import '../widgets/user_avatar.dart';
 import '../dialog/reward_dialog.dart';
 import '../widgets/toast/professional_toast.dart';
 import '../dialog/ad_error_dialog.dart';
+import '../utils/app_theme.dart';
 
 class ShortsScreen extends StatefulWidget {
   const ShortsScreen({super.key});
@@ -51,7 +52,7 @@ class _ShortsScreenState extends State<ShortsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppTheme.darkBackgroundColor,
       body: Consumer<ShortsProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.shorts.isEmpty) {

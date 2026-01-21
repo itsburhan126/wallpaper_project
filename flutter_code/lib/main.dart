@@ -6,6 +6,7 @@ import 'providers/shorts_provider.dart';
 import 'providers/ad_provider.dart';
 import 'screens/splash_screen.dart';
 import 'utils/constants.dart';
+import 'utils/app_theme.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
@@ -47,16 +48,16 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           useMaterial3: true,
-          scaffoldBackgroundColor: AppColors.background,
+          scaffoldBackgroundColor: AppTheme.darkBackgroundColor,
           primaryColor: AppColors.primary,
           colorScheme: ColorScheme.dark(
             primary: AppColors.primary,
             secondary: AppColors.secondary,
-            background: AppColors.background,
+            background: AppTheme.darkBackgroundColor,
             surface: AppColors.cardColor,
           ),
           appBarTheme: const AppBarTheme(
-            backgroundColor: AppColors.background,
+            backgroundColor: AppTheme.darkBackgroundColor,
             elevation: 0,
             centerTitle: true,
           ),

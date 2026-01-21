@@ -8,6 +8,8 @@ import '../services/google_ad_service.dart';
 import '../widgets/toast/professional_toast.dart';
 import '../widgets/coin_animation_overlay.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:flutter/services.dart';
+import '../utils/app_theme.dart';
 
 class GameWebViewScreen extends StatefulWidget {
   final String url;
@@ -113,7 +115,7 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.darkBackgroundColor,
         body: SafeArea(
           child: Stack(
             children: [
@@ -144,13 +146,13 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
                 right: 0,
                 height: 56,
                 child: Container(
-                  color: Colors.white,
+                  decoration: AppTheme.backgroundDecoration,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     children: [
                       // Close Button (X)
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.black87, size: 24),
+                        icon: const Icon(Icons.close, color: Colors.white, size: 24),
                         onPressed: () {
                           _handleExit();
                         },
@@ -167,7 +169,7 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
                             Text(
                               widget.title,
                               style: GoogleFonts.roboto(
-                                color: Colors.black87,
+                                color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -182,7 +184,7 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
                                   child: Text(
                                     _getDomain(widget.url),
                                     style: GoogleFonts.roboto(
-                                      color: Colors.grey.shade600,
+                                      color: Colors.white70,
                                       fontSize: 12,
                                     ),
                                     maxLines: 1,
@@ -200,13 +202,13 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
+                            color: Colors.white.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: Colors.grey.shade300),
+                            border: Border.all(color: Colors.white24),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.timer, color: Colors.black54, size: 14),
+                              const Icon(Icons.timer, color: Colors.white70, size: 14),
                               const SizedBox(width: 4),
                               Text(
                                 "${widget.durationSeconds - _elapsedSeconds}s",

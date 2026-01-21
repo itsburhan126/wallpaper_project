@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../utils/app_theme.dart';
 
 class ProfessionalToast {
   static void show(BuildContext context, {required int coinAmount}) {
@@ -74,7 +75,7 @@ class _ToastWidget extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             const Color(0xFF2A1B4E).withOpacity(0.95),
-            const Color(0xFF120C24).withOpacity(0.95),
+            AppTheme.darkBackgroundColor.withOpacity(0.95),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,

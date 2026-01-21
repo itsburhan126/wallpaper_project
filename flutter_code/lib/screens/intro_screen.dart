@@ -3,6 +3,7 @@ import 'package:introduction_screen/introduction_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../utils/constants.dart';
 import 'auth/login_screen.dart';
+import '../utils/app_theme.dart';
 
 class IntroScreen extends StatelessWidget {
   const IntroScreen({super.key});
@@ -10,17 +11,7 @@ class IntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF1A237E), // Deep Blue
-            Color(0xFF311B92), // Deep Purple
-            Color(0xFF000000), // Black
-          ],
-        ),
-      ),
+      decoration: AppTheme.backgroundDecoration,
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: IntroductionScreen(

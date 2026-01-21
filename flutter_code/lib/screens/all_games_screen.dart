@@ -16,6 +16,7 @@ import '../widgets/coin_animation_overlay.dart';
 import '../providers/ad_provider.dart';
 import '../services/ad_manager_service.dart';
 import '../widgets/animated_coin_balance.dart';
+import '../utils/app_theme.dart';
 
 class AllGamesScreen extends StatefulWidget {
   const AllGamesScreen({super.key});
@@ -97,10 +98,13 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF120C24),
+      backgroundColor: AppTheme.darkBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF120C24),
+        backgroundColor: AppTheme.darkBackgroundColor,
         elevation: 0,
+        flexibleSpace: Container(
+          decoration: AppTheme.backgroundDecoration,
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => Navigator.pop(context),

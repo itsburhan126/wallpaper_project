@@ -10,6 +10,7 @@ import '../widgets/coin_animation_overlay.dart';
 import '../widgets/animated_coin_balance.dart';
 import '../widgets/toast/professional_toast.dart';
 import '../dialog/limit_reached_sheet.dart';
+import '../utils/app_theme.dart';
 
 class LuckyWheelDialog extends StatefulWidget {
   const LuckyWheelDialog({Key? key}) : super(key: key);
@@ -621,7 +622,7 @@ class ProfessionalWheelPainter extends CustomPainter {
     canvas.drawCircle(center, radius, rimPaint);
     
     // 2. Draw Inner Background (Dark)
-    canvas.drawCircle(center, radius * 0.9, Paint()..color = const Color(0xFF1A237E));
+    canvas.drawCircle(center, radius * 0.9, Paint()..color = AppTheme.darkBackgroundColor);
 
     const double sliceAngle = 2 * math.pi / 8;
     final sliceRadius = radius * 0.85;

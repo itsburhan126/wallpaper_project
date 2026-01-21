@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../models/wallpaper_model.dart';
 import '../providers/app_provider.dart';
 import '../utils/constants.dart';
+import '../utils/app_theme.dart';
 import '../services/ad_manager_service.dart';
 
 class WallpaperDetailScreen extends StatefulWidget {
@@ -189,6 +190,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.darkBackgroundColor,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,

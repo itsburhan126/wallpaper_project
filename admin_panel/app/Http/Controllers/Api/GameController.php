@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Models\TransactionHistory;
 use App\Models\AdWatchLog;
+use App\Models\GameHistory;
+use App\Models\Setting;
 use App\Helpers\FilePath;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -20,6 +22,51 @@ class GameController extends Controller
         return response()->json([
             'status' => true,
             'data' => $categories
+        ]);
+    }
+
+    public function incrementPlayCount(Request $request)
+    {
+        $user = $request->user();
+        $today = \Carbon\Carbon::today()->toDateString();
+
+        // Check if last game date is not today, reset count
+        if ($user->last_game_date !== $today) {
+            $user->daily_game_count = 0;
+            $user->last_game_date = $today;
+        }
+
+        // Increment count
+        $user->daily_game_count += 1;
+        $user->save();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Game play count incremented',
+            'data' => [
+                'daily_game_count' => $user->daily_game_count,
+                'last_game_date' => $user->last_game_date,
+            ]
+        ]);
+    }
+
+    public function getStatus(Request $request)
+    {
+        $user = $request->user();
+        $today = \Carbon\Carbon::today();
+        
+        $gamesPlayedToday = \App\Models\GameHistory::where('user_id', $user->id)
+            ->whereDate('created_at', $today)
+            ->count();
+            
+        $dailyLimit = (int) \App\Models\Setting::get('game_daily_limit', 10);
+
+        return response()->json([
+            'status' => true,
+            'data' => [
+                'games_played_today' => $gamesPlayedToday,
+                'daily_limit' => $dailyLimit,
+            ]
         ]);
     }
 
@@ -104,6 +151,7 @@ class GameController extends Controller
             'source' => 'required|string', // level_complete, ad_watch, etc.
             'description' => 'nullable|string',
             'level' => 'nullable|integer', // Optional, to update user level
+            'game_id' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -144,6 +192,22 @@ class GameController extends Controller
                 'description' => $request->description ?? ucfirst($request->source),
             ]);
 
+            // Record Game History
+            GameHistory::create([
+                'user_id' => $user->id,
+                'game_id' => $request->game_id ?? null, // Assuming game_id is passed or null
+                'coins' => $request->amount,
+                'status' => 'completed',
+            ]);
+
+            // Calculate Daily Stats
+            $today = \Carbon\Carbon::today();
+            $gamesPlayedToday = GameHistory::where('user_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->count();
+            
+            $dailyLimit = (int) Setting::get('game_daily_limit', 10);
+
             DB::commit();
 
             return response()->json([
@@ -153,6 +217,8 @@ class GameController extends Controller
                     'coins' => $user->coins,
                     'gems' => $user->gems,
                     'level' => $user->level,
+                    'games_played_today' => $gamesPlayedToday,
+                    'daily_limit' => $dailyLimit,
                 ]
             ]);
 

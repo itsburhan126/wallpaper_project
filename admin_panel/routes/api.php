@@ -16,7 +16,7 @@ use App\Http\Controllers\Api\WallpaperController;
 // Auth Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/google-login', [AuthController::class, 'googleLogin']);
+Route::post('/auth/google', [AuthController::class, 'googleLogin']);
 Route::post('/check-user', [AuthController::class, 'checkUser']);
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -32,6 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Game Balance Updates
     Route::post('/game/update-balance', [GameController::class, 'updateBalance']);
     Route::post('/game/log-ad', [GameController::class, 'logAdWatch']);
+    Route::post('/game/increment-play-count', [GameController::class, 'incrementPlayCount']);
+    Route::get('/game/status', [GameController::class, 'getStatus']);
 
     // Leaderboard
     Route::get('/leaderboard', [LeaderboardController::class, 'index']);

@@ -33,6 +33,26 @@ class ApiService {
     return {};
   }
 
+  Future<Map<String, dynamic>> getGameSettings() async {
+    const url = "${ApiConfig.apiUrl}/settings/game";
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url));
+      _logResponse('GET', url, response);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+    } catch (e) {
+      _logError('GET', url, e);
+      print('Error fetching game settings: $e');
+    }
+    return {};
+  }
+
   Future<Map<String, dynamic>> getAdSettings() async {
     const url = "${ApiConfig.apiUrl}/settings/ads";
     try {
@@ -289,12 +309,13 @@ class ApiService {
     return {'success': false};
   }
 
-  Future<bool> updateBalance(int amount) async {
+  Future<Map<String, dynamic>> updateBalance(int amount, {String source = 'app_activity', String? gameId}) async {
     const url = ApiConfig.updateBalance;
     final body = {
           'amount': amount,
           'type': 'coin',
-          'source': 'app_activity'
+          'source': source,
+          if (gameId != null) 'game_id': gameId,
         };
     try {
       _logRequest('POST', url, body: body);
@@ -302,6 +323,47 @@ class ApiService {
         Uri.parse(url),
         headers: await _getHeaders(),
         body: json.encode(body),
+      );
+      _logResponse('POST', url, response);
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == true) {
+             return data['data'];
+        }
+      }
+    } catch (e) {
+      _logError('POST', url, e);
+    }
+    return {};
+  }
+
+  Future<Map<String, dynamic>> fetchGameStatus() async {
+    const url = ApiConfig.gameStatus;
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url), headers: await _getHeaders());
+      _logResponse('GET', url, response);
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == true) {
+             return data['data'];
+        }
+      }
+    } catch (e) {
+      _logError('GET', url, e);
+    }
+    return {};
+  }
+
+  Future<bool> incrementPlayCount() async {
+    const url = ApiConfig.incrementPlayCount;
+    try {
+      _logRequest('POST', url);
+      final response = await http.post(
+        Uri.parse(url),
+        headers: await _getHeaders(),
       );
       _logResponse('POST', url, response);
       return response.statusCode == 200;

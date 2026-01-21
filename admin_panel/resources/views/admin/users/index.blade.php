@@ -58,7 +58,7 @@
                             </div>
                         </td>
                         <td class="px-6 py-4">
-                            @if($user->status === 'blocked')
+                            @if(!$user->status)
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100">
                                     Blocked
                                 </span>

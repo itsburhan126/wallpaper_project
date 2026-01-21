@@ -22,7 +22,17 @@
             </div>
             
             <div class="p-8 space-y-6">
-                <!-- Game Play Coin Reward Removed -->
+                <!-- Daily Game Limit -->
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">Daily Game Limit</label>
+                    <div class="relative">
+                        <input type="number" name="game_daily_limit" value="{{ $settings['game_daily_limit'] ?? 10 }}" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all pl-12">
+                        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+                            <i class="fas fa-hand-paper"></i>
+                        </div>
+                    </div>
+                    <p class="mt-2 text-xs text-slate-500">Maximum number of games a user can play per day.</p>
+                </div>
             </div>
         </div>
 

@@ -30,6 +30,8 @@ class User extends Authenticatable
         'referred_by',
         'daily_streak',
         'last_daily_reward_at',
+        'daily_game_count',
+        'last_game_date',
     ];
 
     public function referrals()
@@ -72,6 +74,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'status' => 'boolean',
         ];
     }
 

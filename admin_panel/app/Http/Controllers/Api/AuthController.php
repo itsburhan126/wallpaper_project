@@ -122,32 +122,6 @@ class AuthController extends Controller
                         'source' => 'referral_bonus',
                         'description' => 'Referral Bonus (Level 2) from ' . $newUser->name,
                     ]);
-
-                    // Level 3
-                    if ($l2Referrer->referred_by) {
-                        $l3Referrer = User::where('referral_code', $l2Referrer->referred_by)->first();
-                        if ($l3Referrer) {
-                            $bonusL3 = (int) Setting::get('referral_bonus_l3', 10);
-                            $l3Referrer->increment('coins', $bonusL3);
-
-                            ReferralHistory::create([
-                                'referrer_id' => $l3Referrer->id,
-                                'referred_user_id' => $newUser->id,
-                                'level' => 3,
-                                'bonus_amount' => $bonusL3
-                            ]);
-
-                            \App\Models\TransactionHistory::create([
-                                'user_id' => $l3Referrer->id,
-                                'type' => 'gem',
-                                'amount' => $bonusL3,
-                                'source' => 'referral_bonus',
-                                'description' => 'Referral Bonus (Level 3) from ' . $newUser->name,
-                            ]);
-
-                            $l3Referrer->notify(new ReferralBonusNotification($newUser, 3, $bonusL3));
-                        }
-                    }
                 }
             }
         }
@@ -234,10 +208,9 @@ class AuthController extends Controller
                     'google_id' => $request->google_id,
                     'avatar' => $request->avatar ?? 'default.png',
                     'referral_code' => Str::upper(Str::random(8)),
-                    'coins' => 100,
                     'coins' => $signupBonus,
                     'referred_by' => $request->referral_code,
-                    'status' => 'active'
+                    'status' => true
                 ]);
 
                 if ($request->referral_code) {
@@ -329,7 +302,7 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
         $exists = $user ? true : false;
-        $isBlocked = $user && $user->status === 'blocked';
+        $isBlocked = $user ? !$user->status : false;
         
         return response()->json([
             'status' => true,

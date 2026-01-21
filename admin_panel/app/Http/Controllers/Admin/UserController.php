@@ -51,15 +51,15 @@ class UserController extends Controller
     public function toggleBlock($id)
     {
         $user = User::findOrFail($id);
-        $user->status = $user->status === 'blocked' ? 'active' : 'blocked';
+        $user->status = !$user->status; // Toggle boolean
         $user->save();
         
-        // If blocked, maybe revoke tokens?
-        if ($user->status === 'blocked') {
+        // If blocked (status is false), maybe revoke tokens?
+        if (!$user->status) {
             $user->tokens()->delete();
         }
 
-        return back()->with('success', 'User status updated to ' . $user->status);
+        return back()->with('success', 'User status updated to ' . ($user->status ? 'Active' : 'Blocked'));
     }
 
     public function transactions($id)

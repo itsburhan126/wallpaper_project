@@ -125,7 +125,7 @@
                     <!-- Actions -->
                     <div class="flex gap-3">
                         @php
-                            $actionText = $user->status === 'blocked' ? 'unblock' : 'block';
+                            $actionText = !$user->status ? 'unblock' : 'block';
                         @endphp
 
                         <form action="{{ route('admin.users.block', $user->id) }}"
@@ -137,12 +137,12 @@
 
                             <button type="submit"
                                 class="px-4 py-2 rounded-lg font-medium transition-all shadow-sm flex items-center gap-2 border
-                                {{ $user->status === 'blocked'
+                                {{ !$user->status
                                     ? 'bg-emerald-50 text-emerald-700 border-emerald-100 hover:bg-emerald-100'
                                     : 'bg-red-50 text-red-700 border-red-100 hover:bg-red-100' }}">
 
-                                <i class="fas {{ $user->status === 'blocked' ? 'fa-unlock' : 'fa-ban' }}"></i>
-                                {{ $user->status === 'blocked' ? 'Unblock User' : 'Block User' }}
+                                <i class="fas {{ !$user->status ? 'fa-unlock' : 'fa-ban' }}"></i>
+                                {{ !$user->status ? 'Unblock User' : 'Block User' }}
                             </button>
                         </form>
                     </div>

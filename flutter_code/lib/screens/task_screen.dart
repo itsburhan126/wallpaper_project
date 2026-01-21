@@ -47,7 +47,7 @@ class _TaskScreenState extends State<TaskScreen> {
     });
   }
 
-  Future<void> _showGameRewardDialog(BuildContext context, int rewardAmount) async {
+  Future<void> _showGameRewardDialog(BuildContext context, int rewardAmount, String gameId) async {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -56,7 +56,7 @@ class _TaskScreenState extends State<TaskScreen> {
         onClaim: () async {
           if (context.mounted) Navigator.pop(ctx);
           await Future.delayed(const Duration(milliseconds: 300));
-          if (context.mounted) await _claimGameReward(context, rewardAmount, 1);
+          if (context.mounted) await _claimGameReward(context, rewardAmount, 1, gameId);
         },
         onClaim2x: () async {
           // Don't pop immediately, let the button show loading state
@@ -68,7 +68,7 @@ class _TaskScreenState extends State<TaskScreen> {
             () async {
                if (ctx.mounted) Navigator.pop(ctx);
                await Future.delayed(const Duration(milliseconds: 500));
-               if (context.mounted) await _claimGameReward(context, rewardAmount, 2);
+               if (context.mounted) await _claimGameReward(context, rewardAmount, 2, gameId);
             }
           );
 
@@ -83,7 +83,7 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  Future<void> _claimGameReward(BuildContext context, int baseReward, int multiplier) async {
+  Future<void> _claimGameReward(BuildContext context, int baseReward, int multiplier, String gameId) async {
     final provider = Provider.of<AppProvider>(context, listen: false);
     final totalReward = baseReward * multiplier;
     
@@ -94,13 +94,73 @@ class _TaskScreenState extends State<TaskScreen> {
         _coinIconKey, 
         coinCount: 10,
         onComplete: () async {
-          await provider.addCoins(totalReward);
+          await provider.addCoins(totalReward, source: 'game_reward', gameId: gameId);
+          print("🎮 [Game Play] Coins Credited: $totalReward | Games Played Today: ${provider.gamesPlayedToday} | Daily Limit: ${provider.gameDailyLimit}");
           if (context.mounted) {
             ProfessionalToast.showSuccess(context, message: "You earned $totalReward coins!");
           }
         },
       );
     }
+  }
+
+  void _showLimitReachedSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF120C24),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.timer_off_outlined, color: Colors.orange, size: 48),
+            const SizedBox(height: 16),
+            Text(
+              "Daily Limit Reached",
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "You have reached your daily game limit.\nPlease come back tomorrow!",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                color: Colors.white70,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: Text(
+                  "OK",
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -718,6 +778,17 @@ class _TaskScreenState extends State<TaskScreen> {
                   final game = games[index];
                   return GestureDetector(
                     onTap: () async {
+                      final provider = Provider.of<AppProvider>(context, listen: false);
+                      
+                      // Ensure daily limit is reset if it's a new day
+                      await provider.checkDailyLimitReset();
+                      
+                      // Check Daily Limit
+                      if (provider.gamesPlayedToday >= provider.gameDailyLimit) {
+                         _showLimitReachedSheet(context);
+                         return;
+                      }
+
                       final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -737,7 +808,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         final int requiredSeconds = game.playTime > 0 ? game.playTime : 60;
                         
                         if (isTimerComplete && !rewardClaimed) {
-                           _showGameRewardDialog(context, game.winReward > 0 ? game.winReward : 50);
+                           _showGameRewardDialog(context, game.winReward > 0 ? game.winReward : 50, game.id.toString());
                         } else if (!rewardClaimed && !isTimerComplete && playedSeconds < requiredSeconds) {
                           showDialog(
                             context: context,

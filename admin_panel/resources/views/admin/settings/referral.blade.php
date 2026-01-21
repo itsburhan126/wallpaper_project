@@ -24,21 +24,21 @@
             <div class="p-8 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Signup Bonus (Gems)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Signup Bonus (Coins)</label>
                         <div class="relative">
                             <input type="number" name="signup_bonus" value="{{ $settings['signup_bonus'] ?? '100' }}" 
                                 class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all pl-10">
                             <div class="absolute left-4 top-3.5 text-gray-400">
-                                <i class="fas fa-gem"></i>
+                                <i class="fas fa-coins"></i>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1">Gems given to a new user upon registration</p>
+                        <p class="text-xs text-gray-500 mt-1">Coins given to a new user upon registration</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Level 1 Referral Bonus (Gems)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Level 1 Referral Bonus (Coins)</label>
                         <div class="relative">
                             <input type="number" name="referral_bonus_l1" value="{{ $settings['referral_bonus_l1'] ?? '50' }}" 
                                 class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all pl-10">
@@ -50,7 +50,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Level 2 Referral Bonus (Gems)</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Level 2 Referral Bonus (Coins)</label>
                         <div class="relative">
                             <input type="number" name="referral_bonus_l2" value="{{ $settings['referral_bonus_l2'] ?? '20' }}" 
                                 class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all pl-10">
@@ -59,18 +59,6 @@
                             </div>
                         </div>
                         <p class="text-xs text-gray-500 mt-1">Reward for referrer's referrer</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Level 3 Referral Bonus (Gems)</label>
-                        <div class="relative">
-                            <input type="number" name="referral_bonus_l3" value="{{ $settings['referral_bonus_l3'] ?? '10' }}" 
-                                class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 transition-all pl-10">
-                            <div class="absolute left-4 top-3.5 text-gray-400">
-                                <i class="fas fa-network-wired"></i>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-1">Reward for 3rd level referrer</p>
                     </div>
                 </div>
             </div>

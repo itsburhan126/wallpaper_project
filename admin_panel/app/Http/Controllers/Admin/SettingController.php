@@ -173,6 +173,7 @@ class SettingController extends Controller
     {
         $keys = [
             'game_play_reward_coins', 
+            'game_daily_limit',
             'ad_priority_1',
             'ad_priority_2',
             'ad_priority_3',

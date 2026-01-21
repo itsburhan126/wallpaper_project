@@ -13,16 +13,18 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Action', 'image' => 'categories/action.png'],
-            ['name' => 'Adventure', 'image' => 'categories/adventure.png'],
-            ['name' => 'Puzzle', 'image' => 'categories/puzzle.png'],
-            ['name' => 'Strategy', 'image' => 'categories/strategy.png'],
-            ['name' => 'Sports', 'image' => 'categories/sports.png'],
-            ['name' => 'Racing', 'image' => 'categories/racing.png'],
-            ['name' => 'RPG', 'image' => 'categories/rpg.png'],
-            ['name' => 'Arcade', 'image' => 'categories/arcade.png'],
-            ['name' => 'Simulation', 'image' => 'categories/simulation.png'],
-            ['name' => 'Board', 'image' => 'categories/board.png'],
+             
+            // New Categories
+            ['name' => 'Abstract', 'image' => 'categories/abstract.png'],
+            ['name' => 'Nature', 'image' => 'categories/nature.png'],
+            ['name' => 'Cars', 'image' => 'categories/cars.png'],
+            ['name' => 'Space', 'image' => 'categories/space.png'],
+            ['name' => 'Animals', 'image' => 'categories/animals.png'],
+            ['name' => 'Anime', 'image' => 'categories/anime.png'],
+            ['name' => 'Minimal', 'image' => 'categories/minimal.png'],
+            ['name' => 'Tech', 'image' => 'categories/tech.png'],
+            ['name' => 'Music', 'image' => 'categories/music.png'],
+            ['name' => 'Dark', 'image' => 'categories/dark.png'],
         ];
 
         foreach ($categories as $category) {

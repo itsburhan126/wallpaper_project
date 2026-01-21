@@ -24,6 +24,17 @@ class AppProvider with ChangeNotifier {
   String _currencySymbol = '\$';
   int _coinRate = 1000;
 
+  String get currencySymbol => _currencySymbol;
+  int get coinRate => _coinRate;
+
+  // Game Settings
+  int _gameDailyLimit = 10;
+  int _gamesPlayedToday = 0;
+  
+  int get gameDailyLimit => _gameDailyLimit;
+  int get gamesPlayedToday => _gamesPlayedToday;
+  bool get canPlayGame => _gamesPlayedToday < _gameDailyLimit;
+
   // Watch Ads Settings
   int _watchAdsLimit = 10;
   int _watchAdsReward = 50;
@@ -36,9 +47,8 @@ class AppProvider with ChangeNotifier {
   List<String> _luckyWheelPriorities = ['admob', 'admob', 'admob'];
   int _luckyWheelSpinsCount = 0;
 
-  String get currencySymbol => _currencySymbol;
-  int get coinRate => _coinRate;
-  
+  // Game Settings
+
   int get watchAdsLimit => _watchAdsLimit;
   int get watchAdsReward => _watchAdsReward;
   List<String> get watchAdsPriorities => _watchAdsPriorities;
@@ -48,6 +58,8 @@ class AppProvider with ChangeNotifier {
   List<int> get luckyWheelRewards => _luckyWheelRewards;
   List<String> get luckyWheelPriorities => _luckyWheelPriorities;
   int get luckyWheelSpinsCount => _luckyWheelSpinsCount;
+
+
 
   List<Wallpaper> _wallpapers = [];
   List<Category> _categories = [];
@@ -120,12 +132,23 @@ class AppProvider with ChangeNotifier {
       _luckyWheelSpinsCount = prefs.getInt('lucky_wheel_spins_count') ?? 0;
     }
 
+    // Load Game Play Count
+    String? lastGameDate = prefs.getString('last_game_date');
+    if (lastGameDate != today) {
+      _gamesPlayedToday = 0;
+      await prefs.setString('last_game_date', today);
+      await prefs.setInt('games_played_today', 0);
+    } else {
+      _gamesPlayedToday = prefs.getInt('games_played_today') ?? 0;
+    }
+
     // Fetch API Data
     await Future.wait([
       fetchBanners(),
       fetchCategories(),
       fetchWallpapers(),
       fetchGeneralSettings(),
+      fetchGameSettings(),
       fetchDailyRewards(),
       if (token != null) fetchUserBalance(), // Fetch user data if logged in
     ]);
@@ -141,6 +164,7 @@ class AppProvider with ChangeNotifier {
 
   Future<void> fetchGames() async {
     _games = await _apiService.getGames();
+    await fetchGameStatus();
     notifyListeners();
   }
 
@@ -207,6 +231,26 @@ class AppProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchGameSettings() async {
+    // Also fetch status to get latest limit and played count
+    await fetchGameStatus();
+  }
+
+  Future<void> fetchGameStatus() async {
+    final data = await _apiService.fetchGameStatus();
+    if (data.isNotEmpty) {
+      if (data['daily_limit'] != null) {
+        _gameDailyLimit = int.tryParse(data['daily_limit'].toString()) ?? 10;
+      }
+      if (data['games_played_today'] != null) {
+        _gamesPlayedToday = int.tryParse(data['games_played_today'].toString()) ?? 0;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('games_played_today', _gamesPlayedToday);
+      }
+      notifyListeners();
+    }
+  }
+
   String _userEmail = "";
   String get userEmail => _userEmail;
 
@@ -252,6 +296,17 @@ class AppProvider with ChangeNotifier {
       if (userData['avatar'] != null) {
         _userAvatar = userData['avatar'].toString();
         await prefs.setString('user_avatar', _userAvatar);
+      }
+
+      // Sync Game Limit from Server
+      if (userData['daily_game_count'] != null) {
+        _gamesPlayedToday = int.tryParse(userData['daily_game_count'].toString()) ?? 0;
+        await prefs.setInt('games_played_today', _gamesPlayedToday);
+      }
+      if (userData['last_game_date'] != null) {
+        // Assuming format YYYY-MM-DD
+        String serverDate = userData['last_game_date'].toString().split(' ')[0];
+        await prefs.setString('last_game_date', serverDate);
       }
       
       // Also update directly if fields exist in root (fallback)
@@ -354,14 +409,26 @@ class AppProvider with ChangeNotifier {
     return success;
   }
 
-  Future<void> addCoins(int amount) async {
+  Future<void> addCoins(int amount, {String source = 'app_activity', String? gameId}) async {
     _coins += amount;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('coins', _coins);
     notifyListeners();
 
     // Sync with Server
-    await _apiService.updateBalance(amount);
+    final data = await _apiService.updateBalance(amount, source: source, gameId: gameId);
+    
+    // Update Limits from Server Response
+    if (data.isNotEmpty) {
+      if (data['games_played_today'] != null) {
+        _gamesPlayedToday = int.tryParse(data['games_played_today'].toString()) ?? _gamesPlayedToday;
+        await prefs.setInt('games_played_today', _gamesPlayedToday);
+      }
+      if (data['daily_limit'] != null) {
+        _gameDailyLimit = int.tryParse(data['daily_limit'].toString()) ?? _gameDailyLimit;
+      }
+      notifyListeners();
+    }
   }
 
   Future<void> incrementWatchedAdsCount() async {
@@ -376,6 +443,38 @@ class AppProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('lucky_wheel_spins_count', _luckyWheelSpinsCount);
     notifyListeners();
+  }
+
+  Future<void> checkDailyLimitReset() async {
+    final prefs = await SharedPreferences.getInstance();
+    String today = DateTime.now().toIso8601String().split('T')[0];
+    String? lastGameDate = prefs.getString('last_game_date');
+
+    if (lastGameDate != today) {
+      _gamesPlayedToday = 0;
+      await prefs.setString('last_game_date', today);
+      await prefs.setInt('games_played_today', 0);
+      notifyListeners();
+    }
+  }
+
+  Future<void> incrementGamePlayCount() async {
+    final prefs = await SharedPreferences.getInstance();
+    String today = DateTime.now().toIso8601String().split('T')[0];
+    String? lastGameDate = prefs.getString('last_game_date');
+
+    // Check for day change before incrementing
+    if (lastGameDate != today) {
+      _gamesPlayedToday = 0;
+      await prefs.setString('last_game_date', today);
+    }
+
+    _gamesPlayedToday++;
+    await prefs.setInt('games_played_today', _gamesPlayedToday);
+    notifyListeners();
+
+    // Sync with Server
+    await _apiService.incrementPlayCount();
   }
 
   // Admin Actions removed from Provider as they are now handled via Admin Panel

@@ -16,4 +16,6 @@ class ApiConfig {
   static const String user = "$apiUrl/user";
   static const String games = "$apiUrl/games";
   static const String updateBalance = "$apiUrl/game/update-balance";
+  static const String incrementPlayCount = "$apiUrl/game/increment-play-count";
+  static const String gameStatus = "$apiUrl/game/status";
 }

@@ -176,6 +176,13 @@
                     <span>Categories</span>
                 </a>
 
+                <a href="{{ route('admin.wallpapers.index') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.wallpapers.*') ? 'nav-item-active' : 'text-slate-400' }}">
+                    <div class="w-6 flex justify-center mr-0">
+                        <i class="fas fa-images {{ request()->routeIs('admin.wallpapers.*') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>
+                    </div>
+                    <span>Wallpapers</span>
+                </a>
+
                 <a href="{{ route('admin.games.index') }}" class="nav-item flex items-center px-4 py-3 text-sm font-medium rounded-lg group {{ request()->routeIs('admin.games.*') ? 'nav-item-active' : 'text-slate-400' }}">
                      <div class="w-6 flex justify-center mr-0">
                         <i class="fas fa-gamepad {{ request()->routeIs('admin.games.*') ? 'text-indigo-400' : 'text-slate-500 group-hover:text-slate-300' }}"></i>

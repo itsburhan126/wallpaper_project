@@ -302,7 +302,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.monetization_on_rounded, color: const Color(0xFFFFD700), size: 14, key: _coinIconKey),
+                        Icon(FontAwesomeIcons.coins, color: const Color(0xFFFFD700), size: 14, key: _coinIconKey),
                         const SizedBox(width: 5),
                         Consumer<AppProvider>(
                           builder: (context, provider, _) {
@@ -1223,7 +1223,7 @@ class _TaskScreenState extends State<TaskScreen> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.monetization_on, color: Colors.amber, size: 12),
+                    const Icon(FontAwesomeIcons.coins, color: Colors.amber, size: 12),
                     const SizedBox(width: 4),
                     Text(
                       "+$reward",

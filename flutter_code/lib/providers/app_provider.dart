@@ -277,15 +277,40 @@ class AppProvider with ChangeNotifier {
   String _userAvatar = "";
   String get userAvatar => _userAvatar;
 
+  String _referralCode = "";
+  String get referralCode => _referralCode;
+
+  int _totalReferrals = 0;
+  int get totalReferrals => _totalReferrals;
+
+  int _totalReferralEarnings = 0;
+  int get totalReferralEarnings => _totalReferralEarnings;
+
   Future<void> setUser(Map<String, dynamic> data) async {
     print("------- PROVIDER SET USER DEBUG -------");
     print("Received Data: $data");
     
     final prefs = await SharedPreferences.getInstance();
 
+    // Parse Referral Stats from Root Data (if available)
+    if (data['referral_count'] != null) {
+      _totalReferrals = int.tryParse(data['referral_count'].toString()) ?? 0;
+    }
+    if (data['total_referral_earnings'] != null) {
+      _totalReferralEarnings = int.tryParse(data['total_referral_earnings'].toString()) ?? 0;
+    }
+
     if (data['user'] != null) {
       final userData = data['user'];
       
+      if (userData['referral_code'] != null) {
+        _referralCode = userData['referral_code'].toString();
+        await prefs.setString('referral_code', _referralCode);
+      } else if (userData['username'] != null) {
+        // Fallback to username if no specific code
+        _referralCode = userData['username'].toString();
+      }
+
       if (userData['coins'] != null) {
         _coins = int.tryParse(userData['coins'].toString()) ?? _coins;
       }
@@ -374,6 +399,11 @@ class AppProvider with ChangeNotifier {
       } else if (data['image'] != null) {
         _userAvatar = data['image'].toString();
         await prefs.setString('user_avatar', _userAvatar);
+      }
+
+      if (data['referral_code'] != null) {
+        _referralCode = data['referral_code'].toString();
+        await prefs.setString('referral_code', _referralCode);
       }
     }
     

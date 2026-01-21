@@ -23,6 +23,7 @@ import 'game_webview_screen.dart';
 import 'all_games_screen.dart';
 
 import '../widgets/animated_coin_balance.dart';
+import 'referral_screen.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -522,31 +523,16 @@ class _TaskScreenState extends State<TaskScreen> {
                   const SizedBox(height: 12),
                   _buildTaskItem(
                     context,
-                    title: "Play Lucky Slots",
-                    subtitle: "0/5",
-                    progress: 0.0,
-                    reward: 100,
-                    icon: Icons.games, // Replaced slot_machine with games
-                    // Fallback icon if slot_machine not available
-                    // icon: Icons.videogame_asset, 
-                    iconColor: Colors.greenAccent,
-                    actionLabel: "GO",
-                    onTap: () {
-                      // Navigate to Slots
-                    },
-                  ),
-                   const SizedBox(height: 12),
-                  _buildTaskItem(
-                    context,
-                    title: "Invite Friends",
-                    subtitle: "0/10",
-                    progress: 0.0,
+                    title: "Refer & Earn",
                     reward: 500,
-                    icon: Icons.group_add,
+                    icon: Icons.share_rounded,
                     iconColor: Colors.purpleAccent,
-                    actionLabel: "INVITE",
+                    actionLabel: "REFER",
                     onTap: () {
-                      // Share
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const ReferralScreen()),
+                      );
                     },
                   ),
                   
@@ -1150,8 +1136,8 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget _buildTaskItem(
     BuildContext context, {
     required String title,
-    required String subtitle,
-    required double progress,
+    String? subtitle,
+    double? progress,
     required int reward,
     required IconData icon,
     required Color iconColor,
@@ -1193,31 +1179,35 @@ class _TaskScreenState extends State<TaskScreen> {
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: 6),
-                // Progress Bar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.white10,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      progress == 1.0 ? Colors.green : Colors.blue,
-                    ),
-                    minHeight: 6,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      subtitle,
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        color: Colors.white54,
+                if (progress != null) ...[
+                  const SizedBox(height: 6),
+                  // Progress Bar
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      backgroundColor: Colors.white10,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        progress == 1.0 ? Colors.green : Colors.blue,
                       ),
+                      minHeight: 6,
                     ),
-                  ],
-                ),
+                  ),
+                ],
+                if (subtitle != null) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.poppins(
+                          fontSize: 11,
+                          color: Colors.white54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),

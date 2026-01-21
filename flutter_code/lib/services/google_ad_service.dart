@@ -23,7 +23,7 @@ class GoogleAdService {
     return _interstitialAd != null;
   }
 
-  Future<bool> loadRewardedAd(BuildContext context) async {
+  Future<bool> loadRewardedAd(BuildContext context, {bool force = false}) async {
     final adProvider = Provider.of<AdProvider>(context, listen: false);
     if (!adProvider.adsEnabled || adProvider.admobRewardedId == null) {
       print("⚠️ Ads disabled or ID missing in loadRewardedAd");
@@ -31,28 +31,25 @@ class GoogleAdService {
     }
 
     // Check if a load is already in progress
-    if (_rewardedAdLoadFuture != null) {
-        // If it's been loading for more than 20 seconds, assume it's stuck and force reload
-        if (_rewardedAdLoadStartTime != null && 
-            DateTime.now().difference(_rewardedAdLoadStartTime!) > const Duration(seconds: 20)) {
-            print("⚠️ Previous ad load seems stuck (>20s). Resetting...");
-            _rewardedAdLoadFuture = null;
-        } else {
-            print("⏳ Ad load already in progress, returning existing future");
-            return _rewardedAdLoadFuture!;
-        }
+    if (!force && _rewardedAdLoadFuture != null) {
+        print("⏳ Ad load already in progress, returning existing future");
+        return _rewardedAdLoadFuture!;
+    }
+
+    if (force) {
+      print("💪 Forcing new ad load...");
+      _rewardedAdLoadFuture = null; // Clear existing future
     }
 
     print("🎬 Loading Rewarded Ad: ${adProvider.admobRewardedId}");
 
     final completer = Completer<bool>();
     _rewardedAdLoadFuture = completer.future;
-    _rewardedAdLoadStartTime = DateTime.now();
 
-    // Internal Safety Timeout to prevent stuck loading state
-    Timer(const Duration(seconds: 30), () {
+      // Internal Safety Timeout to prevent stuck loading state
+    Timer(const Duration(seconds: 40), () {
       if (!completer.isCompleted) {
-        print("⚠️ Rewarded Ad Load Timed Out (Internal 30s limit) - Resetting state");
+        print("⚠️ Rewarded Ad Load Timed Out (Internal 40s limit) - Resetting state");
         _rewardedAdLoadFuture = null; // Allow new load attempts
         completer.complete(false);
       }
@@ -81,8 +78,11 @@ class GoogleAdService {
   }
 
   Future<bool> showRewardedAd(BuildContext context, {required Function(int) onReward, required VoidCallback onFailure}) async {
+    print("🎬 showRewardedAd called");
     final adProvider = Provider.of<AdProvider>(context, listen: false);
     
+    print("⚙️ Ad Provider Setting: ${adProvider.adProvider}");
+
     // Check if only AdMob is allowed
     if (adProvider.adProvider != 'admob_only' && adProvider.adProvider != 'both') {
       print("⚠️ AdMob is disabled by admin settings (Provider: ${adProvider.adProvider})");
@@ -91,21 +91,11 @@ class GoogleAdService {
     }
 
     if (_rewardedAd == null) {
-      print("⚠️ Rewarded Ad not ready, attempting to load...");
-      
-      // Wait for the load to complete
-      bool loaded = await loadRewardedAd(context);
-      
-      // Wait a small bit more just in case the ad object assignment needs a tick
-      if (loaded && _rewardedAd == null) {
-         await Future.delayed(const Duration(milliseconds: 500));
-      }
-
-      if (_rewardedAd == null) {
-        print("❌ Rewarded Ad still null after load attempt");
+        print("❌ Rewarded Ad is null in showRewardedAd (and we should have checked readiness before)");
         onFailure();
         return false;
-      }
+    } else {
+      print("✅ _rewardedAd is NOT NULL, proceeding to show");
     }
 
     final completer = Completer<bool>();
@@ -130,12 +120,19 @@ class GoogleAdService {
       },
     );
 
-    _rewardedAd!.show(onUserEarnedReward: (ad, reward) {
-      print("💰 User earned reward: ${reward.amount} ${reward.type}");
-      rewardEarned = true;
-      onReward(reward.amount.toInt());
-    });
-
+    try {
+      print("👉 invoking _rewardedAd!.show()");
+      _rewardedAd!.show(onUserEarnedReward: (ad, reward) {
+        print("💰 User earned reward: ${reward.amount} ${reward.type}");
+        rewardEarned = true;
+        onReward(reward.amount.toInt());
+      });
+    } catch (e) {
+      print("💥 Exception showing ad: $e");
+      onFailure();
+      return false;
+    }
+    
     return completer.future;
   }
 

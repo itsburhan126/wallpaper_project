@@ -9,7 +9,6 @@ import '../dialog/reward_dialog.dart';
 import '../widgets/coin_animation_overlay.dart';
 import '../widgets/animated_coin_balance.dart';
 import '../widgets/toast/professional_toast.dart';
-
 import '../dialog/limit_reached_sheet.dart';
 
 class LuckyWheelDialog extends StatefulWidget {
@@ -76,9 +75,9 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
   }
 
   void _spinWheel() {
-    if (_isSpinning) return;
-
     final appProvider = Provider.of<AppProvider>(context, listen: false);
+    
+    // Check if user has spins left
     if (appProvider.luckyWheelSpinsCount >= appProvider.luckyWheelLimit) {
       showModalBottomSheet(
         context: context,
@@ -93,6 +92,11 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
       );
       return;
     }
+
+    if (_isSpinning) return;
+
+    // Preload ad while spinning
+    _adService.loadRewardedAd(context);
 
     setState(() {
       _isSpinning = true;
@@ -160,30 +164,66 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
       builder: (ctx) => RewardDialog(
         rewardAmount: reward,
         onReceive: () async {
+          print("🖱️ Receive button clicked in LuckyWheelDialog");
           final appProvider = Provider.of<AppProvider>(context, listen: false);
           
           // Show Ad before giving reward
-          // We don't add coins in callbacks anymore to ensure correct animation timing
-          bool earned = await _adService.showRewardedAd(
-            context,
-            onReward: (_) {
-               // Marked as earned internally
-            },
-            onFailure: () {
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Ad failed. Claiming normal reward.")),
+          
+          bool isReady = _adService.isRewardedAdReady();
+          bool isInterstitialReady = _adService.isInterstitialAdReady();
+          print("🧐 Is Ad Ready? Rewarded: $isReady, Interstitial: $isInterstitialReady");
+
+          // 1. Try Rewarded Ad (Best User Experience)
+          if (isReady) {
+             print("✅ Rewarded Ad Ready. Showing...");
+             await _adService.showRewardedAd(
+              context,
+              onReward: (_) => print("💰 Reward Earned"),
+              onFailure: () => print("❌ Failed to show Rewarded Ad"),
+            );
+          }
+          // 2. Fallback to Interstitial Ad (If Rewarded not ready but Interstitial is)
+          else if (isInterstitialReady) {
+             print("⚠️ Rewarded not ready, showing Interstitial fallback...");
+             await _adService.showInterstitialAd(
+               context,
+               onAdDismissed: () => print("✅ Interstitial Dismissed"),
+             );
+          }
+          // 3. Nothing ready? Force Load Rewarded (User is waiting)
+          else {
+            print("⏳ No ads ready. Forcing load (max 15s)...");
+            if (mounted) ProfessionalToast.showLoading(context, message: "Loading Ad...");
+            
+            try {
+               // FORCE LOAD is key here to break stuck states
+               await _adService.loadRewardedAd(context, force: true).timeout(const Duration(seconds: 15));
+            } catch (e) {
+               print("⚠️ Ad load timed out in UI (15s). Proceeding to reward.");
+            }
+
+            // Check again after wait
+            if (_adService.isRewardedAdReady()) {
+                await _adService.showRewardedAd(
+                  context,
+                  onReward: (_) {},
+                  onFailure: () {},
                 );
-              }
-            },
-          );
+            } else {
+               print("❌ Still no ad after wait. Giving reward anyway.");
+               if (mounted) ProfessionalToast.showSuccess(context, message: "Ad unavailable. Reward granted!");
+            }
+          }
+
+          // Always give reward at the end
+          print("� Granting Reward...");
           
           // Close the dialog first
           if (mounted && ctx.mounted) {
             Navigator.pop(ctx);
           }
           
-          // Show animation and add coins (whether ad was shown or failed fallback)
+          // Show animation and add coins
           if (mounted) {
              // Small delay to let dialog close smoothly
              await Future.delayed(const Duration(milliseconds: 200));

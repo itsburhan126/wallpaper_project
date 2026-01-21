@@ -34,17 +34,7 @@
                     <p class="mt-2 text-xs text-slate-500">Maximum number of games a user can play per day.</p>
                 </div>
 
-                <!-- Daily Ad Limit -->
-                <div>
-                    <label class="block text-sm font-bold text-slate-700 mb-2">Daily Ad Limit</label>
-                    <div class="relative">
-                        <input type="number" name="ad_daily_limit" value="{{ $settings['ad_daily_limit'] ?? 10 }}" class="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all pl-12">
-                        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
-                            <i class="fas fa-video"></i>
-                        </div>
-                    </div>
-                    <p class="mt-2 text-xs text-slate-500">Maximum number of rewarded ads a user can watch per day.</p>
-                </div>
+
             </div>
         </div>
 

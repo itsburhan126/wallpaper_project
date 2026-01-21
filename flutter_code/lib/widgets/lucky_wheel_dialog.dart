@@ -10,6 +10,8 @@ import '../widgets/coin_animation_overlay.dart';
 import '../widgets/animated_coin_balance.dart';
 import '../widgets/toast/professional_toast.dart';
 
+import '../dialog/limit_reached_sheet.dart';
+
 class LuckyWheelDialog extends StatefulWidget {
   const LuckyWheelDialog({Key? key}) : super(key: key);
 
@@ -78,8 +80,16 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
 
     final appProvider = Provider.of<AppProvider>(context, listen: false);
     if (appProvider.luckyWheelSpinsCount >= appProvider.luckyWheelLimit) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Daily limit reached! Come back tomorrow.')),
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (_) => LimitReachedSheet(
+          title: "Daily Spin Limit Reached",
+          message: "You have used all your lucky spins for today.\nPlease come back tomorrow!",
+          icon: Icons.refresh,
+          color: Colors.purpleAccent,
+        ),
       );
       return;
     }

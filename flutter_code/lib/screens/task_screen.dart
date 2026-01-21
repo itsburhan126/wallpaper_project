@@ -992,16 +992,30 @@ class _TaskScreenState extends State<TaskScreen> {
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFF161616), // Slightly lighter than pure black
+            gradient: LinearGradient(
+              colors: [
+                const Color(0xFF161616),
+                const Color(0xFF222222),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: const Color(0xFF6C63FF).withOpacity(0.5), width: 1.5), // Neon Border
             boxShadow: [
               // Neon Glow
               BoxShadow(
-                color: const Color(0xFF6C63FF).withOpacity(0.3),
-                blurRadius: 20,
-                spreadRadius: 2,
+                color: const Color(0xFF6C63FF).withOpacity(0.25),
+                blurRadius: 25,
+                spreadRadius: 1,
                 offset: const Offset(0, 4),
+              ),
+              // Inner depth shadow
+              BoxShadow(
+                color: Colors.black.withOpacity(0.5),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+                inset: true,
               ),
             ],
           ),

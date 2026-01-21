@@ -5,16 +5,16 @@ class AppTheme {
   AppTheme._();
 
   // Core Colors
-  static const Color darkBackgroundColor = Color(0xFF120C24);
-  static const Color primaryColor = Color(0xFF2E1C59);
+  static const Color darkBackgroundColor = Color(0xFF000000);
+  static const Color primaryColor = Color(0xFF1A1A1A);
   
   // Gradients
   static const LinearGradient backgroundGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
-      Color(0xFF2E1C59),
-      Color(0xFF120C24),
+      Color(0xFF141414), // Very dark grey
+      Color(0xFF000000), // Pure black
     ],
   );
 
@@ -22,8 +22,8 @@ class AppTheme {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      Color(0xFF2A1B4E),
-      Color(0xFF1A1230),
+      Color(0xFF1C1C1E),
+      Color(0xFF0A0A0A),
     ],
   );
 

@@ -36,11 +36,19 @@ class AppProvider with ChangeNotifier {
   bool get canPlayGame => _gamesPlayedToday < _gameDailyLimit;
 
   // Watch Ads Settings
-  int _watchAdsLimit = 10;
+  int _adDailyLimit = 10;
+  int _adsWatchedToday = 0;
+
   int _watchAdsReward = 50;
   List<String> _watchAdsPriorities = ['admob', 'admob', 'admob'];
-  int _watchedAdsCount = 0;
+  
+  int get adDailyLimit => _adDailyLimit;
+  int get adsWatchedToday => _adsWatchedToday;
+  bool get canWatchAd => _adsWatchedToday < _adDailyLimit;
 
+  int get watchAdsReward => _watchAdsReward;
+  List<String> get watchAdsPriorities => _watchAdsPriorities;
+  
   // Lucky Wheel Settings
   int _luckyWheelLimit = 10;
   List<int> _luckyWheelRewards = [10, 20, 30, 40, 50, 60, 70, 80];
@@ -49,10 +57,10 @@ class AppProvider with ChangeNotifier {
 
   // Game Settings
 
-  int get watchAdsLimit => _watchAdsLimit;
-  int get watchAdsReward => _watchAdsReward;
-  List<String> get watchAdsPriorities => _watchAdsPriorities;
-  int get watchedAdsCount => _watchedAdsCount;
+  // int get watchAdsLimit => _watchAdsLimit; // Deprecated
+  // int get watchAdsReward => _watchAdsReward;
+  // List<String> get watchAdsPriorities => _watchAdsPriorities;
+  // int get watchedAdsCount => _watchedAdsCount;
 
   int get luckyWheelLimit => _luckyWheelLimit;
   List<int> get luckyWheelRewards => _luckyWheelRewards;
@@ -115,11 +123,11 @@ class AppProvider with ChangeNotifier {
     String today = DateTime.now().toIso8601String().split('T')[0];
     String? lastAdDate = prefs.getString('last_ad_date');
     if (lastAdDate != today) {
-      _watchedAdsCount = 0;
+      _adsWatchedToday = 0;
       await prefs.setString('last_ad_date', today);
-      await prefs.setInt('watched_ads_count', 0);
+      await prefs.setInt('ads_watched_today', 0);
     } else {
-      _watchedAdsCount = prefs.getInt('watched_ads_count') ?? 0;
+      _adsWatchedToday = prefs.getInt('ads_watched_today') ?? 0;
     }
 
     // Load Lucky Wheel Count
@@ -190,8 +198,8 @@ class AppProvider with ChangeNotifier {
       _coinRate = int.tryParse(settings['coin_rate'].toString()) ?? 1000;
     }
 
-    if (settings.containsKey('watch_ads_limit')) {
-      _watchAdsLimit = int.tryParse(settings['watch_ads_limit'].toString()) ?? 10;
+    if (settings.containsKey('ad_daily_limit')) {
+      _adDailyLimit = int.tryParse(settings['ad_daily_limit'].toString()) ?? 10;
     }
     if (settings.containsKey('watch_ads_reward')) {
       _watchAdsReward = int.tryParse(settings['watch_ads_reward'].toString()) ?? 50;
@@ -246,6 +254,15 @@ class AppProvider with ChangeNotifier {
         _gamesPlayedToday = int.tryParse(data['games_played_today'].toString()) ?? 0;
         final prefs = await SharedPreferences.getInstance();
         await prefs.setInt('games_played_today', _gamesPlayedToday);
+      }
+      
+      if (data['ad_daily_limit'] != null) {
+        _adDailyLimit = int.tryParse(data['ad_daily_limit'].toString()) ?? 10;
+      }
+      if (data['ads_watched_today'] != null) {
+        _adsWatchedToday = int.tryParse(data['ads_watched_today'].toString()) ?? 0;
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setInt('ads_watched_today', _adsWatchedToday);
       }
       notifyListeners();
     }
@@ -303,6 +320,13 @@ class AppProvider with ChangeNotifier {
         _gamesPlayedToday = int.tryParse(userData['daily_game_count'].toString()) ?? 0;
         await prefs.setInt('games_played_today', _gamesPlayedToday);
       }
+      
+      // Sync Ad Limit from Server
+      if (userData['daily_ad_count'] != null) {
+        _adsWatchedToday = int.tryParse(userData['daily_ad_count'].toString()) ?? 0;
+        await prefs.setInt('ads_watched_today', _adsWatchedToday);
+      }
+      
       if (userData['last_game_date'] != null) {
         // Assuming format YYYY-MM-DD
         String serverDate = userData['last_game_date'].toString().split(' ')[0];
@@ -413,6 +437,19 @@ class AppProvider with ChangeNotifier {
     _coins += amount;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt('coins', _coins);
+
+    // Optimistic Update for Ads
+    if (source == 'ad_watch') {
+      _adsWatchedToday++;
+      await prefs.setInt('ads_watched_today', _adsWatchedToday);
+    }
+
+    // Optimistic Update for Lucky Wheel
+    if (source == 'lucky_wheel') {
+      _luckyWheelSpinsCount++;
+      await prefs.setInt('lucky_wheel_spins_count', _luckyWheelSpinsCount);
+    }
+    
     notifyListeners();
 
     // Sync with Server
@@ -427,15 +464,34 @@ class AppProvider with ChangeNotifier {
       if (data['daily_limit'] != null) {
         _gameDailyLimit = int.tryParse(data['daily_limit'].toString()) ?? _gameDailyLimit;
       }
+      
+      if (data['ads_watched_today'] != null) {
+        _adsWatchedToday = int.tryParse(data['ads_watched_today'].toString()) ?? _adsWatchedToday;
+        await prefs.setInt('ads_watched_today', _adsWatchedToday);
+      }
+      if (data['ad_daily_limit'] != null) {
+        _adDailyLimit = int.tryParse(data['ad_daily_limit'].toString()) ?? _adDailyLimit;
+      }
+
+      if (data['lucky_wheel_spins_today'] != null) {
+        _luckyWheelSpinsCount = int.tryParse(data['lucky_wheel_spins_today'].toString()) ?? _luckyWheelSpinsCount;
+        await prefs.setInt('lucky_wheel_spins_count', _luckyWheelSpinsCount);
+      }
+      if (data['lucky_wheel_limit'] != null) {
+        _luckyWheelLimit = int.tryParse(data['lucky_wheel_limit'].toString()) ?? _luckyWheelLimit;
+      }
+      
       notifyListeners();
     }
   }
 
   Future<void> incrementWatchedAdsCount() async {
-    _watchedAdsCount++;
+    _adsWatchedToday++;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('watched_ads_count', _watchedAdsCount);
+    await prefs.setInt('ads_watched_today', _adsWatchedToday);
     notifyListeners();
+    
+    // Sync logic is handled via addCoins(source='ad_watch') which calls updateBalance
   }
 
   Future<void> incrementLuckyWheelSpinsCount() async {
@@ -452,9 +508,16 @@ class AppProvider with ChangeNotifier {
 
     if (lastGameDate != today) {
       _gamesPlayedToday = 0;
+      _adsWatchedToday = 0;
+      _luckyWheelSpinsCount = 0;
       await prefs.setString('last_game_date', today);
       await prefs.setInt('games_played_today', 0);
+      await prefs.setInt('ads_watched_today', 0);
+      await prefs.setInt('lucky_wheel_spins_count', 0);
       notifyListeners();
+    } else {
+        // Load persisted values if same day
+        _luckyWheelSpinsCount = prefs.getInt('lucky_wheel_spins_count') ?? 0;
     }
   }
 

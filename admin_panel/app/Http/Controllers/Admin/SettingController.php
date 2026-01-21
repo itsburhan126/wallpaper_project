@@ -199,7 +199,7 @@ class SettingController extends Controller
     public function watchAds()
     {
         $keys = [
-            'watch_ads_limit', 
+            'ad_daily_limit', 
             'watch_ads_reward',
             'watch_ads_priority_1',
             'watch_ads_priority_2',

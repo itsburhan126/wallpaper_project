@@ -8,6 +8,8 @@ import '../providers/app_provider.dart';
 import 'game_webview_screen.dart';
 import '../dialog/game_reward_dialog.dart';
 import '../dialog/game_warning_dialog.dart';
+import '../dialog/game_limit_dialog.dart';
+import '../dialog/limit_reached_sheet.dart';
 import '../services/google_ad_service.dart';
 import '../widgets/toast/professional_toast.dart';
 import '../widgets/coin_animation_overlay.dart';
@@ -90,64 +92,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
     }
   }
 
-  void _showLimitReachedSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF120C24),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.timer_off_outlined, color: Colors.orange, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              "Daily Limit Reached",
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "You have reached your daily game limit.\nPlease come back tomorrow!",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.white70,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  "OK",
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +175,17 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                   
                   // Check Daily Limit
                   if (provider.gamesPlayedToday >= provider.gameDailyLimit) {
-                     _showLimitReachedSheet(context);
+                     showModalBottomSheet(
+                       context: context,
+                       backgroundColor: Colors.transparent,
+                       isScrollControlled: true,
+                       builder: (_) => LimitReachedSheet(
+                         title: "Daily Game Limit Reached",
+                         message: "You have reached your daily game limit.\nPlease come back tomorrow!",
+                         icon: Icons.timer_off_outlined,
+                         color: Colors.orange,
+                       ),
+                     );
                      return;
                   }
 

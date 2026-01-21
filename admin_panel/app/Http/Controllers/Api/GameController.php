@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\TransactionHistory;
 use App\Models\AdWatchLog;
 use App\Models\GameHistory;
+use App\Models\AdHistory;
+use App\Models\LuckyWheelHistory;
 use App\Models\Setting;
 use App\Helpers\FilePath;
 use Illuminate\Support\Facades\Log;
@@ -60,12 +62,20 @@ class GameController extends Controller
             ->count();
             
         $dailyLimit = (int) \App\Models\Setting::get('game_daily_limit', 10);
+        
+        // Ad Status
+        $adsWatchedToday = \App\Models\AdHistory::where('user_id', $user->id)
+            ->whereDate('created_at', $today)
+            ->count();
+        $adDailyLimit = (int) \App\Models\Setting::get('ad_daily_limit', 10);
 
         return response()->json([
             'status' => true,
             'data' => [
                 'games_played_today' => $gamesPlayedToday,
                 'daily_limit' => $dailyLimit,
+                'ads_watched_today' => $adsWatchedToday,
+                'ad_daily_limit' => $adDailyLimit,
             ]
         ]);
     }
@@ -168,6 +178,38 @@ class GameController extends Controller
         DB::beginTransaction();
 
         try {
+            // Check Ad Limit before processing
+            if ($request->source === 'ad_watch' || $request->source === 'watch_ad') {
+                $today = \Carbon\Carbon::today();
+                $adsWatchedToday = AdHistory::where('user_id', $user->id)
+                    ->whereDate('created_at', $today)
+                    ->count();
+                $adDailyLimit = (int) Setting::get('ad_daily_limit', 10);
+                
+                if ($adsWatchedToday >= $adDailyLimit) {
+                     return response()->json([
+                        'status' => false,
+                        'message' => 'Daily ad limit reached'
+                    ], 403);
+                }
+            }
+
+            // Check Lucky Wheel Limit before processing
+            if ($request->source === 'lucky_wheel' || $request->source === 'lucky_spin') {
+                $today = \Carbon\Carbon::today();
+                $spinsToday = LuckyWheelHistory::where('user_id', $user->id)
+                    ->whereDate('created_at', $today)
+                    ->count();
+                $wheelDailyLimit = (int) Setting::get('lucky_wheel_limit', 10);
+                
+                if ($spinsToday >= $wheelDailyLimit) {
+                     return response()->json([
+                        'status' => false,
+                        'message' => 'Daily lucky wheel limit reached'
+                    ], 403);
+                }
+            }
+
             // Update User Balance
             if ($request->type === 'coin') {
                 $user->coins += $request->amount;
@@ -193,13 +235,33 @@ class GameController extends Controller
             ]);
 
             // Record Game History
-            GameHistory::create([
-                'user_id' => $user->id,
-                'game_id' => $request->game_id ?? null, // Assuming game_id is passed or null
-                'coins' => $request->amount,
-                'status' => 'completed',
-            ]);
+            if ($request->source === 'game_play' || $request->source === 'game_reward') {
+                 GameHistory::create([
+                    'user_id' => $user->id,
+                    'game_id' => $request->game_id ?? null,
+                    'coins' => $request->amount,
+                    'status' => 'completed',
+                ]);
+            }
 
+            // Record Ad History
+            if ($request->source === 'ad_watch' || $request->source === 'watch_ad') {
+                AdHistory::create([
+                    'user_id' => $user->id,
+                    'ad_network' => 'admob', // Default or pass from request
+                    'coins' => $request->amount,
+                    'status' => 'completed',
+                ]);
+            }
+
+            // Record Lucky Wheel History
+            if ($request->source === 'lucky_wheel' || $request->source === 'lucky_spin') {
+                LuckyWheelHistory::create([
+                    'user_id' => $user->id,
+                    'reward_amount' => $request->amount,
+                ]);
+            }
+            
             // Calculate Daily Stats
             $today = \Carbon\Carbon::today();
             $gamesPlayedToday = GameHistory::where('user_id', $user->id)
@@ -207,6 +269,16 @@ class GameController extends Controller
                 ->count();
             
             $dailyLimit = (int) Setting::get('game_daily_limit', 10);
+            
+            $adsWatchedToday = AdHistory::where('user_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->count();
+            $adDailyLimit = (int) Setting::get('ad_daily_limit', 10);
+
+            $spinsToday = LuckyWheelHistory::where('user_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->count();
+            $wheelDailyLimit = (int) Setting::get('lucky_wheel_limit', 10);
 
             DB::commit();
 
@@ -219,6 +291,10 @@ class GameController extends Controller
                     'level' => $user->level,
                     'games_played_today' => $gamesPlayedToday,
                     'daily_limit' => $dailyLimit,
+                    'ads_watched_today' => $adsWatchedToday,
+                    'ad_daily_limit' => $adDailyLimit,
+                    'lucky_wheel_spins_today' => $spinsToday,
+                    'lucky_wheel_limit' => $wheelDailyLimit,
                 ]
             ]);
 

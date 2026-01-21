@@ -184,8 +184,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
                   _coinIconKey, 
                   coinCount: 10,
                   onComplete: () {
-                     appProvider.addCoins(reward);
-                     appProvider.incrementLuckyWheelSpinsCount();
+                     appProvider.addCoins(reward, source: 'lucky_wheel');
                      if (mounted) {
                         ProfessionalToast.showSuccess(
                            context, 

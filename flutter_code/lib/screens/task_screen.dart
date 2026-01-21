@@ -13,6 +13,9 @@ import '../utils/constants.dart';
 import '../dialog/reward_dialog.dart';
 import '../dialog/game_reward_dialog.dart';
 import '../dialog/game_warning_dialog.dart';
+import '../dialog/game_limit_dialog.dart';
+import '../dialog/ad_limit_dialog.dart';
+import '../dialog/limit_reached_sheet.dart';
 import '../widgets/coin_animation_overlay.dart';
 import '../services/google_ad_service.dart';
 import '../widgets/toast/professional_toast.dart';
@@ -104,64 +107,7 @@ class _TaskScreenState extends State<TaskScreen> {
     }
   }
 
-  void _showLimitReachedSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xFF120C24),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.timer_off_outlined, color: Colors.orange, size: 48),
-            const SizedBox(height: 16),
-            Text(
-              "Daily Limit Reached",
-              style: GoogleFonts.poppins(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              "You have reached your daily game limit.\nPlease come back tomorrow!",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.white70,
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  "OK",
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -434,9 +380,9 @@ class _TaskScreenState extends State<TaskScreen> {
                       return _buildTaskItem(
                         context,
                         title: "Watch Ads",
-                        subtitle: "${provider.watchedAdsCount}/${provider.watchAdsLimit}",
-                        progress: provider.watchAdsLimit > 0 
-                            ? (provider.watchedAdsCount / provider.watchAdsLimit).clamp(0.0, 1.0) 
+                        subtitle: "${provider.adsWatchedToday}/${provider.adDailyLimit}",
+                        progress: provider.adDailyLimit > 0 
+                            ? (provider.adsWatchedToday / provider.adDailyLimit).clamp(0.0, 1.0) 
                             : 0.0,
                         reward: provider.watchAdsReward,
                         icon: Icons.play_circle_fill,
@@ -444,50 +390,89 @@ class _TaskScreenState extends State<TaskScreen> {
                         actionLabel: "WATCH",
                         isLoading: _isWatchAdLoading,
                         onTap: () async {
-                          if (provider.watchedAdsCount >= provider.watchAdsLimit) {
-                            ProfessionalToast.showError(context, message: "Daily limit reached! Come back tomorrow.");
+                          if (provider.adsWatchedToday >= provider.adDailyLimit) {
+                            showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              isScrollControlled: true,
+                              builder: (_) => LimitReachedSheet(
+                                title: "Daily Ad Limit Reached",
+                                message: "You have reached your daily ad watch limit.\nPlease come back tomorrow for more rewards!",
+                                icon: Icons.videocam_off_outlined,
+                                color: Colors.purpleAccent,
+                              ),
+                            );
                             return;
                           }
 
-                          if (_isWatchAdLoading) return;
+                          // Show Dialog First
+                          showDialog(
+                            context: context,
+                            builder: (context) => RewardDialog(
+                              rewardAmount: provider.watchAdsReward,
+                              onClose: () => Navigator.pop(context),
+                              onReceive: () async {
+                                Navigator.pop(context); // Close dialog
+                                
+                                if (_isWatchAdLoading) return;
 
-                          setState(() {
-                            _isWatchAdLoading = true;
-                          });
+                                setState(() {
+                                  _isWatchAdLoading = true;
+                                });
 
-                          try {
-                            bool success = await AdManager.showAdWithFallback(
-                              context,
-                              provider.watchAdsPriorities,
-                              () {}, // Handled below
-                            );
+                                try {
+                                  bool success = await AdManager.showAdWithFallback(
+                                    context,
+                                    provider.watchAdsPriorities,
+                                    () async {
+                                       print("💎 Ad Callback Triggered");
+                                       
+                                       // 1. Add Coins (Source of Truth) - Do this first!
+                                       try {
+                                          await provider.addCoins(provider.watchAdsReward, source: 'ad_watch');
+                                          print("💎 Coins Added to Provider");
+                                          
+                                          if (context.mounted) {
+                                              ProfessionalToast.showSuccess(context, message: "You earned ${provider.watchAdsReward} coins!");
+                                          }
+                                       } catch (e) {
+                                          print("❌ Error adding coins: $e");
+                                       }
 
-                            if (success) {
-                              if (context.mounted) {
-                                 // Show Animation first
-                                 CoinAnimationOverlay.show(
-                                   context, 
-                                   _coinIconKey, 
-                                   coinCount: 10,
-                                   onComplete: () async {
-                                      await provider.addCoins(provider.watchAdsReward);
-                                      await provider.incrementWatchedAdsCount();
-                                      if (context.mounted) {
-                                        ProfessionalToast.showSuccess(context, message: "You earned ${provider.watchAdsReward} coins!");
-                                      }
-                                   }
-                                 );
-                              }
-                            } else {
-                              if (context.mounted) ProfessionalToast.showError(context, message: "Ads not available");
-                            }
-                          } finally {
-                            if (mounted) {
-                              setState(() {
-                                _isWatchAdLoading = false;
-                              });
-                            }
-                          }
+                                       // 2. Play Animation (Visual Only)
+                                       // Small delay to let the ad close transition finish
+                                       await Future.delayed(const Duration(milliseconds: 300));
+                                       
+                                       if (context.mounted) {
+                                          print("💎 Starting Coin Animation");
+                                          CoinAnimationOverlay.show(
+                                            context, 
+                                            _coinIconKey, 
+                                            coinCount: 10,
+                                            onComplete: () {
+                                              print("💎 Coin Animation Complete");
+                                            }
+                                          );
+                                       } else {
+                                           print("⚠️ Context not mounted for animation");
+                                       }
+                                    }, 
+                                  );
+                                  
+                                  if (!success && context.mounted) {
+                                     ProfessionalToast.showError(context, message: "Ads not available");
+                                  }
+
+                                } finally {
+                                  if (mounted) {
+                                    setState(() {
+                                      _isWatchAdLoading = false;
+                                    });
+                                  }
+                                }
+                              },
+                            ),
+                          );
                         },
                       );
                     },
@@ -511,6 +496,21 @@ class _TaskScreenState extends State<TaskScreen> {
                         iconColor: Colors.orangeAccent,
                         actionLabel: "SPIN",
                         onTap: () {
+                           if (provider.luckyWheelSpinsCount >= provider.luckyWheelLimit) {
+                             showModalBottomSheet(
+                               context: context,
+                               backgroundColor: Colors.transparent,
+                               isScrollControlled: true,
+                               builder: (_) => LimitReachedSheet(
+                                 title: "Daily Spin Limit Reached",
+                                 message: "You have used all your lucky spins for today.\nPlease come back tomorrow!",
+                                 icon: Icons.refresh,
+                                 color: Colors.purpleAccent,
+                               ),
+                             );
+                             return;
+                           }
+
                            showDialog(
                              context: context,
                              builder: (context) => const LuckyWheelDialog(),
@@ -785,7 +785,17 @@ class _TaskScreenState extends State<TaskScreen> {
                       
                       // Check Daily Limit
                       if (provider.gamesPlayedToday >= provider.gameDailyLimit) {
-                         _showLimitReachedSheet(context);
+                         showModalBottomSheet(
+                           context: context,
+                           backgroundColor: Colors.transparent,
+                           isScrollControlled: true,
+                           builder: (_) => LimitReachedSheet(
+                             title: "Daily Game Limit Reached",
+                             message: "You have reached your daily game limit.\nPlease come back tomorrow!",
+                             icon: Icons.timer_off_outlined,
+                             color: Colors.orange,
+                           ),
+                         );
                          return;
                       }
 

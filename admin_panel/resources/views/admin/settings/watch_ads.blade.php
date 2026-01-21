@@ -27,7 +27,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-slate-700 mb-2">Daily Limit</label>
                         <div class="relative">
-                            <input type="number" name="watch_ads_limit" value="{{ $settings['watch_ads_limit'] ?? 10 }}" class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none" placeholder="e.g. 10">
+                            <input type="number" name="ad_daily_limit" value="{{ $settings['ad_daily_limit'] ?? 10 }}" class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none" placeholder="e.g. 10">
                             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                                 <i class="fas fa-clock"></i>
                             </div>

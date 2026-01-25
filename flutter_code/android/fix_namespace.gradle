@@ -1,0 +1,23 @@
+subprojects {
+    if (project.name == 'async_wallpaper') {
+        // Function to apply the fix
+        def fixNamespace = {
+            if (project.hasProperty('android')) {
+                def android = project.android
+                if (android.hasProperty('namespace') && android.namespace == null) {
+                    println "Fixing namespace for project: ${project.name}"
+                    android.namespace = 'com.codenameakshay.async_wallpaper'
+                }
+            }
+        }
+
+        // Apply immediately if already evaluated, otherwise schedule
+        if (project.state.executed) {
+            fixNamespace()
+        } else {
+            project.afterEvaluate {
+                fixNamespace()
+            }
+        }
+    }
+}

@@ -5,119 +5,289 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/app_provider.dart';
+import '../providers/language_provider.dart';
 import '../utils/app_theme.dart';
+import 'faq_screen.dart';
+import 'edit_profile_screen.dart';
+import 'support/support_screen.dart';
+import 'page_viewer_screen.dart';
+import '../widgets/toast/professional_toast.dart';
+import 'rewards/reward_history_screen.dart';
+import 'rewards/redeem_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.darkBackgroundColor,
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          _buildSliverAppBar(context),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 24),
-                  _buildStatsCard(context),
-                  const SizedBox(height: 32),
-                  _buildMenuSection(
-                    context,
-                    title: "Account",
-                    items: [
-                      _MenuItem(
-                        icon: Icons.person_outline_rounded,
-                        title: "Edit Profile",
-                        onTap: () {
-                          // Navigate to edit profile
-                        },
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, _) {
+        return Scaffold(
+          backgroundColor: AppTheme.darkBackgroundColor,
+          body: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              _buildSliverAppBar(context, languageProvider),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 24),
+                      _buildStatsCard(context, languageProvider),
+                      const SizedBox(height: 32),
+                      _buildMenuSection(
+                        context,
+                        title: languageProvider.getText('account_section'),
+                        items: [
+                          _MenuItem(
+                            icon: Icons.person_outline_rounded,
+                            title: languageProvider.getText('edit_profile'),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                              );
+                            },
+                          ),
+                          _MenuItem(
+                            icon: Icons.notifications_outlined,
+                            title: languageProvider.getText('notifications'),
+                            badge: "2",
+                            onTap: () {},
+                          ),
+                          _MenuItem(
+                            icon: Icons.wallet_giftcard,
+                            title: languageProvider.getText('my_rewards'),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const RewardHistoryScreen()),
+                              );
+                            },
+                          ),
+                          _MenuItem(
+                            icon: Icons.monetization_on_outlined,
+                            title: languageProvider.getText('redeem') == 'redeem' ? 'Redeem' : languageProvider.getText('redeem'),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const RedeemScreen()),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                      _MenuItem(
-                        icon: Icons.notifications_outlined,
-                        title: "Notifications",
-                        badge: "2",
-                        onTap: () {},
+                      const SizedBox(height: 24),
+                      _buildMenuSection(
+                        context,
+                        title: languageProvider.getText('general_section'),
+                        items: [
+                          _MenuItem(
+                            icon: Icons.language,
+                            title: languageProvider.getText('language'),
+                            subtitle: languageProvider.currentLanguageCode == 'en' ? 'English' : 'বাংলা',
+                            onTap: () {
+                              _showLanguageBottomSheet(context, languageProvider);
+                            },
+                          ),
+                          _MenuItem(
+                            icon: Icons.dark_mode_outlined,
+                            title: languageProvider.getText('dark_mode'),
+                            isSwitch: true,
+                            switchValue: true,
+                            onChanged: (val) {
+                              ProfessionalToast.showSuccess(
+                                context,
+                                message: languageProvider.getText('coming_soon'),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                      _MenuItem(
-                        icon: Icons.wallet_giftcard,
-                        title: "My Rewards",
-                        onTap: () {},
+                      const SizedBox(height: 24),
+                      _buildMenuSection(
+                        context,
+                        title: languageProvider.getText('support_section'),
+                        items: [
+                          _MenuItem(
+                            icon: Icons.quiz_rounded,
+                            title: languageProvider.getText('faq'),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const FaqScreen()),
+                              );
+                            },
+                          ),
+                          _MenuItem(
+                            icon: Icons.help_outline_rounded,
+                            title: languageProvider.getText('help_center'),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const SupportScreen()),
+                              );
+                            },
+                          ),
+                          _MenuItem(
+                            icon: Icons.privacy_tip_outlined,
+                            title: languageProvider.getText('privacy_policy'),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PageViewerScreen(
+                                    slug: 'privacy-policy',
+                                    title: languageProvider.getText('privacy_policy'),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          _MenuItem(
+                            icon: Icons.description_outlined,
+                            title: languageProvider.getText('terms_conditions'),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PageViewerScreen(
+                                    slug: 'terms-and-conditions',
+                                    title: languageProvider.getText('terms_conditions'),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          _MenuItem(
+                            icon: Icons.info_outline_rounded,
+                            title: languageProvider.getText('about_us'),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PageViewerScreen(
+                                    slug: 'about-us',
+                                    title: languageProvider.getText('about_us'),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
+                      const SizedBox(height: 32),
+                      _buildLogoutButton(languageProvider),
+                      const SizedBox(height: 40),
+                      Text(
+                        "${languageProvider.getText('version')} 1.0.0",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white24,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 100),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  _buildMenuSection(
-                    context,
-                    title: "General",
-                    items: [
-                      _MenuItem(
-                        icon: Icons.language,
-                        title: "Language",
-                        subtitle: "English (US)",
-                        onTap: () {},
-                      ),
-                      _MenuItem(
-                        icon: Icons.dark_mode_outlined,
-                        title: "Dark Mode",
-                        isSwitch: true,
-                        switchValue: true,
-                        onChanged: (val) {},
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  _buildMenuSection(
-                    context,
-                    title: "Support",
-                    items: [
-                      _MenuItem(
-                        icon: Icons.help_outline_rounded,
-                        title: "Help Center",
-                        onTap: () {},
-                      ),
-                      _MenuItem(
-                        icon: Icons.privacy_tip_outlined,
-                        title: "Privacy Policy",
-                        onTap: () async {
-                          const url = 'https://google.com'; // Replace with actual policy URL
-                          if (await canLaunchUrl(Uri.parse(url))) {
-                            await launchUrl(Uri.parse(url));
-                          }
-                        },
-                      ),
-                      _MenuItem(
-                        icon: Icons.info_outline_rounded,
-                        title: "About Us",
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  _buildLogoutButton(),
-                  const SizedBox(height: 40),
-                  Text(
-                    "Version 1.0.0",
-                    style: GoogleFonts.poppins(
-                      color: Colors.white24,
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 100),
-                ],
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    );
+  }
+
+  void _showLanguageBottomSheet(BuildContext context, LanguageProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: AppTheme.darkBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border.all(color: Colors.white.withOpacity(0.1)),
+        ),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              provider.getText('select_language'),
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            _buildLanguageOption(
+              context, 
+              provider, 
+              'English', 
+              'en', 
+              '🇺🇸'
+            ),
+            const SizedBox(height: 12),
+            _buildLanguageOption(
+              context, 
+              provider, 
+              'বাংলা', 
+              'bn', 
+              '🇧🇩'
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context) {
+  Widget _buildLanguageOption(
+    BuildContext context, 
+    LanguageProvider provider, 
+    String name, 
+    String code, 
+    String flag
+  ) {
+    final isSelected = provider.currentLanguageCode == code;
+    return GestureDetector(
+      onTap: () {
+        provider.setLocale(code);
+        Navigator.pop(context);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.amber.withOpacity(0.15) : Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? Colors.amber : Colors.white.withOpacity(0.05)
+          ),
+        ),
+        child: Row(
+          children: [
+            Text(flag, style: const TextStyle(fontSize: 24)),
+            const SizedBox(width: 16),
+            Text(
+              name,
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.amber : Colors.white,
+              ),
+            ),
+            const Spacer(),
+            if (isSelected)
+              const Icon(Icons.check_circle_rounded, color: Colors.amber),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSliverAppBar(BuildContext context, LanguageProvider languageProvider) {
     return SliverAppBar(
       expandedHeight: 280,
       pinned: true,
@@ -149,50 +319,64 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: 20),
                   // Avatar with Glow
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        width: 110,
-                        height: 110,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.1),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
-                              blurRadius: 20,
-                              spreadRadius: 5,
+                  Consumer<AppProvider>(
+                    builder: (context, provider, _) {
+                      return Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 110,
+                            height: 110,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.1),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 20,
+                                  spreadRadius: 5,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 3),
-                          image: const DecorationImage(
-                            image: NetworkImage("https://i.pravatar.cc/300"), // Placeholder Avatar
-                            fit: BoxFit.cover,
                           ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: const BoxDecoration(
-                            color: Colors.amber,
-                            shape: BoxShape.circle,
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                              image: DecorationImage(
+                                image: provider.userAvatar.isNotEmpty
+                                    ? NetworkImage(provider.userAvatar)
+                                    : const NetworkImage("https://i.pravatar.cc/300"),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
-                          child: const Icon(Icons.camera_alt, color: Colors.black, size: 16),
-                        ),
-                      ),
-                    ],
-                  ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                                );
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: const BoxDecoration(
+                                  color: Colors.amber,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.camera_alt, color: Colors.black, size: 16),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ).animate().scale(duration: 600.ms, curve: Curves.elasticOut);
+                    }
+                  ),
                   const SizedBox(height: 16),
                   
                   Consumer<AppProvider>(
@@ -200,7 +384,7 @@ class ProfileScreen extends StatelessWidget {
                       return Column(
                         children: [
                           Text(
-                            provider.userName.isNotEmpty ? provider.userName : "Guest User",
+                            provider.userName.isNotEmpty ? provider.userName : languageProvider.getText('guest_user'),
                             style: GoogleFonts.poppins(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -217,7 +401,7 @@ class ProfileScreen extends StatelessWidget {
                               border: Border.all(color: Colors.white.withOpacity(0.2)),
                             ),
                             child: Text(
-                              "ID: ${provider.userId}",
+                              languageProvider.getText('user_id_fmt').replaceAll('@id', provider.userId),
                               style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 color: Colors.white70,
@@ -238,7 +422,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsCard(BuildContext context) {
+  Widget _buildStatsCard(BuildContext context, LanguageProvider languageProvider) {
     return Consumer<AppProvider>(
       builder: (context, provider, _) {
         return Container(
@@ -259,21 +443,21 @@ class ProfileScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildStatItem(
-                "Balance",
+                languageProvider.getText('balance'),
                 "${provider.coins}",
-                Icons.monetization_on_rounded,
+                FontAwesomeIcons.coins,
                 Colors.amber,
               ),
               Container(width: 1, height: 40, color: Colors.white10),
               _buildStatItem(
-                "Level",
+                languageProvider.getText('level'),
                 "${provider.userLevel}",
                 Icons.shield_rounded,
                 Colors.blueAccent,
               ),
               Container(width: 1, height: 40, color: Colors.white10),
               _buildStatItem(
-                "Tasks",
+                languageProvider.getText('tasks_stat'),
                 "158",
                 Icons.check_circle_rounded,
                 Colors.greenAccent,
@@ -397,6 +581,8 @@ class ProfileScreen extends StatelessWidget {
                           fontSize: 12,
                           color: Colors.white38,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                   ],
                 ),
@@ -432,7 +618,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoutButton() {
+  Widget _buildLogoutButton(LanguageProvider provider) {
     return Container(
       width: double.infinity,
       height: 56,
@@ -453,7 +639,7 @@ class ProfileScreen extends StatelessWidget {
                 const Icon(Icons.logout_rounded, color: Colors.redAccent),
                 const SizedBox(width: 8),
                 Text(
-                  "Log Out",
+                  provider.getText('logout'),
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

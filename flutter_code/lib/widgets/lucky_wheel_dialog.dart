@@ -11,6 +11,7 @@ import '../widgets/animated_coin_balance.dart';
 import '../widgets/toast/professional_toast.dart';
 import '../dialog/limit_reached_sheet.dart';
 import '../utils/app_theme.dart';
+import '../providers/language_provider.dart';
 
 class LuckyWheelDialog extends StatefulWidget {
   const LuckyWheelDialog({Key? key}) : super(key: key);
@@ -77,6 +78,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
 
   void _spinWheel() {
     final appProvider = Provider.of<AppProvider>(context, listen: false);
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
     
     // Check if user has spins left
     if (appProvider.luckyWheelSpinsCount >= appProvider.luckyWheelLimit) {
@@ -85,8 +87,8 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
         backgroundColor: Colors.transparent,
         isScrollControlled: true,
         builder: (_) => LimitReachedSheet(
-          title: "Daily Spin Limit Reached",
-          message: "You have used all your lucky spins for today.\nPlease come back tomorrow!",
+          title: langProvider.getText('daily_spin_limit'),
+          message: langProvider.getText('spin_limit_msg'),
           icon: Icons.refresh,
           color: Colors.purpleAccent,
         ),
@@ -212,7 +214,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
                 );
             } else {
                print("❌ Still no ad after wait. Giving reward anyway.");
-               if (mounted) ProfessionalToast.showSuccess(context, message: "Ad unavailable. Reward granted!");
+               if (mounted) ProfessionalToast.showSuccess(context, message: "${Provider.of<LanguageProvider>(context, listen: false).getText('ad_not_available')}. ${Provider.of<LanguageProvider>(context, listen: false).getText('congratulations')}!");
             }
           }
 
@@ -239,7 +241,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
                      if (mounted) {
                         ProfessionalToast.showSuccess(
                            context, 
-                           message: "You won $reward coins!",
+                           message: "${Provider.of<LanguageProvider>(context, listen: false).getText('you_earned_coins')} $reward ${Provider.of<LanguageProvider>(context, listen: false).getText('coins')}!",
                         );
                      }
                   }
@@ -267,6 +269,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
   @override
   Widget build(BuildContext context) {
     final appProvider = Provider.of<AppProvider>(context);
+    final langProvider = Provider.of<LanguageProvider>(context);
     final rewards = appProvider.luckyWheelRewards;
     final safeRewards = rewards.length == 8 ? rewards : List.generate(8, (i) => (i + 1) * 10);
 
@@ -302,9 +305,9 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
                           height: 80,
                           alignment: Alignment.center,
                           padding: const EdgeInsets.only(bottom: 10), // Adjust for ribbon curve
-                          child: const Text(
-                            "LUCKY SPIN",
-                            style: TextStyle(
+                          child: Text(
+                            langProvider.getText('lucky_spin_title'),
+                            style: const TextStyle(
                               fontFamily: 'Roboto', // Use a standard font or one from assets if available
                               color: Colors.white,
                               fontSize: 28,

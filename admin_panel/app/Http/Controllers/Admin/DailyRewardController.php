@@ -25,7 +25,12 @@ class DailyRewardController extends Controller
 
         $settings = Setting::whereIn('key', $keys)->pluck('value', 'key');
         
-        return view('admin.daily-rewards.index', compact('settings'));
+        $totalCoins = 0;
+        for ($i = 1; $i <= 7; $i++) {
+            $totalCoins += (int)($settings['daily_reward_' . $i] ?? 0);
+        }
+        
+        return view('admin.daily-rewards.index', compact('settings', 'totalCoins'));
     }
 
     public function store(Request $request)

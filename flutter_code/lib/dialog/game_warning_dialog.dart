@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
+import '../providers/language_provider.dart';
 
 class GameWarningDialog extends StatelessWidget {
   final int playedSeconds;
@@ -16,27 +18,28 @@ class GameWarningDialog extends StatelessWidget {
     required this.onClose,
   });
 
-  String _formatDuration(int seconds) {
+  String _formatDuration(int seconds, LanguageProvider lang) {
     if (seconds < 60) {
-      return "$seconds Seconds";
+      return "$seconds ${lang.getText('seconds')}";
     } else {
       final minutes = (seconds / 60).floor();
       final remainingSeconds = seconds % 60;
-      return "$minutes:${remainingSeconds.toString().padLeft(2, '0')} Minutes";
+      return "$minutes:${remainingSeconds.toString().padLeft(2, '0')} ${lang.getText('minutes')}";
     }
   }
 
-  String _formatRequiredDuration(int seconds) {
+  String _formatRequiredDuration(int seconds, LanguageProvider lang) {
      if (seconds < 60) {
-      return "$seconds seconds";
+      return "$seconds ${lang.getText('seconds')}";
     } else {
       final minutes = (seconds / 60).ceil(); // Round up for "at least X minute"
-      return "$minutes minute${minutes > 1 ? 's' : ''}";
+      return "$minutes ${lang.getText('minutes')}";
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = Provider.of<LanguageProvider>(context);
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -57,7 +60,7 @@ class GameWarningDialog extends StatelessWidget {
           children: [
             // Title: Played X Seconds
             Text(
-              "Played ${_formatDuration(playedSeconds)}",
+              langProvider.getText('played_time').replaceAll('@time', _formatDuration(playedSeconds, langProvider)),
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 fontSize: 18,
@@ -75,7 +78,9 @@ class GameWarningDialog extends StatelessWidget {
                  borderRadius: BorderRadius.circular(8),
                ),
                child: Text(
-                "Please play for at least ${_formatRequiredDuration(requiredSeconds)} to receive $rewardAmount tokens.",
+                langProvider.getText('play_requirement_msg')
+                  .replaceAll('@time', _formatRequiredDuration(requiredSeconds, langProvider))
+                  .replaceAll('@amount', rewardAmount.toString()),
                 textAlign: TextAlign.center,
                 style: GoogleFonts.poppins(
                   fontSize: 14,
@@ -100,7 +105,7 @@ class GameWarningDialog extends StatelessWidget {
                   elevation: 2,
                 ),
                 child: Text(
-                  "Close",
+                  langProvider.getText('close'),
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,

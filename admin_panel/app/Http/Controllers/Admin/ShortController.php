@@ -11,8 +11,13 @@ class ShortController extends Controller
 {
     public function index()
     {
+        $stats = [
+            'total' => Short::count(),
+            'active' => Short::where('is_active', true)->count(),
+            'views' => Short::sum('views'),
+        ];
         $shorts = Short::latest()->paginate(10);
-        return view('admin.shorts.index', compact('shorts'));
+        return view('admin.shorts.index', compact('shorts', 'stats'));
     }
 
     public function create()

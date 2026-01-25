@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../utils/app_theme.dart';
+import '../providers/language_provider.dart';
 
 class GameLimitDialog extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -12,6 +14,7 @@ class GameLimitDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
@@ -48,7 +51,7 @@ class GameLimitDialog extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              "Daily Limit Reached",
+              langProvider.getText('daily_limit_reached'),
               style: GoogleFonts.poppins(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -57,7 +60,7 @@ class GameLimitDialog extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              "You have reached your daily game limit.\nPlease come back tomorrow!",
+              langProvider.getText('daily_game_limit_msg'),
               textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
                 fontSize: 14,
@@ -80,7 +83,7 @@ class GameLimitDialog extends StatelessWidget {
                   elevation: 0,
                 ),
                 child: Text(
-                  "OK",
+                  langProvider.getText('ok'),
                   style: GoogleFonts.poppins(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

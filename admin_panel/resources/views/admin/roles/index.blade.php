@@ -16,9 +16,9 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach($roles as $role)
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow group">
+        <div class="bg-white rounded-2xl shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] border border-slate-100 p-6 hover:shadow-lg transition-all duration-300 group">
             <div class="flex justify-between items-start mb-4">
-                <div class="h-12 w-12 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100">
+                <div class="h-12 w-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 group-hover:scale-110 transition-transform">
                     <i class="fas fa-shield-alt text-xl"></i>
                 </div>
                 <div class="flex gap-2">
@@ -37,11 +37,11 @@
                 </div>
             </div>
             
-            <h3 class="text-lg font-bold text-slate-900 mb-1">{{ $role->name }}</h3>
+            <h3 class="text-lg font-bold text-slate-800 mb-1">{{ $role->name }}</h3>
             <p class="text-sm text-slate-500 mb-4">{{ $role->admins_count }} Staff Members</p>
             
             <div class="border-t border-slate-100 pt-4">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Permissions</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Permissions</p>
                 <div class="flex flex-wrap gap-2">
                     @if($role->slug === 'super-admin')
                         <span class="px-2 py-1 bg-emerald-50 text-emerald-700 text-xs rounded-md font-medium border border-emerald-100">All Permissions</span>

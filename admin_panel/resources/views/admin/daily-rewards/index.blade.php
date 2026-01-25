@@ -11,6 +11,23 @@
         </div>
     </div>
 
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <!-- Total Weekly Coins -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] hover:shadow-lg transition-all duration-300 group">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Weekly Coin Pool</p>
+                    <h3 class="text-3xl font-bold text-slate-800 mt-2 group-hover:text-emerald-600 transition-colors">{{ number_format($totalCoins) }}</h3>
+                    <p class="text-xs text-slate-400 mt-1">Total coins for 7-day streak</p>
+                </div>
+                <div class="p-3 bg-emerald-50 rounded-xl text-emerald-600 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-coins text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @if(session('success'))
         <div class="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center text-emerald-700">
             <i class="fas fa-check-circle mr-3 text-lg"></i>

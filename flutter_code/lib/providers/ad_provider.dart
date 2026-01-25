@@ -15,11 +15,14 @@ class AdProvider with ChangeNotifier {
   String _adProvider = 'admob_only'; // admob_only, facebook_only
 
   // AdMob IDs
-  String? _admobAppId;
-  String? _admobBannerId;
-  String? _admobInterstitialId;
-  String? _admobRewardedId;
-  String? _admobNativeId;
+  String _admobAppId = '';
+  String _admobBannerId = '';
+  String _admobInterstitialId = '';
+  String _admobRewardedId = '';
+  String _admobNativeId = '';
+
+  String _pubscaleAppId = '';
+  String _pubscaleApiKey = '';
 
   // Getters
   bool get adsEnabled => _adsEnabled;
@@ -28,11 +31,14 @@ class AdProvider with ChangeNotifier {
   bool get nativeEnabled => _adsEnabled && _nativeEnabled;
   String get adProvider => _adProvider;
 
-  String? get admobAppId => _admobAppId;
-  String? get admobBannerId => _admobBannerId;
-  String? get admobInterstitialId => _admobInterstitialId;
-  String? get admobRewardedId => _admobRewardedId;
-  String? get admobNativeId => _admobNativeId;
+  String get admobAppId => _admobAppId;
+  String get admobBannerId => _admobBannerId;
+  String get admobInterstitialId => _admobInterstitialId;
+  String get admobRewardedId => _admobRewardedId;
+  String get admobNativeId => _admobNativeId;
+  
+  String get pubscaleAppId => _pubscaleAppId;
+  String get pubscaleApiKey => _pubscaleApiKey;
 
   List<String> _adPriorities = ['admob'];
   List<String> get adPriorities => _adPriorities;
@@ -55,11 +61,14 @@ class AdProvider with ChangeNotifier {
         _nativeEnabled = settings['native_ads_enabled'].toString() == '1';
         _adProvider = settings['ad_provider'] ?? 'admob_only';
 
-        _admobAppId = settings['admob_android_app_id'];
-        _admobBannerId = settings['admob_android_banner_id'];
-        _admobInterstitialId = settings['admob_android_interstitial_id'];
-        _admobRewardedId = settings['admob_android_rewarded_id'];
-        _admobNativeId = settings['admob_android_native_id'];
+        _admobAppId = settings['admob_android_app_id'] ?? '';
+        _admobBannerId = settings['admob_android_banner_id'] ?? '';
+        _admobInterstitialId = settings['admob_android_interstitial_id'] ?? '';
+        _admobRewardedId = settings['admob_android_rewarded_id'] ?? '';
+        _admobNativeId = settings['admob_android_native_id'] ?? '';
+        
+        _pubscaleAppId = settings['pubscale_app_id'] ?? '';
+        _pubscaleApiKey = settings['pubscale_api_key'] ?? '';
 
         // Parse Ad Priorities
         List<String> priorities = [];

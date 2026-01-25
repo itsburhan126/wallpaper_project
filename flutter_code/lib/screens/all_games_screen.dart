@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../providers/app_provider.dart';
+import '../providers/language_provider.dart';
 import 'game_webview_screen.dart';
 import '../dialog/game_reward_dialog.dart';
 import '../dialog/game_warning_dialog.dart';
@@ -62,7 +63,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
           );
 
           if (!adShown && context.mounted) {
-             ProfessionalToast.showError(context, message: "Ads not available");
+             ProfessionalToast.showError(context, message: Provider.of<LanguageProvider>(context, listen: false).getText('ads_unavailable'));
           }
         },
         onClose: () {
@@ -86,7 +87,8 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
            await provider.addCoins(totalReward, source: 'game_play', gameId: gameId.toString());
            print("🎮 [Game Play] Coins Credited: $totalReward | Games Played Today: ${provider.gamesPlayedToday} | Daily Limit: ${provider.gameDailyLimit}");
            if (context.mounted) {
-             ProfessionalToast.showSuccess(context, message: "You earned $totalReward coins!");
+             final lang = Provider.of<LanguageProvider>(context, listen: false);
+             ProfessionalToast.showSuccess(context, message: "${lang.getText('earned_coins_msg')} $totalReward ${lang.getText('coins')}!");
            }
         }
       );
@@ -97,6 +99,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = Provider.of<LanguageProvider>(context);
     return Scaffold(
       backgroundColor: AppTheme.darkBackgroundColor,
       appBar: AppBar(
@@ -150,7 +153,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                   const Icon(Icons.videogame_asset_off, color: Colors.white24, size: 64),
                   const SizedBox(height: 16),
                   Text(
-                    "No games found",
+                    langProvider.getText('no_games_found'),
                     style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
                   ),
                 ],
@@ -184,8 +187,8 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                        backgroundColor: Colors.transparent,
                        isScrollControlled: true,
                        builder: (_) => LimitReachedSheet(
-                         title: "Daily Game Limit Reached",
-                         message: "You have reached your daily game limit.\nPlease come back tomorrow!",
+                         title: langProvider.getText('daily_game_limit'),
+                         message: langProvider.getText('game_limit_msg'),
                          icon: Icons.timer_off_outlined,
                          color: Colors.orange,
                        ),

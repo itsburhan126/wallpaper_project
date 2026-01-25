@@ -11,8 +11,13 @@ class CategoryController extends Controller
 {
     public function index()
     {
+        $stats = [
+            'total' => Category::count(),
+            'active' => Category::where('status', true)->count(),
+            'inactive' => Category::where('status', false)->count(),
+        ];
         $categories = Category::latest()->paginate(20);
-        return view('admin.categories.index', compact('categories'));
+        return view('admin.categories.index', compact('categories', 'stats'));
     }
 
     public function create()
@@ -84,5 +89,24 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->back()->with('success', 'Category deleted successfully.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:categories,id',
+        ]);
+
+        $categories = Category::whereIn('id', $request->ids)->get();
+
+        foreach ($categories as $category) {
+            if ($category->image && File::exists(public_path($category->image))) {
+                File::delete(public_path($category->image));
+            }
+            $category->delete();
+        }
+
+        return response()->json(['success' => true, 'message' => 'Selected categories deleted successfully.']);
     }
 }

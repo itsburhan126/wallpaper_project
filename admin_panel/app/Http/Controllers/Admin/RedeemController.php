@@ -15,8 +15,15 @@ class RedeemController extends Controller
     // Requests Management
     public function requests()
     {
+        $stats = [
+            'total' => RedeemRequest::count(),
+            'pending' => RedeemRequest::where('status', 'pending')->count(),
+            'approved' => RedeemRequest::where('status', 'approved')->count(),
+            'rejected' => RedeemRequest::where('status', 'rejected')->count(),
+        ];
+
         $requests = RedeemRequest::with(['user', 'method.gateway'])->latest()->paginate(20);
-        return view('admin.redeem.requests.index', compact('requests'));
+        return view('admin.redeem.requests.index', compact('requests', 'stats'));
     }
 
     public function updateRequestStatus(Request $request, $id)
@@ -36,8 +43,13 @@ class RedeemController extends Controller
 
     public function index()
     {
+        $stats = [
+            'total' => RedeemGateway::count(),
+            'active' => RedeemGateway::where('is_active', true)->count(),
+            'inactive' => RedeemGateway::where('is_active', false)->count(),
+        ];
         $gateways = RedeemGateway::withCount('methods')->orderBy('priority', 'desc')->get();
-        return view('admin.redeem.gateways.index', compact('gateways'));
+        return view('admin.redeem.gateways.index', compact('gateways', 'stats'));
     }
 
     public function store(Request $request)
@@ -136,7 +148,14 @@ class RedeemController extends Controller
     {
         $gateway = RedeemGateway::findOrFail($gatewayId);
         $methods = $gateway->methods()->orderBy('coin_cost', 'asc')->get();
-        return view('admin.redeem.methods.index', compact('gateway', 'methods'));
+        
+        $stats = [
+            'total' => $methods->count(),
+            'active' => $methods->where('is_active', true)->count(),
+            'inactive' => $methods->where('is_active', false)->count(),
+        ];
+        
+        return view('admin.redeem.methods.index', compact('gateway', 'methods', 'stats'));
     }
 
     public function storeMethod(Request $request, $gatewayId)

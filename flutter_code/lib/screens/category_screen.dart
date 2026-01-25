@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../providers/app_provider.dart';
+import '../providers/language_provider.dart';
 import '../widgets/shimmer_loading.dart';
 import '../widgets/wallpaper_tab.dart';
 import '../models/category_model.dart';
@@ -18,8 +19,8 @@ class CategoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.darkBackgroundColor, // Ultra dark background
-      body: Consumer<AppProvider>(
-        builder: (context, provider, _) {
+      body: Consumer2<AppProvider, LanguageProvider>(
+        builder: (context, provider, langProvider, _) {
           return RefreshIndicator(
             backgroundColor: const Color(0xFF2A1B4E),
             color: Colors.white,
@@ -47,7 +48,7 @@ class CategoryScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        "Collections",
+                        langProvider.getText('collections'),
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -57,7 +58,7 @@ class CategoryScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        "Curated for you",
+                        langProvider.getText('curated_for_you'),
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w400,
                           color: Colors.white54,
@@ -111,7 +112,7 @@ class CategoryScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
                         Text(
-                          "No collections found",
+                          langProvider.getText('no_collections_found'),
                           style: GoogleFonts.poppins(color: Colors.white54, fontSize: 16),
                         ),
                       ],

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
@@ -6,6 +7,7 @@ import '../models/wallpaper_model.dart';
 import '../models/category_model.dart';
 import '../models/banner_model.dart';
 import '../models/game_model.dart';
+import '../models/support_ticket.dart';
 
 class ApiService {
   Future<String?> _getToken() async {
@@ -71,6 +73,27 @@ class ApiService {
       print('Error fetching ad settings: $e');
     }
     return {};
+  }
+
+  // Pages
+  Future<Map<String, dynamic>?> getPage(String slug) async {
+    final url = "${ApiConfig.apiUrl}/pages/$slug";
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url));
+      _logResponse('GET', url, response);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+    } catch (e) {
+      _logError('GET', url, e);
+      print('Error fetching page: $e');
+    }
+    return null;
   }
 
   Future<Map<String, String>> _getHeaders() async {
@@ -200,7 +223,197 @@ class ApiService {
       }
     } catch (e) {
       _logError('POST', url, e);
-      return {'success': false, 'message': 'Connection error: $e'};
+      return {'success': false, 'message': 'Connection error'};
+    }
+  }
+
+  // Support
+  Future<List<SupportTicket>> getSupportTickets() async {
+    const url = "${ApiConfig.apiUrl}/support/tickets";
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url), headers: await _getHeaders());
+      _logResponse('GET', url, response);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == true) {
+          final List ticketsData = data['data'];
+          return ticketsData.map((e) => SupportTicket.fromJson(e)).toList();
+        }
+      }
+    } catch (e) {
+      _logError('GET', url, e);
+    }
+    return [];
+  }
+
+  Future<bool> createSupportTicket(String subject, String message) async {
+    const url = "${ApiConfig.apiUrl}/support/tickets";
+    try {
+      final body = json.encode({
+        'subject': subject,
+        'message': message,
+        'priority': 'low', // Default
+      });
+      _logRequest('POST', url, body: body);
+      
+      final response = await http.post(
+        Uri.parse(url),
+        headers: await _getHeaders(),
+        body: body,
+      );
+      _logResponse('POST', url, response);
+
+      if (response.statusCode == 201) {
+        return true;
+      }
+    } catch (e) {
+      _logError('POST', url, e);
+    }
+    return false;
+  }
+
+  Future<SupportTicket?> getSupportTicket(int id) async {
+    final url = "${ApiConfig.apiUrl}/support/tickets/$id";
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url), headers: await _getHeaders());
+      _logResponse('GET', url, response);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == true) {
+          return SupportTicket.fromJson(data['data']);
+        }
+      }
+    } catch (e) {
+      _logError('GET', url, e);
+    }
+    return null;
+  }
+
+  Future<bool> replyToTicket(int id, String message) async {
+    final url = "${ApiConfig.apiUrl}/support/tickets/$id/reply";
+    try {
+      final body = json.encode({'message': message});
+      _logRequest('POST', url, body: body);
+      
+      final response = await http.post(
+        Uri.parse(url),
+        headers: await _getHeaders(),
+        body: body,
+      );
+      _logResponse('POST', url, response);
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      _logError('POST', url, e);
+    }
+    return false;
+  }
+
+  // Redeem & History
+  Future<List<dynamic>> getCoinHistory() async {
+    const url = "${ApiConfig.apiUrl}/transactions";
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url), headers: await _getHeaders());
+      _logResponse('GET', url, response);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == true) {
+          return data['data']; // Assuming data is a list of transactions
+        }
+      }
+    } catch (e) {
+      _logError('GET', url, e);
+    }
+    return [];
+  }
+
+  Future<List<dynamic>> getRedeemHistory() async {
+    const url = "${ApiConfig.apiUrl}/redeem/history";
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url), headers: await _getHeaders());
+      _logResponse('GET', url, response);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == true) {
+          return data['data']; // Assuming data is a list of redeem requests
+        }
+      }
+    } catch (e) {
+      _logError('GET', url, e);
+    }
+    return [];
+  }
+
+  Future<List<dynamic>> getRedeemGateways() async {
+    const url = "${ApiConfig.apiUrl}/redeem/gateways";
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url), headers: await _getHeaders());
+      _logResponse('GET', url, response);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == true) {
+          return data['data'];
+        }
+      }
+    } catch (e) {
+      _logError('GET', url, e);
+    }
+    return [];
+  }
+
+  Future<List<dynamic>> getRedeemMethods(int gatewayId) async {
+    final url = "${ApiConfig.apiUrl}/redeem/methods/$gatewayId";
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url), headers: await _getHeaders());
+      _logResponse('GET', url, response);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['status'] == true) {
+          return data['data'];
+        }
+      }
+    } catch (e) {
+      _logError('GET', url, e);
+    }
+    return [];
+  }
+
+  Future<Map<String, dynamic>> submitRedeemRequest(int methodId, String accountDetails, num amount) async {
+    const url = "${ApiConfig.apiUrl}/redeem/request";
+    try {
+      final body = json.encode({
+        'method_id': methodId,
+        'account_details': accountDetails,
+        'amount': amount,
+      });
+      _logRequest('POST', url, body: body);
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: await _getHeaders(),
+        body: body,
+      );
+      _logResponse('POST', url, response);
+
+      final data = json.decode(response.body);
+      return data;
+    } catch (e) {
+      _logError('POST', url, e);
+      return {'success': false, 'message': 'Connection error'};
     }
   }
 
@@ -307,6 +520,85 @@ class ApiService {
       _logError('GET', url, e);
     }
     return {'success': false};
+  }
+
+  // Profile Methods
+  Future<Map<String, dynamic>> updateProfile(String name) async {
+    const url = ApiConfig.updateProfile;
+    final body = {'name': name};
+    try {
+      _logRequest('POST', url, body: body);
+      final response = await http.post(
+        Uri.parse(url),
+        headers: await _getHeaders(),
+        body: json.encode(body),
+      );
+      _logResponse('POST', url, response);
+
+      final data = json.decode(response.body);
+      if (response.statusCode == 200 && data['status'] == true) {
+        return {'success': true, 'data': data['data'], 'message': data['message']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Update failed'};
+      }
+    } catch (e) {
+      _logError('POST', url, e);
+      return {'success': false, 'message': 'Connection error: $e'};
+    }
+  }
+
+  Future<Map<String, dynamic>> changePassword(String currentPassword, String newPassword) async {
+    const url = ApiConfig.changePassword;
+    final body = {
+      'current_password': currentPassword,
+      'new_password': newPassword,
+      'new_password_confirmation': newPassword,
+    };
+    try {
+      _logRequest('POST', url, body: body);
+      final response = await http.post(
+        Uri.parse(url),
+        headers: await _getHeaders(),
+        body: json.encode(body),
+      );
+      _logResponse('POST', url, response);
+
+      final data = json.decode(response.body);
+      if (response.statusCode == 200 && data['status'] == true) {
+        return {'success': true, 'message': data['message']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Password change failed'};
+      }
+    } catch (e) {
+      _logError('POST', url, e);
+      return {'success': false, 'message': 'Connection error: $e'};
+    }
+  }
+
+  Future<Map<String, dynamic>> updateAvatar(File imageFile) async {
+    const url = ApiConfig.updateAvatar;
+    try {
+      _logRequest('POST (Multipart)', url);
+      final request = http.MultipartRequest('POST', Uri.parse(url));
+      request.headers.addAll(await _getHeaders());
+      
+      request.files.add(await http.MultipartFile.fromPath('avatar', imageFile.path));
+      
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      
+      _logResponse('POST', url, response);
+
+      final data = json.decode(response.body);
+      if (response.statusCode == 200 && data['status'] == true) {
+        return {'success': true, 'data': data['data'], 'message': data['message']};
+      } else {
+        return {'success': false, 'message': data['message'] ?? 'Avatar update failed'};
+      }
+    } catch (e) {
+      _logError('POST', url, e);
+      return {'success': false, 'message': 'Connection error: $e'};
+    }
   }
 
   Future<Map<String, dynamic>> updateBalance(int amount, {String source = 'app_activity', String? gameId}) async {
@@ -454,5 +746,33 @@ class ApiService {
       print('Error fetching wallpapers: $e');
     }
     return [];
+  }
+
+  // Increment Wallpaper View
+  Future<bool> viewWallpaper(String id) async {
+    final url = "${ApiConfig.wallpapers}/$id";
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url));
+      _logResponse('GET', url, response);
+      return response.statusCode == 200;
+    } catch (e) {
+      _logError('GET', url, e);
+      return false;
+    }
+  }
+
+  // Increment Wallpaper Download
+  Future<bool> downloadWallpaper(String id) async {
+    final url = "${ApiConfig.wallpapers}/$id/download";
+    try {
+      _logRequest('POST', url);
+      final response = await http.post(Uri.parse(url));
+      _logResponse('POST', url, response);
+      return response.statusCode == 200;
+    } catch (e) {
+      _logError('POST', url, e);
+      return false;
+    }
   }
 }

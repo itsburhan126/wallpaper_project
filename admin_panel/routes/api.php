@@ -55,6 +55,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/shorts/{id}/like', [\App\Http\Controllers\Api\ShortController::class, 'toggleLike']);
     Route::post('/shorts/{id}/comments', [\App\Http\Controllers\Api\ShortController::class, 'storeComment']);
     Route::post('/shorts/{id}/reward', [\App\Http\Controllers\Api\ShortController::class, 'reward']);
+
+    // Support
+    Route::get('/support/tickets', [\App\Http\Controllers\Api\SupportController::class, 'index']);
+    Route::post('/support/tickets', [\App\Http\Controllers\Api\SupportController::class, 'store']);
+    Route::get('/support/tickets/{id}', [\App\Http\Controllers\Api\SupportController::class, 'show']);
+    Route::post('/support/tickets/{id}/reply', [\App\Http\Controllers\Api\SupportController::class, 'reply']);
 });
 
 // Public APIs for App

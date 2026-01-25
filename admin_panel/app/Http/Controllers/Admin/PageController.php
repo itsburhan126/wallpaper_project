@@ -14,8 +14,8 @@ class PageController extends Controller
         // Lazy seed default pages if they don't exist
         $defaults = [
             'Privacy Policy' => 'privacy-policy',
-            'Terms & Conditions' => 'terms-conditions',
-            'About App' => 'about-app',
+            'Terms and Conditions' => 'terms-and-conditions',
+            'About Us' => 'about-us',
         ];
 
         foreach ($defaults as $title => $slug) {
@@ -30,7 +30,11 @@ class PageController extends Controller
         }
 
         $pages = Page::all();
-        return view('admin.pages.index', compact('pages'));
+        $stats = [
+            'total' => $pages->count(),
+            'active' => $pages->where('is_active', true)->count(),
+        ];
+        return view('admin.pages.index', compact('pages', 'stats'));
     }
 
     public function edit($id)

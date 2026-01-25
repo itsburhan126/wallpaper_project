@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
+import '../../providers/language_provider.dart';
 import '../../utils/constants.dart';
 import '../main_screen.dart';
 import '../../services/api_service.dart';
@@ -24,9 +26,10 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isLoading = false;
 
   void _handleSignup() async {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     if (_nameController.text.isEmpty || _emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
+        SnackBar(content: Text(languageProvider.getText('fill_all_fields'))),
       );
       return;
     }
@@ -49,7 +52,7 @@ class _SignupScreenState extends State<SignupScreen> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'] ?? 'Registration failed')),
+          SnackBar(content: Text(result['message'] ?? languageProvider.getText('registration_failed'))),
         );
       }
     }
@@ -57,6 +60,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -119,7 +123,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       const SizedBox(height: 40),
                       Text(
-                        "Create Account",
+                        languageProvider.getText('create_account'),
                         style: GoogleFonts.poppins(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
@@ -128,7 +132,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.2, end: 0),
                       const SizedBox(height: 8),
                       Text(
-                        "Please fill in the form to continue",
+                        languageProvider.getText('fill_form'),
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           color: Colors.white70,
@@ -136,17 +140,17 @@ class _SignupScreenState extends State<SignupScreen> {
                       ).animate().fadeIn(delay: 200.ms, duration: 500.ms).slideX(begin: -0.2, end: 0),
                       const SizedBox(height: 40),
                       
-                      _buildTextField(_nameController, "Full Name", Icons.person_outline)
+                      _buildTextField(_nameController, languageProvider.getText('full_name'), Icons.person_outline)
                           .animate().fadeIn(delay: 400.ms, duration: 500.ms).slideY(begin: 0.2, end: 0),
                       const SizedBox(height: 20),
-                      _buildTextField(_emailController, "Email", Icons.email_outlined)
+                      _buildTextField(_emailController, languageProvider.getText('email'), Icons.email_outlined)
                           .animate().fadeIn(delay: 600.ms, duration: 500.ms).slideY(begin: 0.2, end: 0),
                       const SizedBox(height: 20),
-                      _buildTextField(_passwordController, "Password", Icons.lock_outline, isPassword: true)
+                      _buildTextField(_passwordController, languageProvider.getText('password'), Icons.lock_outline, isPassword: true)
                           .animate().fadeIn(delay: 800.ms, duration: 500.ms).slideY(begin: 0.2, end: 0),
                       
                       const SizedBox(height: 20),
-                      _buildTextField(_referralController, "Referral Code (Optional)", Icons.card_giftcard)
+                      _buildTextField(_referralController, languageProvider.getText('referral_code_optional'), Icons.card_giftcard)
                           .animate().fadeIn(delay: 900.ms, duration: 500.ms).slideY(begin: 0.2, end: 0),
 
                       const SizedBox(height: 40),
@@ -167,7 +171,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: _isLoading 
                             ? const CircularProgressIndicator(color: Colors.white)
                             : Text(
-                                "SIGN UP",
+                                languageProvider.getText('sign_up_btn'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -183,13 +187,13 @@ class _SignupScreenState extends State<SignupScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Already have an account? ", style: TextStyle(color: Colors.white70)),
+                          Text(languageProvider.getText('already_have_account'), style: const TextStyle(color: Colors.white70)),
                           GestureDetector(
                             onTap: () {
                               Navigator.pop(context);
                             },
                             child: Text(
-                              "Login",
+                              languageProvider.getText('login_link'),
                               style: TextStyle(
                                 color: AppColors.accent,
                                 fontWeight: FontWeight.bold,

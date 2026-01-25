@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../utils/app_theme.dart';
+import '../../providers/language_provider.dart';
 
 class ProfessionalToast {
   static void show(BuildContext context, {required int coinAmount}) {
@@ -63,11 +65,22 @@ class _ToastWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = Provider.of<LanguageProvider>(context, listen: false);
     final isError = type == ToastType.error;
     final isLoading = type == ToastType.loading;
     final primaryColor = isError ? Colors.redAccent : (isLoading ? Colors.blueAccent : Colors.amber);
     final icon = isError ? Icons.error_outline_rounded : (isLoading ? Icons.hourglass_empty_rounded : Icons.check_rounded);
-    final title = isError ? "Oops!" : (isLoading ? "Please Wait" : (message != null && coinAmount == null ? "Success!" : "Reward Claimed!"));
+    
+    String titleText;
+    if (isError) {
+      titleText = langProvider.getText('oops');
+    } else if (isLoading) {
+      titleText = langProvider.getText('please_wait');
+    } else if (message != null && coinAmount == null) {
+      titleText = langProvider.getText('success');
+    } else {
+      titleText = langProvider.getText('reward_claimed');
+    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -118,7 +131,7 @@ class _ToastWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  title,
+                  titleText,
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -128,7 +141,7 @@ class _ToastWidget extends StatelessWidget {
                 const SizedBox(height: 4),
                 if (isError || (message != null && coinAmount == null))
                   Text(
-                    message ?? "Something went wrong",
+                    message ?? langProvider.getText('something_went_wrong'),
                     style: GoogleFonts.poppins(
                       color: Colors.white70,
                       fontSize: 12,
@@ -138,7 +151,7 @@ class _ToastWidget extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        "You've received",
+                        langProvider.getText('you_received'),
                         style: GoogleFonts.poppins(
                       color: Colors.white70,
                         fontSize: 12,
@@ -146,7 +159,7 @@ class _ToastWidget extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        "$coinAmount Coins",
+                        "$coinAmount ${langProvider.getText('coins_suffix')}",
                         style: GoogleFonts.poppins(
                           color: Colors.amber,
                           fontWeight: FontWeight.bold,

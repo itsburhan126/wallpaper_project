@@ -43,8 +43,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware(['auth:admin', 'admin.demo'])->group(function () {
         
         // Categories & Games
+        Route::post('categories/bulk-destroy', [\App\Http\Controllers\Admin\CategoryController::class, 'bulkDestroy'])->name('categories.bulk_destroy');
         Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
+        
+        Route::post('games/bulk-destroy', [\App\Http\Controllers\Admin\GameController::class, 'bulkDestroy'])->name('games.bulk_destroy');
         Route::resource('games', \App\Http\Controllers\Admin\GameController::class);
+        Route::post('wallpapers/bulk-destroy', [\App\Http\Controllers\Admin\WallpaperController::class, 'bulkDestroy'])->name('wallpapers.bulk_destroy');
         Route::resource('wallpapers', \App\Http\Controllers\Admin\WallpaperController::class);
         Route::resource('shorts', \App\Http\Controllers\Admin\ShortController::class);
 
@@ -144,5 +148,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('users/{id}/transactions', [\App\Http\Controllers\Admin\UserController::class, 'transactions'])->name('users.transactions');
             Route::get('users/{id}/redeems', [\App\Http\Controllers\Admin\UserController::class, 'redeems'])->name('users.redeems');
         });
+
+        // Support
+        Route::get('support', [\App\Http\Controllers\Admin\SupportController::class, 'index'])->name('support.index');
+        Route::get('support/{id}', [\App\Http\Controllers\Admin\SupportController::class, 'show'])->name('support.show');
+        Route::post('support/{id}/reply', [\App\Http\Controllers\Admin\SupportController::class, 'reply'])->name('support.reply');
+        Route::delete('support/{id}', [\App\Http\Controllers\Admin\SupportController::class, 'destroy'])->name('support.destroy');
     });
 });

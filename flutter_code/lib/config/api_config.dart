@@ -14,6 +14,9 @@ class ApiConfig {
   static const String addReferrer = "$apiUrl/add-referrer";
   static const String register = "$apiUrl/register";
   static const String user = "$apiUrl/user";
+  static const String updateProfile = "$apiUrl/user/update";
+  static const String changePassword = "$apiUrl/user/change-password";
+  static const String updateAvatar = "$apiUrl/user/update-avatar";
   static const String games = "$apiUrl/games";
   static const String updateBalance = "$apiUrl/game/update-balance";
   static const String incrementPlayCount = "$apiUrl/game/increment-play-count";

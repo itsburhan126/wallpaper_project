@@ -19,13 +19,26 @@
     <form action="{{ route('admin.shorts.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
         
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+                <h2 class="text-lg font-bold text-slate-900">Short Details</h2>
+                <p class="text-sm text-slate-500">Upload a new video short.</p>
+            </div>
+            
             <div class="p-8">
+                <div class="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl relative mb-6 flex items-start gap-3">
+                    <i class="fas fa-exclamation-triangle mt-0.5"></i>
+                    <div>
+                        <h4 class="font-bold text-sm">Important: Video Resolution</h4>
+                        <p class="text-sm mt-1">Please ensure uploaded videos are <strong>1080p (1920x1080)</strong> or lower. 4K videos (3840x2160) may not play on many mobile devices due to hardware limitations.</p>
+                    </div>
+                </div>
+
                 @if ($errors->any())
-                    <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg relative mb-6 flex items-start gap-3">
+                    <div class="bg-rose-50 border border-rose-200 text-rose-700 px-4 py-3 rounded-xl relative mb-6 flex items-start gap-3">
                         <i class="fas fa-exclamation-circle mt-0.5"></i>
                         <div>
-                            <h4 class="font-semibold text-sm">Please fix the following errors:</h4>
+                            <h4 class="font-bold text-sm">Please fix the following errors:</h4>
                             <ul class="list-disc list-inside text-sm mt-1">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -38,50 +51,55 @@
                 <div class="grid grid-cols-1 gap-8">
                     <!-- Title Input -->
                     <div>
-                        <label for="title" class="block text-sm font-semibold text-slate-700 mb-2">Short Title <span class="text-red-500">*</span></label>
+                        <label for="title" class="block text-sm font-bold text-slate-700 mb-2">Short Title <span class="text-red-500">*</span></label>
                         <input type="text" name="title" id="title" required value="{{ old('title') }}"
-                            class="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm"
+                            class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all text-sm font-medium text-slate-700 placeholder-slate-400"
                             placeholder="e.g. Amazing Wallpaper Transformation">
                     </div>
 
                     <!-- Video Upload -->
                     <div>
-                        <label for="video" class="block text-sm font-semibold text-slate-700 mb-2">Video File (MP4) <span class="text-red-500">*</span></label>
-                        <div class="relative border-2 border-dashed border-slate-300 rounded-lg p-8 hover:bg-slate-50 transition-colors text-center cursor-pointer" onclick="document.getElementById('video').click()">
+                        <label for="video" class="block text-sm font-bold text-slate-700 mb-2">Video File (MP4) <span class="text-red-500">*</span></label>
+                        <div class="relative border-2 border-dashed border-slate-300 rounded-xl p-8 hover:bg-indigo-50/30 hover:border-indigo-300 transition-all text-center cursor-pointer group" onclick="document.getElementById('video').click()">
                             <input type="file" name="video" id="video" accept="video/mp4" required class="hidden" onchange="showFileName(this, 'video-name')">
-                            <i class="fas fa-cloud-upload-alt text-4xl text-slate-400 mb-3"></i>
-                            <p class="text-sm font-medium text-slate-700">Click to upload video</p>
-                            <p class="text-xs text-slate-500 mt-1">MP4 format, Max 100MB</p>
+                            <div class="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-indigo-500"></i>
+                            </div>
+                            <p class="text-sm font-bold text-slate-700">Click to upload video</p>
+                            <p class="text-xs text-slate-500 mt-1">MP4 format, Max 100MB. <strong>Max Resolution: 1080p</strong></p>
                             <p id="video-name" class="text-sm text-indigo-600 mt-2 font-medium"></p>
                         </div>
                     </div>
 
                     <!-- Thumbnail Upload -->
                     <div>
-                        <label for="thumbnail" class="block text-sm font-semibold text-slate-700 mb-2">Thumbnail Image <span class="text-gray-400 text-xs font-normal">(Optional)</span></label>
-                        <div class="relative border-2 border-dashed border-slate-300 rounded-lg p-8 hover:bg-slate-50 transition-colors text-center cursor-pointer" onclick="document.getElementById('thumbnail').click()">
+                        <label for="thumbnail" class="block text-sm font-bold text-slate-700 mb-2">Thumbnail Image <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+                        <div class="relative border-2 border-dashed border-slate-300 rounded-xl p-8 hover:bg-indigo-50/30 hover:border-indigo-300 transition-all text-center cursor-pointer group" onclick="document.getElementById('thumbnail').click()">
                             <input type="file" name="thumbnail" id="thumbnail" accept="image/*" class="hidden" onchange="showFileName(this, 'thumbnail-name')">
-                            <i class="fas fa-image text-4xl text-slate-400 mb-3"></i>
-                            <p class="text-sm font-medium text-slate-700">Click to upload thumbnail</p>
+                            <div class="w-16 h-16 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                <i class="fas fa-image text-3xl text-purple-500"></i>
+                            </div>
+                            <p class="text-sm font-bold text-slate-700">Click to upload thumbnail</p>
                             <p class="text-xs text-slate-500 mt-1">JPG, PNG format</p>
                             <p id="thumbnail-name" class="text-sm text-indigo-600 mt-2 font-medium"></p>
                         </div>
                     </div>
 
                     <!-- Status -->
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
                         <input type="hidden" name="is_active" value="0">
                         <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', 1) ? 'checked' : '' }}
-                            class="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all">
-                        <label for="is_active" class="text-sm font-medium text-slate-700">Active (Visible in App)</label>
+                            class="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-all cursor-pointer">
+                        <label for="is_active" class="text-sm font-bold text-slate-700 cursor-pointer select-none">Active (Visible in App)</label>
                     </div>
 
                 </div>
             </div>
             
-            <div class="bg-slate-50 px-8 py-4 border-t border-slate-200 flex justify-end">
-                <button type="submit" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium shadow-md shadow-indigo-500/20 flex items-center gap-2">
-                    <i class="fas fa-save"></i> Save Short
+            <div class="bg-slate-50 px-8 py-4 border-t border-slate-100 flex justify-end">
+                <button type="submit" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                    <i class="fas fa-save"></i>
+                    <span>Save Short</span>
                 </button>
             </div>
         </div>

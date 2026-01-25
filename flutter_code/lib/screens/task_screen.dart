@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wallpaper_app/widgets/lucky_wheel_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -25,6 +26,7 @@ import 'all_games_screen.dart';
 import '../widgets/animated_coin_balance.dart';
 import 'referral_screen.dart';
 import '../utils/app_theme.dart';
+import '../providers/language_provider.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({super.key});
@@ -78,7 +80,7 @@ class _TaskScreenState extends State<TaskScreen> {
           );
 
           if (!adShown && context.mounted) {
-             ProfessionalToast.showError(context, message: "Ads not available");
+             ProfessionalToast.showError(context, message: Provider.of<LanguageProvider>(context, listen: false).getText('ads_unavailable'));
           }
         },
         onClose: () {
@@ -102,7 +104,8 @@ class _TaskScreenState extends State<TaskScreen> {
           await provider.addCoins(totalReward, source: 'game_reward', gameId: gameId);
           print("🎮 [Game Play] Coins Credited: $totalReward | Games Played Today: ${provider.gamesPlayedToday} | Daily Limit: ${provider.gameDailyLimit}");
           if (context.mounted) {
-            ProfessionalToast.showSuccess(context, message: "You earned $totalReward coins!");
+            final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+            ProfessionalToast.showSuccess(context, message: "${langProvider.getText('you_earned_coins')} $totalReward ${langProvider.getText('coins')}!");
           }
         },
       );
@@ -115,6 +118,7 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget build(BuildContext context) {
     // DEBUG LOGS
     final debugProvider = Provider.of<AppProvider>(context);
+    final langProvider = Provider.of<LanguageProvider>(context);
     print("------- TASK SCREEN DEBUG -------");
     print("Coins: ${debugProvider.coins}");
     print("Name: ${debugProvider.userName}");
@@ -230,7 +234,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              provider.userName.isNotEmpty ? provider.userName : "Guest Player",
+                              provider.userName.isNotEmpty ? provider.userName : langProvider.getText('guest_player'),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.poppins(
@@ -267,7 +271,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                   const Icon(Icons.stars_rounded, color: Colors.white, size: 8),
                                   const SizedBox(width: 2),
                                   Text(
-                                    "Lvl ${provider.userLevel}",
+                                    "${langProvider.getText('lvl_short')} ${provider.userLevel}",
                                     style: GoogleFonts.poppins(
                                       fontSize: 9,
                                       fontWeight: FontWeight.w800,
@@ -375,7 +379,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     builder: (context, provider, child) {
                       return _buildTaskItem(
                         context,
-                        title: "Watch Ads",
+                        title: langProvider.getText('watch_ads_title'),
                         subtitle: "${provider.adsWatchedToday}/${provider.adDailyLimit}",
                         progress: provider.adDailyLimit > 0 
                             ? (provider.adsWatchedToday / provider.adDailyLimit).clamp(0.0, 1.0) 
@@ -383,7 +387,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         reward: provider.watchAdsReward,
                         icon: Icons.play_circle_fill,
                         iconColor: Colors.blueAccent,
-                        actionLabel: "WATCH",
+                        actionLabel: langProvider.getText('watch_action'),
                         isLoading: _isWatchAdLoading,
                         onTap: () async {
                           if (provider.adsWatchedToday >= provider.adDailyLimit) {
@@ -392,8 +396,8 @@ class _TaskScreenState extends State<TaskScreen> {
                               backgroundColor: Colors.transparent,
                               isScrollControlled: true,
                               builder: (_) => LimitReachedSheet(
-                                title: "Daily Ad Limit Reached",
-                                message: "You have reached your daily ad watch limit.\nPlease come back tomorrow for more rewards!",
+                                title: langProvider.getText('daily_ad_limit_title'),
+                                message: langProvider.getText('daily_ad_limit_msg'),
                                 icon: Icons.videocam_off_outlined,
                                 color: Colors.purpleAccent,
                               ),
@@ -429,7 +433,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                           print("💎 Coins Added to Provider");
                                           
                                           if (context.mounted) {
-                                              ProfessionalToast.showSuccess(context, message: "You earned ${provider.watchAdsReward} coins!");
+                                              ProfessionalToast.showSuccess(context, message: "${langProvider.getText('earned_coins_msg')} ${provider.watchAdsReward} ${langProvider.getText('coins')}!");
                                           }
                                        } catch (e) {
                                           print("❌ Error adding coins: $e");
@@ -482,7 +486,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           
                       return _buildTaskItem(
                         context,
-                        title: "Play Lucky Wheel",
+                        title: langProvider.getText('play_lucky_wheel'),
                         subtitle: "${provider.luckyWheelSpinsCount}/${provider.luckyWheelLimit}",
                         progress: provider.luckyWheelLimit > 0 
                             ? (provider.luckyWheelSpinsCount / provider.luckyWheelLimit).clamp(0.0, 1.0) 
@@ -490,7 +494,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         reward: maxReward,
                         icon: Icons.casino,
                         iconColor: Colors.orangeAccent,
-                        actionLabel: "SPIN",
+                        actionLabel: langProvider.getText('spin_action'),
                         onTap: () {
                            if (provider.luckyWheelSpinsCount >= provider.luckyWheelLimit) {
                              showModalBottomSheet(
@@ -498,8 +502,8 @@ class _TaskScreenState extends State<TaskScreen> {
                                backgroundColor: Colors.transparent,
                                isScrollControlled: true,
                                builder: (_) => LimitReachedSheet(
-                                 title: "Daily Spin Limit Reached",
-                                 message: "You have used all your lucky spins for today.\nPlease come back tomorrow!",
+                                 title: langProvider.getText('daily_spin_limit'),
+                                 message: langProvider.getText('spin_limit_msg'),
                                  icon: Icons.refresh,
                                  color: Colors.purpleAccent,
                                ),
@@ -518,11 +522,11 @@ class _TaskScreenState extends State<TaskScreen> {
                   const SizedBox(height: 12),
                   _buildTaskItem(
                     context,
-                    title: "Refer & Earn",
+                    title: langProvider.getText('refer_earn'),
                     reward: 500,
                     icon: Icons.share_rounded,
                     iconColor: Colors.purpleAccent,
-                    actionLabel: "REFER",
+                    actionLabel: langProvider.getText('refer_action'),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -542,85 +546,253 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
+  void _launchPubScaleOfferWall() async {
+     final adProvider = Provider.of<AdProvider>(context, listen: false);
+     final appProvider = Provider.of<AppProvider>(context, listen: false);
+     final langProvider = Provider.of<LanguageProvider>(context, listen: false);
+     final appId = adProvider.pubscaleAppId;
+     final userId = appProvider.userId;
+
+     if (appId.isEmpty) {
+        ProfessionalToast.showError(context, message: langProvider.getText('offer_wall_not_configured'));
+        return;
+     }
+     
+     if (userId.isEmpty) {
+        ProfessionalToast.showError(context, message: langProvider.getText('login_for_offer_wall'));
+        return;
+     }
+
+     final url = "https://wow.pubscale.com/?app_id=$appId&user_id=$userId";
+     final uri = Uri.parse(url);
+     
+     try {
+       if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+       } else {
+          ProfessionalToast.showError(context, message: langProvider.getText('offer_wall_launch_failed'));
+       }
+     } catch (e) {
+       debugPrint("Error launching PubScale: $e");
+       ProfessionalToast.showError(context, message: langProvider.getText('offer_wall_error'));
+     }
+  }
+
   Widget _buildPromoBanner() {
+    final langProvider = Provider.of<LanguageProvider>(context);
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
       width: double.infinity,
-      height: 140,
+      height: 175,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        gradient: const LinearGradient(
-          colors: [Color(0xFF4A00E0), Color(0xFF8E2DE2)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        borderRadius: BorderRadius.circular(24),
+        // Enhanced Neon Glow
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF8E2DE2).withOpacity(0.4),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
+            color: const Color(0xFFB026FF).withOpacity(0.6), // Neon Violet Glow
+            blurRadius: 25,
+            spreadRadius: 1,
+            offset: const Offset(0, 10),
+          ),
+          BoxShadow(
+            color: const Color(0xFF4A00E0).withOpacity(0.5), // Deep Purple Glow
+            blurRadius: 15,
+            offset: const Offset(0, 5),
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -20,
-            top: -20,
-            child: Icon(
-              Icons.stars,
-              size: 150,
-              color: Colors.white.withOpacity(0.1),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            // Background with Richer Neon Gradient
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF6200EA), // Deep Indigo
+                    Color(0xFFB026FF), // Neon Purple
+                    Color(0xFFE040FB), // Electric Pink Accent
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  stops: [0.0, 0.6, 1.0],
+                ),
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.amber,
-                    borderRadius: BorderRadius.circular(4),
+
+            // Decorative Glowing Orbs
+            Positioned(
+              top: -40,
+              right: -40,
+              child: Container(
+                width: 180,
+                height: 180,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      Colors.white.withOpacity(0.2),
+                      Colors.transparent,
+                    ],
                   ),
-                  child: Text(
-                    "NEW SPENDER BONUS",
-                    style: GoogleFonts.poppins(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: -50,
+              left: -20,
+              child: Container(
+                width: 150,
+                height: 150,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withOpacity(0.08),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white.withOpacity(0.1),
+                      blurRadius: 30,
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  "Get Double Rewards!",
-                  style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "Limited time offer",
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.white70,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+
+            // Glassy Border Overlay
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1.5,
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white.withOpacity(0.2),
+                    Colors.transparent,
+                  ],
+                ),
+              ),
+            ),
+
+            // Interactive content
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _launchPubScaleOfferWall,
+                splashColor: Colors.white.withOpacity(0.2),
+                highlightColor: Colors.white.withOpacity(0.1),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFD700), // Gold
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFFFD700).withOpacity(0.6),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 2),
+                                  )
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.local_fire_department_rounded, size: 14, color: Colors.black),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    langProvider.getText('hot_offers'),
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 11,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              langProvider.getText('pubscale_offer_wall'),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    offset: const Offset(0, 2),
+                                    blurRadius: 4,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              langProvider.getText('complete_tasks_msg'),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.poppins(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      // Animated Button Effect
+                      Container(
+                        height: 56,
+                        width: 56,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.white.withOpacity(0.5),
+                              blurRadius: 15,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.arrow_forward_rounded,
+                          color: Color(0xFF6200EA),
+                          size: 28,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ).animate().fadeIn().slideX();
+    ).animate(onPlay: (controller) => controller.repeat(reverse: true))
+    .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.2)) // Constant subtle shimmer
+    .animate().fadeIn().slideX();
   }
 
   Widget _buildGamesSection(BuildContext context) {
-    return Consumer<AppProvider>(
-      builder: (context, provider, child) {
+    return Consumer2<AppProvider, LanguageProvider>(
+      builder: (context, provider, langProvider, child) {
         final games = provider.games;
         // Logic: Show max 7 games + 1 'More' button if needed
         final bool showMoreButton = games.length > 7;
@@ -670,7 +842,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     const Icon(Icons.videogame_asset_off, color: Colors.white24, size: 40),
                     const SizedBox(height: 8),
                     Text(
-                      "No games available",
+                      langProvider.getText('no_games'),
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         color: Colors.white54,
@@ -742,7 +914,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "View All",
+                            langProvider.getText('view_all'),
                             textAlign: TextAlign.center,
                             style: GoogleFonts.poppins(
                               fontSize: 11,
@@ -771,8 +943,8 @@ class _TaskScreenState extends State<TaskScreen> {
                            backgroundColor: Colors.transparent,
                            isScrollControlled: true,
                            builder: (_) => LimitReachedSheet(
-                             title: "Daily Game Limit Reached",
-                             message: "You have reached your daily game limit.\nPlease come back tomorrow!",
+                             title: langProvider.getText('daily_game_limit'),
+                             message: langProvider.getText('game_limit_msg'),
                              icon: Icons.timer_off_outlined,
                              color: Colors.orange,
                            ),
@@ -1009,13 +1181,6 @@ class _TaskScreenState extends State<TaskScreen> {
                 blurRadius: 25,
                 spreadRadius: 1,
                 offset: const Offset(0, 4),
-              ),
-              // Inner depth shadow
-              BoxShadow(
-                color: Colors.black.withOpacity(0.5),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-                inset: true,
               ),
             ],
           ),

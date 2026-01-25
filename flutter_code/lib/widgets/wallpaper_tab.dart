@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_provider.dart';
+import '../providers/language_provider.dart';
 import '../models/wallpaper_model.dart';
 import '../services/api_service.dart';
 import '../widgets/wallpaper_card.dart';
@@ -109,12 +110,12 @@ class _WallpaperTabState extends State<WallpaperTab> with AutomaticKeepAliveClie
                   const Icon(Icons.error_outline, color: Colors.red, size: 48),
                   const SizedBox(height: 16),
                   Text(
-                    "Failed to load wallpapers",
+                    Provider.of<LanguageProvider>(context).getText('failed_load_wallpapers'),
                     style: TextStyle(color: Colors.white.withOpacity(0.7)),
                   ),
                   TextButton(
                     onPressed: () => _fetchData(),
-                    child: const Text("Retry"),
+                    child: Text(Provider.of<LanguageProvider>(context).getText('retry')),
                   ),
                 ],
               ),
@@ -123,7 +124,7 @@ class _WallpaperTabState extends State<WallpaperTab> with AutomaticKeepAliveClie
             SliverFillRemaining(
               child: Center(
                 child: Text(
-                  "No wallpapers found",
+                  Provider.of<LanguageProvider>(context).getText('no_wallpapers_found'),
                   style: TextStyle(color: Colors.white.withOpacity(0.5)),
                 ),
               ),

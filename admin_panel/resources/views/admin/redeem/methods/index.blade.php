@@ -19,6 +19,48 @@
         </div>
     </div>
 
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Total Methods -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] hover:shadow-lg transition-all duration-300 group">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Methods</p>
+                    <h3 class="text-3xl font-bold text-slate-800 mt-2 group-hover:text-indigo-600 transition-colors">{{ number_format($stats['total']) }}</h3>
+                </div>
+                <div class="p-3 bg-indigo-50 rounded-xl text-indigo-600 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-list-ul text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Methods -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] hover:shadow-lg transition-all duration-300 group">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Active Methods</p>
+                    <h3 class="text-3xl font-bold text-slate-800 mt-2 group-hover:text-emerald-600 transition-colors">{{ number_format($stats['active']) }}</h3>
+                </div>
+                <div class="p-3 bg-emerald-50 rounded-xl text-emerald-600 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-check-circle text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inactive Methods -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] hover:shadow-lg transition-all duration-300 group">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Inactive Methods</p>
+                    <h3 class="text-3xl font-bold text-slate-800 mt-2 group-hover:text-amber-600 transition-colors">{{ number_format($stats['inactive']) }}</h3>
+                </div>
+                <div class="p-3 bg-amber-50 rounded-xl text-amber-600 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-times-circle text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Create New Method -->
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="p-6 border-b border-slate-100 bg-slate-50/50">

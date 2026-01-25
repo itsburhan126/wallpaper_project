@@ -106,7 +106,8 @@ class RedeemController extends Controller
     {
         $history = RedeemRequest::where('user_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->limit(50)
+            ->get();
 
         return response()->json([
             'status' => true,

@@ -12,8 +12,14 @@ class WallpaperController extends Controller
 {
     public function index()
     {
-        $wallpapers = Wallpaper::with('category')->latest()->paginate(10);
-        return view('admin.wallpapers.index', compact('wallpapers'));
+        $stats = [
+            'total' => Wallpaper::count(),
+            'views' => Wallpaper::sum('views'),
+            'downloads' => Wallpaper::sum('downloads'),
+            'categories' => Category::count(),
+        ];
+        $wallpapers = Wallpaper::with('category')->latest()->paginate(12);
+        return view('admin.wallpapers.index', compact('wallpapers', 'stats'));
     }
 
     public function create()
@@ -85,5 +91,24 @@ class WallpaperController extends Controller
         }
         $wallpaper->delete();
         return redirect()->route('admin.wallpapers.index')->with('success', 'Wallpaper deleted successfully.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:wallpapers,id',
+        ]);
+
+        $wallpapers = Wallpaper::whereIn('id', $request->ids)->get();
+
+        foreach ($wallpapers as $wallpaper) {
+            if ($wallpaper->image) {
+                Storage::disk('public')->delete($wallpaper->image);
+            }
+            $wallpaper->delete();
+        }
+
+        return redirect()->route('admin.wallpapers.index')->with('success', count($wallpapers) . ' wallpapers deleted successfully.');
     }
 }

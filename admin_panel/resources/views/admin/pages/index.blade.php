@@ -11,7 +11,38 @@
         </div>
     </div>
 
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <!-- Total Pages -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] hover:shadow-lg transition-all duration-300 group">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Total Pages</p>
+                    <h3 class="text-3xl font-bold text-slate-800 mt-2 group-hover:text-indigo-600 transition-colors">{{ number_format($stats['total']) }}</h3>
+                </div>
+                <div class="p-3 bg-indigo-50 rounded-xl text-indigo-600 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-file-alt text-xl"></i>
+                </div>
+            </div>
+        </div>
+        <!-- Active Pages -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] hover:shadow-lg transition-all duration-300 group">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-slate-500 text-xs font-bold uppercase tracking-wider">Active Pages</p>
+                    <h3 class="text-3xl font-bold text-slate-800 mt-2 group-hover:text-emerald-600 transition-colors">{{ number_format($stats['active']) }}</h3>
+                </div>
+                <div class="p-3 bg-emerald-50 rounded-xl text-emerald-600 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-check-circle text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+            <h3 class="font-bold text-slate-800">All Pages</h3>
+        </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200">
                 <thead class="bg-slate-50">

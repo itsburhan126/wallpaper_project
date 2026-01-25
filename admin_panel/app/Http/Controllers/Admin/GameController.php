@@ -12,8 +12,14 @@ class GameController extends Controller
 {
     public function index()
     {
+        $stats = [
+            'total' => Game::count(),
+            'active' => Game::where('is_active', true)->count(),
+            'inactive' => Game::where('is_active', false)->count(),
+            'featured' => Game::where('is_featured', true)->count(),
+        ];
         $games = Game::latest()->paginate(20);
-        return view('admin.games.index', compact('games'));
+        return view('admin.games.index', compact('games', 'stats'));
     }
 
     public function create()
@@ -100,5 +106,23 @@ class GameController extends Controller
         $game->delete();
 
         return redirect()->back()->with('success', 'Game deleted successfully.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $ids = $request->ids;
+        if (empty($ids)) {
+            return response()->json(['status' => false, 'message' => 'No items selected.']);
+        }
+
+        $games = Game::whereIn('id', $ids)->get();
+        foreach ($games as $game) {
+            if ($game->image && File::exists(public_path($game->image))) {
+                File::delete(public_path($game->image));
+            }
+            $game->delete();
+        }
+
+        return response()->json(['status' => true, 'message' => 'Selected games deleted successfully.']);
     }
 }

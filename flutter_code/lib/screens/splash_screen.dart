@@ -8,6 +8,7 @@ import '../utils/constants.dart';
 import 'intro_screen.dart';
 import 'main_screen.dart';
 import '../providers/ad_provider.dart';
+import '../providers/language_provider.dart';
 import '../services/google_ad_service.dart';
 import '../services/api_service.dart';
 import 'auth/login_screen.dart';
@@ -105,92 +106,96 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light,
-        systemNavigationBarColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.light,
-      ),
-      child: Scaffold(
-        extendBody: true,
-        backgroundColor: Colors.transparent,
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: AppTheme.backgroundDecoration,
-          child: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-            Container(
-              height: 150,
-              width: 150,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  // Neon Glow Effect
-                  BoxShadow(
-                    color: Colors.cyanAccent.withOpacity(0.6),
-                    blurRadius: 50,
-                    spreadRadius: 10,
+    return Consumer<LanguageProvider>(
+      builder: (context, langProvider, child) {
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.light,
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarIconBrightness: Brightness.light,
+          ),
+          child: Scaffold(
+            extendBody: true,
+            backgroundColor: Colors.transparent,
+            body: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: AppTheme.backgroundDecoration,
+              child: SafeArea(
+                child: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          height: 150,
+                          width: 150,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              // Neon Glow Effect
+                              BoxShadow(
+                                color: Colors.cyanAccent.withOpacity(0.6),
+                                blurRadius: 50,
+                                spreadRadius: 10,
+                              ),
+                              BoxShadow(
+                                color: Colors.purpleAccent.withOpacity(0.4),
+                                blurRadius: 30,
+                                spreadRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/app_icon.png',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ).animate()
+                         .scale(duration: 800.ms, curve: Curves.elasticOut)
+                         .then()
+                         .shimmer(duration: 1200.ms, color: Colors.white.withOpacity(0.5)),
+                        
+                        const SizedBox(height: 30),
+                        
+                        Text(
+                          langProvider.getText('app_name'),
+                          style: GoogleFonts.poppins(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 2,
+                            shadows: [
+                              Shadow(
+                                color: Colors.cyanAccent.withOpacity(0.8),
+                                blurRadius: 20,
+                                offset: const Offset(0, 0),
+                              ),
+                            ],
+                          ),
+                        ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.5, end: 0),
+                        
+                        const SizedBox(height: 10),
+                        
+                        Text(
+                          langProvider.getText('app_tagline'),
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.grey,
+                            letterSpacing: 1,
+                          ),
+                        ).animate().fadeIn(delay: 800.ms),
+                      ],
+                    ),
                   ),
-                  BoxShadow(
-                    color: Colors.purpleAccent.withOpacity(0.4),
-                    blurRadius: 30,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/app_icon.png',
-                  fit: BoxFit.cover,
                 ),
               ),
-            ).animate()
-             .scale(duration: 800.ms, curve: Curves.elasticOut)
-             .then()
-             .shimmer(duration: 1200.ms, color: Colors.white.withOpacity(0.5)),
-            
-            const SizedBox(height: 30),
-            
-            Text(
-              "Prime Walls",
-              style: GoogleFonts.poppins(
-                fontSize: 40,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 2,
-                shadows: [
-                  Shadow(
-                    color: Colors.cyanAccent.withOpacity(0.8),
-                    blurRadius: 20,
-                    offset: const Offset(0, 0),
-                  ),
-                ],
-              ),
-            ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.5, end: 0),
-            
-            const SizedBox(height: 10),
-            
-            Text(
-              "Premium Wallpapers & Games",
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                color: Colors.grey,
-                letterSpacing: 1,
-              ),
-            ).animate().fadeIn(delay: 800.ms),
-          ],
-        ),
-      ),
-    ),
-      ),
-      ),
-    ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

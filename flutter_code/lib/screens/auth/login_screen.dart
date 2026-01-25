@@ -13,6 +13,7 @@ import '../../dialog/referral_dialog.dart';
 
 import 'package:provider/provider.dart';
 import '../../providers/app_provider.dart';
+import '../../providers/language_provider.dart';
 import '../../utils/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -30,9 +31,10 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isGoogleLoading = false;
 
   void _handleLogin() async {
+    final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
+        SnackBar(content: Text(languageProvider.getText('fill_all_fields'))),
       );
       return;
     }
@@ -56,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(result['message'] ?? 'Login failed')),
+          SnackBar(content: Text(result['message'] ?? languageProvider.getText('login_failed'))),
         );
       }
     }
@@ -120,6 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -175,7 +178,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: 40),
                       Text(
-                        "Welcome Back",
+                        languageProvider.getText('welcome_back'),
                         style: GoogleFonts.poppins(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
@@ -183,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ).animate().fadeIn(delay: 200.ms).slideX(),
                       Text(
-                        "Sign in to continue",
+                        languageProvider.getText('sign_in_continue'),
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           color: Colors.white70,
@@ -191,9 +194,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       ).animate().fadeIn(delay: 300.ms).slideX(),
                       const SizedBox(height: 50),
                       
-                      _buildTextField(_emailController, "Email", Icons.email_outlined).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
+                      _buildTextField(_emailController, languageProvider.getText('email'), Icons.email_outlined).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
                       const SizedBox(height: 20),
-                      _buildTextField(_passwordController, "Password", Icons.lock_outline, isPassword: true).animate().fadeIn(delay: 500.ms).slideY(begin: 0.2, end: 0),
+                      _buildTextField(_passwordController, languageProvider.getText('password'), Icons.lock_outline, isPassword: true).animate().fadeIn(delay: 500.ms).slideY(begin: 0.2, end: 0),
                       
                       const SizedBox(height: 10),
                       Align(
@@ -201,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: TextButton(
                           onPressed: () {},
                           child: Text(
-                            "Forgot Password?",
+                            languageProvider.getText('forgot_password'),
                             style: GoogleFonts.poppins(
                               color: AppColors.accent,
                               fontWeight: FontWeight.w600,
@@ -228,7 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: _isLoading 
                             ? const CircularProgressIndicator(color: Colors.white)
                             : Text(
-                                "LOGIN",
+                                languageProvider.getText('login_btn'),
                                 style: GoogleFonts.poppins(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -246,7 +249,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Expanded(child: Divider(color: Colors.grey[800])),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text("Or login with", style: TextStyle(color: Colors.grey)),
+                            child: Text(languageProvider.getText('or_login_with'), style: const TextStyle(color: Colors.grey)),
                           ),
                           Expanded(child: Divider(color: Colors.grey[800])),
                         ],
@@ -274,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ) 
                               : const Icon(FontAwesomeIcons.google, color: Colors.white),
                           label: Text(
-                            _isGoogleLoading ? "  Loading..." : "Continue with Google",
+                            _isGoogleLoading ? languageProvider.getText('loading') : languageProvider.getText('continue_google'),
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -289,7 +292,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text("Don't have an account? ", style: TextStyle(color: Colors.grey)),
+                          Text(languageProvider.getText('no_account'), style: const TextStyle(color: Colors.grey)),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -298,7 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               );
                             },
                             child: Text(
-                              "Sign Up",
+                              languageProvider.getText('sign_up'),
                               style: TextStyle(
                                 color: AppColors.accent,
                                 fontWeight: FontWeight.bold,

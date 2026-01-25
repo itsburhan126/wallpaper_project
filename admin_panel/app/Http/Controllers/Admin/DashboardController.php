@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\RedeemRequest;
 use App\Models\User;
+use App\Models\Wallpaper;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -14,8 +15,13 @@ class DashboardController extends Controller
     {
         $totalUsers = User::count();
         $todayUsers = User::whereDate('created_at', Carbon::today())->count();
+        
         $totalRedeemRequests = RedeemRequest::count();
         $todayRedeemRequests = RedeemRequest::whereDate('created_at', Carbon::today())->count();
+        $pendingRedeems = RedeemRequest::where('status', 'pending')->count();
+        $totalPayout = RedeemRequest::where('status', 'approved')->sum('amount');
+
+        $totalWallpapers = Wallpaper::count();
 
         $topUsers = User::orderBy('coins', 'desc')->take(10)->get();
         $recentRedeemRequests = RedeemRequest::with('user')->latest()->take(10)->get();
@@ -25,6 +31,9 @@ class DashboardController extends Controller
             'todayUsers',
             'totalRedeemRequests',
             'todayRedeemRequests',
+            'pendingRedeems',
+            'totalPayout',
+            'totalWallpapers',
             'topUsers',
             'recentRedeemRequests'
         ));

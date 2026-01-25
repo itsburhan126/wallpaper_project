@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../providers/language_provider.dart';
 
 class GameRewardDialog extends StatefulWidget {
   final int baseReward;
@@ -40,6 +42,7 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = Provider.of<LanguageProvider>(context);
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -63,20 +66,20 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
               ],
             ),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Level Completed!",
-                  style: GoogleFonts.poppins(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    langProvider.getText('level_completed'),
+                    style: GoogleFonts.poppins(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "You've earned coins",
-                  style: GoogleFonts.poppins(
+                  const SizedBox(height: 4),
+                  Text(
+                    langProvider.getText('you_earned_coins'),
+                    style: GoogleFonts.poppins(
                     fontSize: 14,
                     color: Colors.black54,
                   ),
@@ -186,7 +189,7 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                             child: CircularProgressIndicator(color: Colors.grey, strokeWidth: 2),
                           )
                         : Text(
-                            "No thanks, claim ${widget.baseReward}",
+                            "${langProvider.getText('no_thanks_claim')} ${widget.baseReward}",
                             style: GoogleFonts.poppins(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -222,7 +225,7 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                   const Icon(Icons.star, color: Colors.yellow, size: 20),
                   const SizedBox(width: 8),
                   Text(
-                    "CONGRATULATIONS",
+                    langProvider.getText('congratulations').toUpperCase(),
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

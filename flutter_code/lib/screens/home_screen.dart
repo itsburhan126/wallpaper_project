@@ -6,12 +6,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../providers/app_provider.dart';
+import '../providers/language_provider.dart';
 import '../utils/constants.dart';
 import '../widgets/wallpaper_tab.dart';
 import '../widgets/shimmer_loading.dart';
 import '../models/category_model.dart';
 import 'shorts_screen.dart';
+import 'task_screen.dart';
 import '../utils/app_theme.dart';
+import '../widgets/toast/professional_toast.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,16 +24,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Fixed tabs
-  final List<String> _fixedTabs = ["Hot", "New", "Rankings"];
   int _currentBannerIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    
+    final List<String> fixedTabs = [
+      languageProvider.getText('tab_hot'),
+      languageProvider.getText('tab_new'),
+      languageProvider.getText('tab_rankings')
+    ];
+
     return Consumer<AppProvider>(
       builder: (context, provider, _) {
         // Construct the full list of tabs: Fixed + Categories
-        final List<String> tabs = [..._fixedTabs];
+        final List<String> tabs = [...fixedTabs];
         
         if (provider.categories.isNotEmpty) {
           tabs.addAll(provider.categories.map((c) => c.name));
@@ -76,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const SizedBox(width: 10),
                                       Expanded(
                                         child: Text(
-                                          "Search wallpapers...",
+                                          languageProvider.getText('search_hint'),
                                           style: GoogleFonts.poppins(
                                             color: Colors.white.withOpacity(0.7),
                                             fontSize: 14,
@@ -109,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       const Icon(Icons.play_circle_fill, color: Colors.white, size: 16),
                                       const SizedBox(width: 4),
                                       Text(
-                                        "Shorts",
+                                        languageProvider.getText('nav_shorts'),
                                         style: GoogleFonts.poppins(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
@@ -121,20 +130,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               const SizedBox(width: 15),
-                              const Icon(FontAwesomeIcons.gift, color: Colors.orange, size: 22),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const TaskScreen()),
+                                  );
+                                },
+                                child: const Icon(FontAwesomeIcons.gift, color: Colors.orange, size: 22),
+                              ),
                               const SizedBox(width: 15),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFDD835),
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Text(
-                                  "VIP",
-                                  style: GoogleFonts.poppins(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 12,
+                              GestureDetector(
+                                onTap: () {
+                                  ProfessionalToast.showLoading(context, message: languageProvider.getText('coming_soon'));
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFFDD835),
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Text(
+                                    languageProvider.getText('vip'),
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
                                   ),
                                 ),
                               ),
@@ -176,23 +198,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 body: TabBarView(
                   children: tabs.map((tabName) {
                     // 1. Hot Tab (with Banner)
-                    if (tabName == "Hot") {
+                    if (tabName == languageProvider.getText('tab_hot')) {
                       return WallpaperTab(
                         isHot: true,
                         header: _buildBanner(provider),
-                        identifier: tabName,
+                        identifier: "Hot",
                       );
                     }
                     
                     // 2. New Tab
-                    if (tabName == "New") {
-                      return WallpaperTab(isHot: false, identifier: tabName);
+                    if (tabName == languageProvider.getText('tab_new')) {
+                      return WallpaperTab(isHot: false, identifier: "New");
                     }
 
-                    // 3. Rankings Tab (Placeholder for now)
-                    if (tabName == "Rankings") {
-                       // You might want to implement a RankingsTab later or use WallpaperTab with specific sort
-                       return WallpaperTab(isHot: false, identifier: tabName);
+                    // 3. Rankings Tab
+                    if (tabName == languageProvider.getText('tab_rankings')) {
+                       return WallpaperTab(isHot: false, identifier: "Rankings");
                     }
 
                     // 4. Category Tabs
@@ -217,6 +238,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBanner(AppProvider provider) {
+    final languageProvider = Provider.of<LanguageProvider>(context);
     if (provider.isLoading && provider.banners.isEmpty) {
       return const BannerShimmer();
     }
@@ -281,7 +303,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "Featured",
+                                languageProvider.getText('banner_featured'),
                                 style: GoogleFonts.poppins(
                                   color: Colors.white,
                                   fontSize: 12,
@@ -289,7 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               Text(
-                                "Check This Out",
+                                languageProvider.getText('banner_check_out'),
                                 style: GoogleFonts.blackOpsOne(
                                   color: const Color(0xFFFFD700), // Gold
                                   fontSize: 24,

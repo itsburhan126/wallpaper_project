@@ -12,8 +12,13 @@ class BannerController extends Controller
 {
     public function index()
     {
+        $stats = [
+            'total' => Banner::count(),
+            'active' => Banner::where('status', true)->count(),
+            'inactive' => Banner::where('status', false)->count(),
+        ];
         $banners = Banner::latest()->get();
-        return view('admin.banners.index', compact('banners'));
+        return view('admin.banners.index', compact('banners', 'stats'));
     }
 
     public function create()

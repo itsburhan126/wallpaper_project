@@ -4,6 +4,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/app_provider.dart';
+import '../providers/language_provider.dart';
 import '../services/google_ad_service.dart';
 import '../widgets/toast/professional_toast.dart';
 import '../widgets/coin_animation_overlay.dart';
@@ -74,7 +75,7 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
         if (_elapsedSeconds >= widget.durationSeconds && !_isTimerComplete) {
           _isTimerComplete = true;
           // Notify user slightly that they can now exit
-          ProfessionalToast.showSuccess(context, message: "Goal Reached! Return to menu to claim reward.");
+          ProfessionalToast.showSuccess(context, message: Provider.of<LanguageProvider>(context, listen: false).getText('goal_reached_msg'));
         }
       });
     });
@@ -211,7 +212,7 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
                               const Icon(Icons.timer, color: Colors.white70, size: 14),
                               const SizedBox(width: 4),
                               Text(
-                                "${widget.durationSeconds - _elapsedSeconds}s",
+                                "${widget.durationSeconds - _elapsedSeconds}${Provider.of<LanguageProvider>(context).getText('seconds_short')}",
                                 style: GoogleFonts.roboto(
                                   color: Colors.black87,
                                   fontSize: 12,

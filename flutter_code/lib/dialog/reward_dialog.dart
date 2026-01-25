@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../providers/language_provider.dart';
 
 class RewardDialog extends StatefulWidget {
   final int rewardAmount;
@@ -46,6 +48,8 @@ class _RewardDialogState extends State<RewardDialog> {
     final double value = widget.coinRate > 0 
         ? widget.rewardAmount / widget.coinRate 
         : 0.0;
+    
+    final langProvider = Provider.of<LanguageProvider>(context);
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -157,7 +161,7 @@ class _RewardDialogState extends State<RewardDialog> {
                             ],
                           )
                         : Text(
-                            "Receive",
+                            langProvider.getText('receive'),
                             style: GoogleFonts.poppins(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -191,7 +195,7 @@ class _RewardDialogState extends State<RewardDialog> {
                 ],
               ),
               child: Text(
-                "Congratulations",
+                langProvider.getText('congratulations'),
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

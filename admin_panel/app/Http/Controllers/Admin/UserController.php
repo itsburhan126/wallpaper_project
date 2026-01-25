@@ -14,6 +14,13 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
+        $stats = [
+            'total' => User::count(),
+            'active' => User::where('status', true)->count(),
+            'blocked' => User::where('status', false)->count(),
+            'new_today' => User::whereDate('created_at', today())->count(),
+        ];
+
         $query = User::query();
 
         if ($request->has('search')) {
@@ -26,7 +33,7 @@ class UserController extends Controller
 
         $users = $query->withCount(['referrals', 'redeemRequests'])->latest()->paginate(15);
 
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', compact('users', 'stats'));
     }
 
     public function show(Request $request, $id)

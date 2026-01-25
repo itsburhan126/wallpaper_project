@@ -54,6 +54,11 @@ class User extends Authenticatable
         return $this->hasMany(AdWatchLog::class);
     }
 
+    public function supportTickets()
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

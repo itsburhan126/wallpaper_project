@@ -8,6 +8,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../models/short_model.dart';
 import '../providers/shorts_provider.dart';
 import '../providers/app_provider.dart';
+import '../providers/language_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/google_ad_service.dart';
 import '../providers/ad_provider.dart';
@@ -17,6 +18,8 @@ import '../dialog/reward_dialog.dart';
 import '../widgets/toast/professional_toast.dart';
 import '../dialog/ad_error_dialog.dart';
 import '../utils/app_theme.dart';
+
+import 'package:url_launcher/url_launcher.dart';
 
 class ShortsScreen extends StatefulWidget {
   const ShortsScreen({super.key});
@@ -53,8 +56,8 @@ class _ShortsScreenState extends State<ShortsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.darkBackgroundColor,
-      body: Consumer<ShortsProvider>(
-        builder: (context, provider, child) {
+      body: Consumer2<ShortsProvider, LanguageProvider>(
+        builder: (context, provider, languageProvider, child) {
           if (provider.isLoading && provider.shorts.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -66,9 +69,9 @@ class _ShortsScreenState extends State<ShortsScreen> {
                 children: [
                   Icon(Icons.video_library_outlined, size: 80, color: Colors.grey[700]),
                   const SizedBox(height: 16),
-                  const Text(
-                    "No shorts available yet",
-                    style: TextStyle(
+                  Text(
+                    languageProvider.getText('no_shorts'),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -76,7 +79,7 @@ class _ShortsScreenState extends State<ShortsScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Check back later for new content!",
+                    languageProvider.getText('check_back'),
                     style: TextStyle(color: Colors.grey[500]),
                   ),
                   const SizedBox(height: 24),
@@ -85,7 +88,7 @@ class _ShortsScreenState extends State<ShortsScreen> {
                       provider.fetchShorts();
                     },
                     icon: const Icon(Icons.refresh),
-                    label: const Text("Refresh"),
+                    label: Text(languageProvider.getText('refresh')),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.indigo,
                       foregroundColor: Colors.white,
@@ -178,7 +181,7 @@ class ProfessionalRewardButton extends StatelessWidget {
                   children: [
                     const Icon(Icons.stars_rounded, color: Colors.white, size: 32),
                     Text(
-                      "CLAIM",
+                      Provider.of<LanguageProvider>(context).getText('claim'),
                       style: GoogleFonts.poppins(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
@@ -202,11 +205,11 @@ class ProfessionalRewardButton extends StatelessWidget {
                       .rotate(begin: -0.05, end: 0.05, duration: 1000.ms),
                   const SizedBox(height: 2),
                   Text(
-                    "${remainingTime}s",
+                    "$remainingTime",
                     style: GoogleFonts.poppins(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                      fontSize: 16,
                     ),
                   ),
                 ],
@@ -328,6 +331,20 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
     if (_controller != null && _controller!.value.hasError) {
       if (mounted) setState(() {});
     }
+  }
+
+  String _getFriendlyErrorMessage(String? error) {
+    if (error == null) return '';
+    if (error.contains('NO_EXCEEDS_CAPABILITIES')) {
+      return "This video resolution is too high for your device.";
+    }
+    if (error.contains('Source error') || error.contains('403') || error.contains('404')) {
+      return "Video source not found or access denied.";
+    }
+    if (error.contains('Network') || error.contains('connection') || error.contains('SocketException')) {
+      return "Please check your internet connection.";
+    }
+    return "An unexpected error occurred while playing video.";
   }
 
   // Called when this page becomes visible
@@ -519,21 +536,57 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.error_outline, color: Colors.red, size: 40),
-                          const SizedBox(height: 8),
-                          const Text(
-                            "Failed to load video",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          if (_controller!.value.errorDescription != null)
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                _controller!.value.errorDescription!,
-                                style: const TextStyle(color: Colors.grey, fontSize: 10),
-                                textAlign: TextAlign.center,
-                              ),
+                          const Icon(Icons.error_outline_rounded, color: Colors.white54, size: 48),
+                          const SizedBox(height: 16),
+                          Text(
+                            Provider.of<LanguageProvider>(context).getText('failed_load_video'),
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600
                             ),
+                          ),
+                          const SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                            child: Text(
+                              _getFriendlyErrorMessage(_controller!.value.errorDescription),
+                              style: GoogleFonts.poppins(color: Colors.white54, fontSize: 12),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                               _initializePlayer();
+                            },
+                            icon: const Icon(Icons.refresh_rounded, size: 18),
+                            label: Text(Provider.of<LanguageProvider>(context).getText('refresh')),
+                             style: ElevatedButton.styleFrom(
+                               backgroundColor: Colors.white.withOpacity(0.1),
+                               foregroundColor: Colors.white,
+                               elevation: 0,
+                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                             ),
+                           ),
+                           const SizedBox(height: 16),
+                           TextButton.icon(
+                             onPressed: () async {
+                               final uri = Uri.parse(widget.short.videoUrl);
+                               if (await canLaunchUrl(uri)) {
+                                 await launchUrl(uri, mode: LaunchMode.externalApplication);
+                               }
+                             },
+                             icon: const Icon(Icons.open_in_new_rounded, size: 16),
+                             label: Text(
+                               "Open in External Player",
+                               style: GoogleFonts.poppins(color: Colors.white70, fontSize: 13),
+                             ),
+                             style: TextButton.styleFrom(
+                               foregroundColor: Colors.white70,
+                             ),
+                           )
                         ],
                       ),
                     )
@@ -570,7 +623,7 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
                 const SizedBox(height: 20),
                 _buildActionBtn(Icons.comment, "${widget.short.commentsCount}", _showCommentsSheet),
                 const SizedBox(height: 20),
-                _buildActionBtn(Icons.share, "Share", _shareShort),
+                _buildActionBtn(Icons.share, Provider.of<LanguageProvider>(context).getText('share'), _shareShort),
               ],
             ),
           ),

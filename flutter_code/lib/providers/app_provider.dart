@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'dart:io';
 import '../models/wallpaper_model.dart';
 import '../models/category_model.dart';
 import '../models/banner_model.dart';
@@ -96,6 +98,15 @@ class AppProvider with ChangeNotifier {
 
   AppProvider() {
     _loadInitialData();
+  }
+
+  // Delegate View/Download to ApiService
+  Future<bool> viewWallpaper(String id) async {
+    return await _apiService.viewWallpaper(id);
+  }
+
+  Future<bool> downloadWallpaper(String id) async {
+    return await _apiService.downloadWallpaper(id);
   }
 
   bool _isUserLoading = false;
@@ -285,6 +296,27 @@ class AppProvider with ChangeNotifier {
 
   int _totalReferralEarnings = 0;
   int get totalReferralEarnings => _totalReferralEarnings;
+
+  // Profile Management
+  Future<Map<String, dynamic>> updateProfile(String name) async {
+    final result = await _apiService.updateProfile(name);
+    if (result['success'] == true) {
+      await setUser(result['data']);
+    }
+    return result;
+  }
+
+  Future<Map<String, dynamic>> changePassword(String currentPassword, String newPassword) async {
+    return await _apiService.changePassword(currentPassword, newPassword);
+  }
+
+  Future<Map<String, dynamic>> updateAvatar(File imageFile) async {
+    final result = await _apiService.updateAvatar(imageFile);
+    if (result['success'] == true) {
+      await setUser(result['data']);
+    }
+    return result;
+  }
 
   Future<void> setUser(Map<String, dynamic> data) async {
     print("------- PROVIDER SET USER DEBUG -------");

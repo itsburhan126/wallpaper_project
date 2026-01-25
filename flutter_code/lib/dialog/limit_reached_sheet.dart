@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../utils/app_theme.dart';
+import '../providers/language_provider.dart';
 
 class LimitReachedSheet extends StatelessWidget {
   final String title;
@@ -8,7 +10,7 @@ class LimitReachedSheet extends StatelessWidget {
   final IconData icon;
   final Color color;
   final VoidCallback? onPressed;
-  final String buttonText;
+  final String? buttonText;
 
   const LimitReachedSheet({
     super.key,
@@ -17,11 +19,12 @@ class LimitReachedSheet extends StatelessWidget {
     required this.icon,
     required this.color,
     this.onPressed,
-    this.buttonText = "OK",
+    this.buttonText,
   });
 
   @override
   Widget build(BuildContext context) {
+    final langProvider = Provider.of<LanguageProvider>(context);
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -111,7 +114,7 @@ class LimitReachedSheet extends StatelessWidget {
                 elevation: 0,
               ),
               child: Text(
-                buttonText,
+                buttonText ?? langProvider.getText('ok'),
                 style: GoogleFonts.poppins(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

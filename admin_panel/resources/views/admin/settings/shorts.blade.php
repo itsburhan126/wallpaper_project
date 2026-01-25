@@ -4,78 +4,80 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto">
-    <!-- Header -->
-    <div class="mb-8">
-        <h1 class="text-2xl font-bold text-slate-800">Shorts Settings</h1>
-        <p class="text-sm text-slate-500 mt-1">Configure global settings for short videos</p>
-    </div>
+    <form action="{{ route('admin.settings.shorts.update') }}" method="POST" class="space-y-8">
+        @csrf
 
-    @if(session('success'))
-        <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg flex items-center gap-2 mb-6">
-            <i class="fas fa-check-circle"></i>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
-
-    <div class="grid grid-cols-1 gap-6">
         <!-- Reward Settings -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
-                <i class="fas fa-gift text-indigo-500"></i>
-                <h3 class="font-semibold text-slate-800">Reward Configuration</h3>
+        <div class="bg-white rounded-2xl shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] border border-slate-100 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm">
+                        <i class="fas fa-gift text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Reward Configuration</h3>
+                        <p class="text-sm text-slate-500">Configure rewards for watching short videos</p>
+                    </div>
+                </div>
             </div>
             
-            <form action="{{ route('admin.settings.shorts.update') }}" method="POST" class="p-6 space-y-6">
-                @csrf
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-8 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Reward Timer -->
                     <div>
-                        <label for="shorts_reward_timer" class="block text-sm font-semibold text-slate-700 mb-2">Reward Timer (Seconds) <span class="text-red-500">*</span></label>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Reward Timer (Seconds)</label>
                         <div class="relative">
-                            <i class="fas fa-stopwatch absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="number" name="shorts_reward_timer" id="shorts_reward_timer" required min="5" 
+                            <input type="number" name="shorts_reward_timer" required min="5" 
                                 value="{{ $settings['shorts_reward_timer'] ?? 15 }}"
-                                class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm">
+                                class="w-full pl-10 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium text-slate-800">
+                            <div class="absolute left-4 top-3.5 text-slate-400">
+                                <i class="fas fa-stopwatch"></i>
+                            </div>
                         </div>
-                        <p class="text-xs text-slate-500 mt-1.5">How many seconds a user must watch before the reward button appears.</p>
+                        <p class="text-xs text-slate-500 mt-2 flex items-center gap-1">
+                            <i class="fas fa-info-circle"></i> How many seconds a user must watch before the reward button appears.
+                        </p>
                     </div>
 
                     <!-- Reward Amount (Coins) -->
                     <div>
-                        <label for="shorts_reward_coins" class="block text-sm font-semibold text-slate-700 mb-2">Reward Amount (Coins)</label>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Reward Amount (Coins)</label>
                         <div class="relative">
-                            <i class="fas fa-coins absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                            <input type="number" name="shorts_reward_coins" id="shorts_reward_coins" required min="1" 
+                            <input type="number" name="shorts_reward_coins" required min="1" 
                                 value="{{ $settings['shorts_reward_coins'] ?? 10 }}"
-                                class="w-full pl-10 pr-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm">
+                                class="w-full pl-10 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium text-slate-800">
+                            <div class="absolute left-4 top-3.5 text-slate-400">
+                                <i class="fas fa-coins"></i>
+                            </div>
                         </div>
-                        <p class="text-xs text-slate-500 mt-1.5">Coins awarded after watching the ad.</p>
+                        <p class="text-xs text-slate-500 mt-2 flex items-center gap-1">
+                            <i class="fas fa-info-circle"></i> Coins awarded after watching the ad.
+                        </p>
                     </div>
                 </div>
-
-                <div class="flex justify-end pt-4">
-                    <button type="submit" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium shadow-md shadow-indigo-500/20 flex items-center gap-2">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
 
         <!-- Ad Fallback Settings -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center gap-2">
-                <i class="fas fa-ad text-indigo-500"></i>
-                <h3 class="font-semibold text-slate-800">Ad Fallback Configuration</h3>
+        <div class="bg-white rounded-2xl shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] border border-slate-100 overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm">
+                        <i class="fas fa-layer-group text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Ad Fallback Configuration</h3>
+                        <p class="text-sm text-slate-500">Configure ad networks priority for shorts</p>
+                    </div>
+                </div>
             </div>
             
-            <form action="{{ route('admin.settings.shorts.update') }}" method="POST" class="p-6 space-y-6">
-                @csrf
+            <div class="p-8 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Fallback 1 -->
-                    <div>
-                        <label for="ad_fallback_1" class="block text-sm font-semibold text-slate-700 mb-2">Fallback Priority 1</label>
-                        <select name="ad_fallback_1" id="ad_fallback_1" class="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">1st Priority</label>
+                        <select name="ad_fallback_1" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all bg-white font-medium text-slate-800">
                             <option value="admob" {{ ($settings['ad_fallback_1'] ?? 'admob') == 'admob' ? 'selected' : '' }}>AdMob</option>
                             <option value="applovin" {{ ($settings['ad_fallback_1'] ?? '') == 'applovin' ? 'selected' : '' }}>AppLovin</option>
                             <option value="unity" {{ ($settings['ad_fallback_1'] ?? '') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
@@ -83,13 +85,12 @@
                             <option value="startapp" {{ ($settings['ad_fallback_1'] ?? '') == 'startapp' ? 'selected' : '' }}>StartApp</option>
                             <option value="none" {{ ($settings['ad_fallback_1'] ?? '') == 'none' ? 'selected' : '' }}>None</option>
                         </select>
-                        <p class="text-xs text-slate-500 mt-1.5">First ad network to try.</p>
                     </div>
 
                     <!-- Fallback 2 -->
-                    <div>
-                        <label for="ad_fallback_2" class="block text-sm font-semibold text-slate-700 mb-2">Fallback Priority 2</label>
-                        <select name="ad_fallback_2" id="ad_fallback_2" class="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">2nd Priority</label>
+                        <select name="ad_fallback_2" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all bg-white font-medium text-slate-800">
                             <option value="admob" {{ ($settings['ad_fallback_2'] ?? '') == 'admob' ? 'selected' : '' }}>AdMob</option>
                             <option value="applovin" {{ ($settings['ad_fallback_2'] ?? '') == 'applovin' ? 'selected' : '' }}>AppLovin</option>
                             <option value="unity" {{ ($settings['ad_fallback_2'] ?? '') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
@@ -97,13 +98,12 @@
                             <option value="startapp" {{ ($settings['ad_fallback_2'] ?? '') == 'startapp' ? 'selected' : '' }}>StartApp</option>
                             <option value="none" {{ ($settings['ad_fallback_2'] ?? 'none') == 'none' ? 'selected' : '' }}>None</option>
                         </select>
-                        <p class="text-xs text-slate-500 mt-1.5">If Priority 1 fails, try this.</p>
                     </div>
 
                     <!-- Fallback 3 -->
-                    <div>
-                        <label for="ad_fallback_3" class="block text-sm font-semibold text-slate-700 mb-2">Fallback Priority 3</label>
-                        <select name="ad_fallback_3" id="ad_fallback_3" class="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all text-sm">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">3rd Priority</label>
+                        <select name="ad_fallback_3" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all bg-white font-medium text-slate-800">
                             <option value="admob" {{ ($settings['ad_fallback_3'] ?? '') == 'admob' ? 'selected' : '' }}>AdMob</option>
                             <option value="applovin" {{ ($settings['ad_fallback_3'] ?? '') == 'applovin' ? 'selected' : '' }}>AppLovin</option>
                             <option value="unity" {{ ($settings['ad_fallback_3'] ?? '') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
@@ -111,17 +111,17 @@
                             <option value="startapp" {{ ($settings['ad_fallback_3'] ?? '') == 'startapp' ? 'selected' : '' }}>StartApp</option>
                             <option value="none" {{ ($settings['ad_fallback_3'] ?? 'none') == 'none' ? 'selected' : '' }}>None</option>
                         </select>
-                        <p class="text-xs text-slate-500 mt-1.5">Final backup ad network.</p>
                     </div>
                 </div>
-
-                <div class="flex justify-end pt-4">
-                    <button type="submit" class="px-6 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all text-sm font-medium shadow-md shadow-indigo-500/20 flex items-center gap-2">
-                        <i class="fas fa-save"></i> Save Changes
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
+
+        <div class="flex justify-end">
+            <button type="submit" class="px-8 py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-3">
+                <i class="fas fa-save text-lg"></i>
+                <span>Save Settings</span>
+            </button>
+        </div>
+    </form>
 </div>
 @endsection

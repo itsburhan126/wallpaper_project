@@ -16,7 +16,11 @@ class StaffController extends Controller
             $q->where('slug', '!=', 'super-admin');
         })->orWhereDoesntHave('role')->latest()->get();
         
-        return view('admin.staff.index', compact('staff'));
+        $stats = [
+            'total' => $staff->count(),
+        ];
+        
+        return view('admin.staff.index', compact('staff', 'stats'));
     }
 
     public function create()

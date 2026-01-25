@@ -20,6 +20,7 @@ class BannerController extends Controller
                 'id' => $banner->id,
                 'title' => $banner->title,
                 'image_url' => FilePath::getUrl($banner->image),
+                'link' => $banner->link,
                 'status' => $banner->status,
             ];
         });
@@ -34,7 +35,7 @@ class BannerController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'title' => 'nullable|string'
         ]);
 

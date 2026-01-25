@@ -110,6 +110,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('settings/deep-link', [\App\Http\Controllers\Admin\SettingController::class, 'deepLink'])->name('settings.deep_link');
             Route::post('settings/deep-link', [\App\Http\Controllers\Admin\SettingController::class, 'updateDeepLink'])->name('settings.deep_link.update');
 
+            Route::get('settings/security', [\App\Http\Controllers\Admin\SettingController::class, 'security'])->name('settings.security');
+            Route::post('settings/security', [\App\Http\Controllers\Admin\SettingController::class, 'updateSecurity'])->name('settings.security.update');
+
             // Redeem Requests
             Route::get('redeem/requests', [\App\Http\Controllers\Admin\RedeemController::class, 'requests'])->name('redeem.requests.index');
             Route::put('redeem/requests/{id}', [\App\Http\Controllers\Admin\RedeemController::class, 'updateRequestStatus'])->name('redeem.requests.update');

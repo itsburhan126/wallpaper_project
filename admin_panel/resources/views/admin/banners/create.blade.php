@@ -28,6 +28,14 @@
                         placeholder="e.g. Summer Sale">
                 </div>
 
+                <!-- Link -->
+                <div>
+                    <label for="link" class="block text-sm font-medium text-slate-700 mb-1">URL (Optional)</label>
+                    <input type="url" name="link" id="link"
+                        class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all placeholder-slate-400"
+                        placeholder="e.g. https://google.com">
+                </div>
+
                 <!-- Image -->
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Banner Image <span class="text-red-500">*</span></label>

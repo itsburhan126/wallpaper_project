@@ -30,7 +30,7 @@ class ShortController extends Controller
         $request->validate([
             'title' => 'nullable|string|max:255',
             'video' => 'required|mimes:mp4,mov,ogg,qt|max:102400', // 100MB max
-            'thumbnail' => 'nullable|image|max:2048',
+            'thumbnail' => 'nullable|image|max:10240',
         ]);
 
         $short = new Short();

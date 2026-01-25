@@ -270,4 +270,28 @@ class SettingController extends Controller
 
         return redirect()->back()->with('success', 'Deep link settings updated successfully.');
     }
+
+    public function security()
+    {
+        $keys = [
+            'security_vpn_block', 
+            'security_one_device', 
+            'security_root_block',
+            'security_dev_mode_block',
+            'security_emulator_block'
+        ];
+        $settings = Setting::whereIn('key', $keys)->pluck('value', 'key');
+        return view('admin.settings.security', compact('settings'));
+    }
+
+    public function updateSecurity(Request $request)
+    {
+        $data = $request->except('_token');
+        
+        foreach ($data as $key => $value) {
+            Setting::set($key, $value, 'security');
+        }
+
+        return redirect()->back()->with('success', 'Security settings updated successfully.');
+    }
 }

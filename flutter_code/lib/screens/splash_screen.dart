@@ -5,12 +5,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/constants.dart';
+import '../config/api_config.dart';
 import 'intro_screen.dart';
 import 'main_screen.dart';
 import '../providers/ad_provider.dart';
 import '../providers/language_provider.dart';
 import '../services/google_ad_service.dart';
 import '../services/api_service.dart';
+import '../services/security_service.dart';
 import 'auth/login_screen.dart';
 import '../utils/app_theme.dart';
 
@@ -32,6 +34,10 @@ class _SplashScreenState extends State<SplashScreen> {
     // Start fetching ad settings immediately
     final adProvider = Provider.of<AdProvider>(context, listen: false);
     
+    // Check Security First
+    bool isSafe = await SecurityService().checkSecurity(context);
+    if (!isSafe) return; // Stop if security violation detected
+
     // Define validation result
     bool isTokenValid = false;
 
@@ -161,7 +167,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         const SizedBox(height: 30),
                         
                         Text(
-                          langProvider.getText('app_name'),
+                          AppConfig.appName,
                           style: GoogleFonts.poppins(
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
@@ -175,18 +181,18 @@ class _SplashScreenState extends State<SplashScreen> {
                               ),
                             ],
                           ),
-                        ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.5, end: 0),
+                        ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.5, end: 0),
                         
                         const SizedBox(height: 10),
                         
                         Text(
-                          langProvider.getText('app_tagline'),
+                          AppConfig.appTagline,
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             color: Colors.grey,
                             letterSpacing: 1,
                           ),
-                        ).animate().fadeIn(delay: 800.ms),
+                        ).animate().fadeIn(delay: 300.ms),
                       ],
                     ),
                   ),

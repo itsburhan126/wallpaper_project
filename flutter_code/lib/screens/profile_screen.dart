@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../services/api_service.dart';
+import 'auth/login_screen.dart';
 import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
 import '../utils/app_theme.dart';
@@ -14,6 +16,7 @@ import 'page_viewer_screen.dart';
 import '../widgets/toast/professional_toast.dart';
 import 'rewards/reward_history_screen.dart';
 import 'rewards/redeem_screen.dart';
+import 'referral_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -54,7 +57,12 @@ class ProfileScreen extends StatelessWidget {
                             icon: Icons.notifications_outlined,
                             title: languageProvider.getText('notifications'),
                             badge: "2",
-                            onTap: () {},
+                            onTap: () {
+                              ProfessionalToast.showSuccess(
+                                context,
+                                message: languageProvider.getText('coming_soon'),
+                              );
+                            },
                           ),
                           _MenuItem(
                             icon: Icons.wallet_giftcard,
@@ -73,6 +81,16 @@ class ProfileScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => const RedeemScreen()),
+                              );
+                            },
+                          ),
+                          _MenuItem(
+                            icon: Icons.group_add_rounded,
+                            title: "Refer & Earn",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const ReferralScreen()),
                               );
                             },
                           ),
@@ -178,7 +196,9 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 32),
-                      _buildLogoutButton(languageProvider),
+                      _buildLogoutButton(context, languageProvider),
+                      const SizedBox(height: 16),
+                      _buildDeleteAccountButton(context, languageProvider),
                       const SizedBox(height: 40),
                       Text(
                         "${languageProvider.getText('version')} 1.0.0",
@@ -618,7 +638,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLogoutButton(LanguageProvider provider) {
+  Widget _buildLogoutButton(BuildContext context, LanguageProvider provider) {
     return Container(
       width: double.infinity,
       height: 56,
@@ -630,7 +650,9 @@ class ProfileScreen extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            _showLogoutDialog(context, provider);
+          },
           borderRadius: BorderRadius.circular(16),
           child: Center(
             child: Row(
@@ -652,6 +674,179 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     ).animate().fadeIn().slideY(begin: 1, end: 0);
+  }
+
+  Widget _buildDeleteAccountButton(BuildContext context, LanguageProvider provider) {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.red.withOpacity(0.3)),
+        color: Colors.red.withOpacity(0.05),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            _showDeleteAccountDialog(context, provider);
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.delete_forever_rounded, color: Colors.red),
+                const SizedBox(width: 8),
+                Text(
+                  provider.getText('delete_account') == 'delete_account' ? 'Delete Account' : provider.getText('delete_account'),
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.red,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ).animate().fadeIn().slideY(begin: 1, end: 0, delay: 100.ms);
+  }
+
+  void _showLogoutDialog(BuildContext context, LanguageProvider provider) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF1F1B2E),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+        ),
+        title: Text(
+          provider.getText('logout'),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          "Are you sure you want to logout?",
+          style: GoogleFonts.poppins(
+            color: Colors.white70,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              provider.getText('cancel') == 'cancel' ? 'Cancel' : provider.getText('cancel'),
+              style: GoogleFonts.poppins(color: Colors.white54),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final appProvider = Provider.of<AppProvider>(context, listen: false);
+              await appProvider.logout();
+              if (context.mounted) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+                );
+              }
+            },
+            child: Text(
+              provider.getText('logout'),
+              style: GoogleFonts.poppins(color: Colors.redAccent, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context, LanguageProvider provider) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: const Color(0xFF1F1B2E),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+        ),
+        title: Text(
+          provider.getText('delete_account') == 'delete_account' ? 'Delete Account' : provider.getText('delete_account'),
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          "Are you sure you want to delete your account? This action cannot be undone and you will lose all your data.",
+          style: GoogleFonts.poppins(
+            color: Colors.white70,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(
+              provider.getText('cancel') == 'cancel' ? 'Cancel' : provider.getText('cancel'),
+              style: GoogleFonts.poppins(color: Colors.white54),
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              _handleDeleteAccount(context);
+            },
+            child: Text(
+              provider.getText('delete') == 'delete' ? 'Delete' : provider.getText('delete'),
+              style: GoogleFonts.poppins(color: Colors.redAccent, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleDeleteAccount(BuildContext context) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      builder: (context) => const Center(child: CircularProgressIndicator(color: Colors.amber)),
+    );
+
+    final apiService = ApiService();
+    final success = await apiService.deleteAccount();
+
+    if (context.mounted) {
+      Navigator.of(context, rootNavigator: true).pop(); // Hide loading
+
+      if (success) {
+        final appProvider = Provider.of<AppProvider>(context, listen: false);
+        await appProvider.logout();
+        
+        if (context.mounted) {
+          ProfessionalToast.showSuccess(
+            context, 
+            message: "Account deleted successfully",
+          );
+
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+            (route) => false,
+          );
+        }
+      } else {
+        ProfessionalToast.showError(
+          context,
+          message: "Failed to delete account. Please try again.",
+        );
+      }
+    }
   }
 }
 

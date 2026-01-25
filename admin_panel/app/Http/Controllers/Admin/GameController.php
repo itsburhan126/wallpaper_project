@@ -31,7 +31,7 @@ class GameController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
             'url' => 'required|url',
             'play_time' => 'required|integer|min:1',
             'win_reward' => 'required|integer|min:0',
@@ -67,7 +67,7 @@ class GameController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
             'url' => 'required|url',
             'play_time' => 'required|integer|min:1',
             'win_reward' => 'required|integer|min:0',

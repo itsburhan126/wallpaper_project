@@ -32,7 +32,7 @@ class WallpaperController extends Controller
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:51200',
         ]);
 
         $imagePath = $request->file('image')->store('wallpapers', 'public');
@@ -61,7 +61,7 @@ class WallpaperController extends Controller
     {
         $request->validate([
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:51200',
         ]);
 
         $data = [

@@ -236,9 +236,15 @@
                 </div>
             </div>
 
-            <!-- Section: System -->
-            <div>
-                <p class="px-4 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">System</p>
+            <!-- Section: System --><a href="{{ route('admin.settings.referral') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.settings.referral') ? 'nav-item-active' : '' }}">
+                    <i class="fas fa-users-cog w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.referral') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
+                    <span>Referral System</span>
+                </a>
+            </div>
+        </div>
+
+        <div>
+            <p class="px-4 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">System</p>
                 <div class="space-y-1">
                     <a href="{{ route('admin.support.index') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.support.*') ? 'nav-item-active' : '' }}">
                         <i class="fas fa-headset w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.support.*') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
@@ -255,6 +261,10 @@
                     <a href="{{ route('admin.settings.api') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.settings.api') ? 'nav-item-active' : '' }}">
                         <i class="fas fa-code w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.api') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
                         <span>API Keys</span>
+                    </a>
+                    <a href="{{ route('admin.settings.security') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.settings.security') ? 'nav-item-active' : '' }}">
+                        <i class="fas fa-shield-alt w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.security') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
+                        <span>Security</span>
                     </a>
                 </div>
             </div>

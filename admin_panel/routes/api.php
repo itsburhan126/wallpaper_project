@@ -81,6 +81,7 @@ Route::get('/settings/game', [SettingController::class, 'game']);
 Route::get('/settings/api', [SettingController::class, 'api']);
 Route::get('/settings/offerwall', [SettingController::class, 'offerwall']);
 Route::get('/settings/shorts', [SettingController::class, 'shorts']);
+Route::get('/settings/security', [SettingController::class, 'security']);
 
 // Shorts
 Route::get('/shorts', [\App\Http\Controllers\Api\ShortController::class, 'index']);

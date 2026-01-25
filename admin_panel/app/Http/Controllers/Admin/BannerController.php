@@ -30,7 +30,8 @@ class BannerController extends Controller
     {
         $request->validate([
             'title' => 'nullable|string|max:255',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'link' => 'nullable|string|url|max:255',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
             'status' => 'boolean',
         ]);
 
@@ -39,10 +40,43 @@ class BannerController extends Controller
         Banner::create([
             'title' => $request->title,
             'image' => $imagePath,
+            'link' => $request->link,
             'status' => $request->has('status'),
         ]);
 
         return redirect()->route('admin.banners.index')->with('success', 'Banner created successfully.');
+    }
+
+    public function edit(Banner $banner)
+    {
+        return view('admin.banners.edit', compact('banner'));
+    }
+
+    public function update(Request $request, Banner $banner)
+    {
+        $request->validate([
+            'title' => 'nullable|string|max:255',
+            'link' => 'nullable|string|url|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
+            'status' => 'boolean',
+        ]);
+
+        $data = [
+            'title' => $request->title,
+            'link' => $request->link,
+            'status' => $request->has('status'),
+        ];
+
+        if ($request->hasFile('image')) {
+            if ($banner->image) {
+                Storage::disk('public')->delete(FilePath::getRelativePath($banner->image));
+            }
+            $data['image'] = $request->file('image')->store(FilePath::FOLDER_BANNERS, 'public');
+        }
+
+        $banner->update($data);
+
+        return redirect()->route('admin.banners.index')->with('success', 'Banner updated successfully.');
     }
 
     public function destroy(Banner $banner)

@@ -602,5 +602,29 @@ class AppProvider with ChangeNotifier {
     await _apiService.incrementPlayCount();
   }
 
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('auth_token');
+    await prefs.remove('user_data');
+    await prefs.remove('user_name');
+    await prefs.remove('user_email');
+    await prefs.remove('user_id');
+    await prefs.remove('user_avatar');
+    await prefs.remove('coins');
+    
+    // Reset State
+    _coins = 0;
+    _userName = "Guest User";
+    _userEmail = "";
+    _userId = "";
+    _userAvatar = "";
+    _userLevel = 1;
+    _referralCode = "";
+    _totalReferrals = 0;
+    _totalReferralEarnings = 0;
+    
+    notifyListeners();
+  }
+
   // Admin Actions removed from Provider as they are now handled via Admin Panel
 }

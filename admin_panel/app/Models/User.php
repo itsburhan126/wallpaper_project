@@ -32,6 +32,7 @@ class User extends Authenticatable
         'last_daily_reward_at',
         'daily_game_count',
         'last_game_date',
+        'device_id',
     ];
 
     public function referrals()

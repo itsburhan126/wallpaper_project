@@ -72,4 +72,14 @@ class SettingController extends Controller
             'data' => $settings
         ]);
     }
+
+    public function security()
+    {
+        $settings = Setting::where('group', 'security')->pluck('value', 'key');
+        
+        return response()->json([
+            'success' => true,
+            'data' => $settings
+        ]);
+    }
 }

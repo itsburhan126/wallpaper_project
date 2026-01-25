@@ -56,7 +56,7 @@ class RedeemController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'icon' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'icon' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
             'priority' => 'integer|min:0',
             'is_active' => 'boolean',
         ]);
@@ -82,7 +82,7 @@ class RedeemController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'icon' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
             'priority' => 'integer|min:0',
             'is_active' => 'boolean',
         ]);

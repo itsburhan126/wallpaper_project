@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
 import '../utils/constants.dart';
@@ -264,64 +265,70 @@ class _HomeScreenState extends State<HomeScreen> {
             items: provider.banners.map((banner) {
               return Builder(
                 builder: (BuildContext context) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        CachedNetworkImage(
-                          imageUrl: banner.imageUrl,
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) => Container(
-                            color: Colors.grey[900],
-                            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  return GestureDetector(
+                    onTap: () async {
+                      if (banner.linkUrl != null && banner.linkUrl!.isNotEmpty) {
+                        final Uri url = Uri.parse(banner.linkUrl!);
+                        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+                          if (context.mounted) {
+                            ProfessionalToast.showError(context, message: "Could not launch ${banner.linkUrl}");
+                          }
+                        }
+                      }
+                    },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(15),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CachedNetworkImage(
+                            imageUrl: banner.imageUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey[900],
+                              child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              color: Colors.grey[900],
+                              child: const Icon(Icons.error, color: Colors.white54),
+                            ),
                           ),
-                          errorWidget: (context, url, error) => Container(
-                            color: Colors.grey[900],
-                            child: const Icon(Icons.error, color: Colors.white54),
+                          // Gradient Overlay
+                          if (banner.title != null && banner.title!.isNotEmpty)
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Colors.black.withOpacity(0.8),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                        // Gradient Overlay
-                        Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.transparent,
-                                Colors.black.withOpacity(0.8),
+                          // Text Content
+                          if (banner.title != null && banner.title!.isNotEmpty)
+                          Positioned(
+                            bottom: 15,
+                            left: 15,
+                            right: 15,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  banner.title!,
+                                  style: GoogleFonts.blackOpsOne(
+                                    color: const Color(0xFFFFD700), // Gold
+                                    fontSize: 24,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
-                        ),
-                        // Text Content
-                        Positioned(
-                          bottom: 15,
-                          left: 15,
-                          right: 15,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                languageProvider.getText('banner_featured'),
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Text(
-                                languageProvider.getText('banner_check_out'),
-                                style: GoogleFonts.blackOpsOne(
-                                  color: const Color(0xFFFFD700), // Gold
-                                  fontSize: 24,
-                                  letterSpacing: 1.2,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },

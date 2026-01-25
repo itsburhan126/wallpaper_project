@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Setting;
 use App\Models\ReferralHistory;
+use App\Models\TransactionHistory;
 use App\Notifications\WelcomeNotification;
 use App\Notifications\ReferralBonusNotification;
 use Illuminate\Http\Request;
@@ -23,6 +24,7 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
             'referral_code' => 'nullable|string|exists:users,referral_code',
+            'device_id' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -31,6 +33,18 @@ class AuthController extends Controller
                 'message' => $validator->errors()->first(),
                 'errors' => $validator->errors()
             ], 422);
+        }
+
+        // Check One Device One Account Policy
+        if ($request->device_id && (bool)Setting::get('security_one_device', 0)) {
+            $deviceId = trim($request->device_id);
+            $existingUser = User::where('device_id', $deviceId)->first();
+            if ($existingUser) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Device limit reached. Account already exists.'
+                ], 403);
+            }
         }
 
         DB::beginTransaction();
@@ -44,10 +58,20 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'referral_code' => Str::upper(Str::random(8)),
                 'avatar' => 'default.png',
-                'coins' => 0,
                 'coins' => $signupBonus,
                 'referred_by' => $request->referral_code,
+                'device_id' => $request->device_id ? trim($request->device_id) : null,
             ]);
+
+            if ($signupBonus > 0) {
+                TransactionHistory::create([
+                    'user_id' => $user->id,
+                    'type' => 'coin',
+                    'amount' => $signupBonus,
+                    'source' => 'signup_bonus',
+                    'description' => 'Signup Bonus',
+                ]);
+            }
 
             if ($request->referral_code) {
                 $this->processReferral($user, $request->referral_code);
@@ -132,6 +156,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
+            'device_id' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -157,6 +182,12 @@ class AuthController extends Controller
             ], 403);
         }
 
+        // Update device_id if provided and not set
+        if ($request->device_id && !$user->device_id) {
+            $user->device_id = trim($request->device_id);
+            $user->save();
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -177,6 +208,7 @@ class AuthController extends Controller
             'google_id' => 'required|string',
             'avatar' => 'nullable|string',
             'referral_code' => 'nullable|string|exists:users,referral_code',
+            'device_id' => 'nullable|string',
         ]);
 
         if ($validator->fails()) {
@@ -198,6 +230,19 @@ class AuthController extends Controller
             }
 
             if (!$user) {
+                // Check One Device One Account Policy for New Users
+                if ($request->device_id && (bool)Setting::get('security_one_device', 0)) {
+                    $deviceId = trim($request->device_id);
+                    $existingDeviceUser = User::where('device_id', $deviceId)->first();
+                    if ($existingDeviceUser) {
+                        DB::rollBack();
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Device limit reached. Account already exists.'
+                        ], 403);
+                    }
+                }
+
                 $isNewUser = true;
                 $signupBonus = (int) Setting::get('signup_bonus', 100);
 
@@ -210,8 +255,19 @@ class AuthController extends Controller
                     'referral_code' => Str::upper(Str::random(8)),
                     'coins' => $signupBonus,
                     'referred_by' => $request->referral_code,
-                    'status' => true
+                    'status' => true,
+                    'device_id' => $request->device_id ? trim($request->device_id) : null,
                 ]);
+
+                if ($signupBonus > 0) {
+                    TransactionHistory::create([
+                        'user_id' => $user->id,
+                        'type' => 'coin',
+                        'amount' => $signupBonus,
+                        'source' => 'signup_bonus',
+                        'description' => 'Signup Bonus',
+                    ]);
+                }
 
                 if ($request->referral_code) {
                     $this->processReferral($user, $request->referral_code);
@@ -222,6 +278,10 @@ class AuthController extends Controller
                 }
                 if (!$user->google_id) {
                     $user->update(['google_id' => $request->google_id]);
+                }
+                // Update device_id if provided and not set
+                if ($request->device_id && !$user->device_id) {
+                    $user->update(['device_id' => trim($request->device_id)]);
                 }
             }
 

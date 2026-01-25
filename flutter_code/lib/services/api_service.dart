@@ -75,6 +75,26 @@ class ApiService {
     return {};
   }
 
+  Future<Map<String, dynamic>> getSecuritySettings() async {
+    const url = "${ApiConfig.apiUrl}/settings/security";
+    try {
+      _logRequest('GET', url);
+      final response = await http.get(Uri.parse(url));
+      _logResponse('GET', url, response);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        if (data['success'] == true) {
+          return data['data'];
+        }
+      }
+    } catch (e) {
+      _logError('GET', url, e);
+      print('Error fetching security settings: $e');
+    }
+    return {};
+  }
+
   // Pages
   Future<Map<String, dynamic>?> getPage(String slug) async {
     final url = "${ApiConfig.apiUrl}/pages/$slug";
@@ -198,16 +218,20 @@ class ApiService {
   }
 
   // Auth Methods
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(String email, String password, {String? deviceId}) async {
     const url = ApiConfig.login;
     try {
-      final body = json.encode({'email': email, 'password': password});
-      _logRequest('POST', url, body: body);
+      final body = {
+        'email': email, 
+        'password': password,
+        if (deviceId != null) 'device_id': deviceId,
+      };
+      _logRequest('POST', url, body: json.encode(body));
       
       final response = await http.post(
         Uri.parse(url),
         headers: await _getHeaders(),
-        body: body,
+        body: json.encode(body),
       );
       
       _logResponse('POST', url, response);
@@ -225,6 +249,26 @@ class ApiService {
       _logError('POST', url, e);
       return {'success': false, 'message': 'Connection error'};
     }
+  }
+
+  Future<bool> deleteAccount() async {
+    const url = "${ApiConfig.apiUrl}/delete-account";
+    try {
+      _logRequest('POST', url);
+      final response = await http.post(
+        Uri.parse(url),
+        headers: await _getHeaders(),
+      );
+      _logResponse('POST', url, response);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['status'] == true || data['success'] == true;
+      }
+    } catch (e) {
+      _logError('POST', url, e);
+    }
+    return false;
   }
 
   // Support
@@ -417,13 +461,14 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> register(String name, String email, String password, {String? referralCode}) async {
+  Future<Map<String, dynamic>> register(String name, String email, String password, {String? referralCode, String? deviceId}) async {
     const url = ApiConfig.register;
     final body = {
       'name': name,
       'email': email,
       'password': password,
       if (referralCode != null && referralCode.isNotEmpty) 'referral_code': referralCode,
+      if (deviceId != null) 'device_id': deviceId,
     };
     try {
       _logRequest('POST', url, body: body);
@@ -448,13 +493,14 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> googleLogin(String email, String name, String googleId, String? avatar) async {
+  Future<Map<String, dynamic>> googleLogin(String email, String name, String googleId, String? avatar, {String? deviceId}) async {
     const url = ApiConfig.googleLogin;
     final body = {
       'email': email,
       'name': name,
       'google_id': googleId,
       if (avatar != null) 'avatar': avatar,
+      if (deviceId != null) 'device_id': deviceId,
     };
     try {
       _logRequest('POST', url, body: body);
@@ -679,6 +725,7 @@ class ApiService {
         final List<dynamic> list = data['data'] ?? data;
         return list.map((e) => BannerModel(
           id: e['id'].toString(),
+          title: e['title'],
           imageUrl: e['image_url'] ?? e['image'],
           linkUrl: e['link'],
         )).toList();

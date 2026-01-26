@@ -186,6 +186,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                     fit: BoxFit.cover,
                                     width: 32,
                                     height: 32,
+                                    memCacheHeight: 100,
                                     placeholder: (context, url) => const Icon(Icons.person, color: Colors.white, size: 20),
                                     errorWidget: (context, url, error) => const Icon(Icons.person, color: Colors.white, size: 20),
                                   ),

@@ -74,6 +74,10 @@ class MyApp extends StatelessWidget {
                 },
               ),
             ),
+            scrollBehavior: const MaterialScrollBehavior().copyWith(
+              physics: const BouncingScrollPhysics(),
+              scrollbars: false,
+            ),
             home: const SplashScreen(),
           );
         },

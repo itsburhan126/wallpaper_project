@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
@@ -267,7 +268,15 @@ class _RedeemScreenState extends State<RedeemScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 if (gateway['image'] != null)
-                                  Image.network(gateway['image'], height: 40, width: 40, errorBuilder: (_,__,___) => const Icon(Icons.payment, color: Colors.white))
+                                  CachedNetworkImage(
+                                    imageUrl: gateway['image'],
+                                    height: 40,
+                                    width: 40,
+                                    fit: BoxFit.cover,
+                                    memCacheHeight: 100,
+                                    errorWidget: (_,__,___) => const Icon(Icons.payment, color: Colors.white),
+                                    placeholder: (_,__) => const SizedBox(width: 40, height: 40),
+                                  )
                                 else
                                   const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 32),
                                 const SizedBox(height: 8),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -365,12 +366,17 @@ class ProfileScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(color: Colors.white, width: 3),
-                              image: DecorationImage(
-                                image: provider.userAvatar.isNotEmpty
-                                    ? NetworkImage(provider.userAvatar)
-                                    : const NetworkImage("https://i.pravatar.cc/300"),
-                                fit: BoxFit.cover,
-                              ),
+                            ),
+                            child: ClipOval(
+                              child: provider.userAvatar.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      imageUrl: provider.userAvatar,
+                                      fit: BoxFit.cover,
+                                      memCacheHeight: 300,
+                                      placeholder: (context, url) => const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) => Image.network("https://i.pravatar.cc/300", fit: BoxFit.cover),
+                                    )
+                                  : Image.network("https://i.pravatar.cc/300", fit: BoxFit.cover),
                             ),
                           ),
                           Positioned(

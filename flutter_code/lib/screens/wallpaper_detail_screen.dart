@@ -659,6 +659,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
               child: CachedNetworkImage(
                 imageUrl: widget.wallpaper.url,
                 fit: BoxFit.cover,
+                memCacheHeight: MediaQuery.of(context).size.height.toInt() * 2, // High quality but bounded
                 placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
               ),

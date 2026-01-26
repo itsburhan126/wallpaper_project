@@ -40,6 +40,8 @@ class WallpaperCard extends StatelessWidget {
               CachedNetworkImage(
                 imageUrl: wallpaper.thumbUrl,
                 fit: BoxFit.cover,
+                memCacheHeight: 800, // Optimize memory usage
+                fadeInDuration: const Duration(milliseconds: 300), // Smooth fade-in
                 placeholder: (context, url) => Container(
                   color: Colors.grey[850],
                   child: const Center(

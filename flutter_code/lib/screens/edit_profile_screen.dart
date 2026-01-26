@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -232,11 +233,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: _selectedImage != null
                     ? Image.file(_selectedImage!, fit: BoxFit.cover)
                     : (provider.userAvatar.isNotEmpty
-                        ? Image.network(
-                            provider.userAvatar,
+                        ? CachedNetworkImage(
+                            imageUrl: provider.userAvatar,
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) =>
+                            memCacheHeight: 300,
+                            errorWidget: (context, error, stackTrace) =>
                                 Image.network("https://i.pravatar.cc/300", fit: BoxFit.cover),
+                            placeholder: (context, url) => const CircularProgressIndicator(),
                           )
                         : Image.network("https://i.pravatar.cc/300", fit: BoxFit.cover)),
               ),

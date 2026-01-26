@@ -254,6 +254,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                             fit: BoxFit.cover,
                             width: double.infinity,
                             height: double.infinity,
+                            memCacheHeight: 400, // Optimize for grid items
                             placeholder: (context, url) => Container(
                               color: Colors.white10,
                               child: const Center(child: Icon(Icons.gamepad, color: Colors.white24)),

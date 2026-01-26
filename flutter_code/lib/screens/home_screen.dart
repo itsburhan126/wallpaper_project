@@ -297,6 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           CachedNetworkImage(
                             imageUrl: banner.imageUrl,
                             fit: BoxFit.cover,
+                            memCacheHeight: 600, // Optimize memory for banner
                             placeholder: (context, url) => Container(
                               color: Colors.grey[900],
                               child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),

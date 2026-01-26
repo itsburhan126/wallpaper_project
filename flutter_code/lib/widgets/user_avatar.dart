@@ -61,6 +61,7 @@ class UserAvatar extends StatelessWidget {
                   ? CachedNetworkImage(
                       imageUrl: imageUrl!,
                       fit: BoxFit.cover,
+                      memCacheHeight: (radius * 2 * 2).toInt(), // Optimize for avatar size
                       placeholder: (context, url) => Container(
                         color: bgColor,
                         child: Center(

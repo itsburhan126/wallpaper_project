@@ -72,6 +72,7 @@ dependencies:
   flutter_inappwebview: ^6.1.5
   cached_video_player_plus: ^4.1.0
 
+  intl: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -59,7 +59,7 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -90,9 +90,9 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.1),
+                    color: Colors.amber.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                    border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -129,7 +129,7 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                       disabledBackgroundColor: Colors.deepPurple,
                       disabledForegroundColor: Colors.white,
                       elevation: 4,
-                      shadowColor: Colors.deepPurple.withOpacity(0.4),
+                      shadowColor: Colors.deepPurple.withValues(alpha: 0.4),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       padding: EdgeInsets.zero,
                     ),
@@ -169,7 +169,7 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                           ),
                   ),
                 ).animate(onPlay: (c) => c.repeat(reverse: true))
-                .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.2)),
+                .shimmer(duration: 2000.ms, color: Colors.white.withValues(alpha: 0.2)),
 
                 const SizedBox(height: 12),
 
@@ -213,7 +213,7 @@ class _GameRewardDialogState extends State<GameRewardDialog> {
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.purple.withOpacity(0.3),
+                    color: Colors.purple.withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),

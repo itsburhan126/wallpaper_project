@@ -21,7 +21,7 @@ class _UniversalNativeAdState extends State<UniversalNativeAd> {
   String _currentNetwork = '';
   
   // For loading retries
-  int _retryAttempt = 0;
+  // final int _retryAttempt = 0;
 
   @override
   void initState() {
@@ -157,7 +157,7 @@ class _UniversalNativeAdState extends State<UniversalNativeAd> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -185,7 +185,7 @@ class _UniversalNativeAdState extends State<UniversalNativeAd> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
              BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -207,7 +207,7 @@ class _UniversalNativeAdState extends State<UniversalNativeAd> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),

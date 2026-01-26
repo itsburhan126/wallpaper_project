@@ -247,7 +247,7 @@ class AdProvider with ChangeNotifier {
         }
       }
     } catch (e) {
-      print('Error loading ad settings: $e');
+      debugPrint('Error loading ad settings: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

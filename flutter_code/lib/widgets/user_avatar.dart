@@ -42,7 +42,7 @@ class UserAvatar extends StatelessWidget {
         boxShadow: borderWidth > 0
             ? [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 )
@@ -67,7 +67,7 @@ class UserAvatar extends StatelessWidget {
                         child: Center(
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: textColor.withOpacity(0.5),
+                            color: textColor.withValues(alpha: 0.5),
                           ),
                         ),
                       ),

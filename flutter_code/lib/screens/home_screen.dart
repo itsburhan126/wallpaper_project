@@ -3,12 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
-import '../utils/constants.dart';
 import '../widgets/wallpaper_tab.dart';
 import '../widgets/shimmer_loading.dart';
 import '../models/category_model.dart';
@@ -78,19 +76,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: Container(
                                   height: 45,
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.1),
+                                    color: Colors.white.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(25),
                                   ),
                                   padding: const EdgeInsets.symmetric(horizontal: 15),
                                   child: Row(
                                     children: [
-                                      Icon(Icons.search, color: Colors.white.withOpacity(0.5), size: 24),
+                                      Icon(Icons.search, color: Colors.white.withValues(alpha: 0.5), size: 24),
                                       const SizedBox(width: 10),
                                       Expanded(
                                         child: Text(
                                           languageProvider.getText('search_hint'),
                                           style: GoogleFonts.poppins(
-                                            color: Colors.white.withOpacity(0.7),
+                                            color: Colors.white.withValues(alpha: 0.7),
                                             fontSize: 14,
                                           ),
                                           overflow: TextOverflow.ellipsis,
@@ -252,7 +250,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBanner(AppProvider provider) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
+    // final languageProvider = Provider.of<LanguageProvider>(context);
     if (provider.isLoading && provider.banners.isEmpty) {
       return const BannerShimmer();
     }
@@ -316,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 end: Alignment.bottomCenter,
                                 colors: [
                                   Colors.transparent,
-                                  Colors.black.withOpacity(0.8),
+                                  Colors.black.withValues(alpha: 0.8),
                                 ],
                               ),
                             ),
@@ -362,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRadius: BorderRadius.circular(4.0),
                   color: _currentBannerIndex == entry.key
                       ? const Color(0xFFFFD700) // Gold
-                      : Colors.white.withOpacity(0.2),
+                      : Colors.white.withValues(alpha: 0.2),
                 ),
               );
             }).toList(),

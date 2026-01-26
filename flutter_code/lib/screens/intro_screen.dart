@@ -56,7 +56,7 @@ class IntroScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.accent.withOpacity(0.4),
+                      color: AppColors.accent.withValues(alpha: 0.4),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -105,7 +105,7 @@ class IntroScreen extends StatelessWidget {
           shape: BoxShape.circle,
           gradient: RadialGradient(
             colors: [
-              color.withOpacity(0.2),
+              color.withValues(alpha: 0.2),
               Colors.transparent,
             ],
             stops: const [0.5, 1.0],
@@ -114,11 +114,11 @@ class IntroScreen extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white.withOpacity(0.05),
-            border: Border.all(color: color.withOpacity(0.3), width: 2),
+            color: Colors.white.withValues(alpha: 0.05),
+            border: Border.all(color: color.withValues(alpha: 0.3), width: 2),
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.1),
+                color: color.withValues(alpha: 0.1),
                 blurRadius: 20,
                 spreadRadius: 5,
               ),
@@ -142,7 +142,7 @@ class IntroScreen extends StatelessWidget {
         color: Colors.white,
         shadows: [
           Shadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 10,
             offset: const Offset(0, 5),
           ),

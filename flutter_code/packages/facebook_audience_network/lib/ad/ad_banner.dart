@@ -39,6 +39,7 @@ enum BannerAdResult {
 }
 
 class FacebookBannerAd extends StatefulWidget {
+  @override
   final Key? key;
 
   /// Replace the default one with your placement ID for the release build.
@@ -68,7 +69,7 @@ class FacebookBannerAd extends StatefulWidget {
   ///   'error\_message': "No internet connection",
   /// }
   /// ```
-  FacebookBannerAd({
+  const FacebookBannerAd({
     this.key,
     this.placementId = "YOUR_PLACEMENT_ID",
     this.bannerSize = BannerSize.STANDARD,
@@ -109,7 +110,7 @@ class _FacebookBannerAdState extends State<FacebookBannerAd>
       return Container(
         height: containerHeight,
         color: Colors.transparent,
-        child: Container(
+        child: SizedBox(
           width: widget.bannerSize.width.toDouble(),
           child: Center(
             child: UiKitView(
@@ -126,7 +127,7 @@ class _FacebookBannerAdState extends State<FacebookBannerAd>
         ),
       );
     } else {
-      return Container(
+      return SizedBox(
         height: widget.bannerSize.height <= -1
             ? double.infinity
             : widget.bannerSize.height.toDouble(),
@@ -145,8 +146,9 @@ class _FacebookBannerAdState extends State<FacebookBannerAd>
 
       switch (call.method) {
         case ERROR_METHOD:
-          if (widget.listener != null)
+          if (widget.listener != null) {
             widget.listener!(BannerAdResult.ERROR, call.arguments);
+          }
           break;
         case LOADED_METHOD:
           setState(() {
@@ -154,16 +156,19 @@ class _FacebookBannerAdState extends State<FacebookBannerAd>
                 ? double.infinity
                 : widget.bannerSize.height.toDouble();
           });
-          if (widget.listener != null)
+          if (widget.listener != null) {
             widget.listener!(BannerAdResult.LOADED, call.arguments);
+          }
           break;
         case CLICKED_METHOD:
-          if (widget.listener != null)
+          if (widget.listener != null) {
             widget.listener!(BannerAdResult.CLICKED, call.arguments);
+          }
           break;
         case LOGGING_IMPRESSION_METHOD:
-          if (widget.listener != null)
+          if (widget.listener != null) {
             widget.listener!(BannerAdResult.LOGGING_IMPRESSION, call.arguments);
+          }
           break;
       }
 

@@ -102,26 +102,26 @@ class _RewardHistoryScreenState extends State<RewardHistoryScreen> with SingleTi
           itemCount: historyList.length,
           itemBuilder: (context, index) {
             final item = historyList[index];
-            final isCredit = true; // Since we filtered, it's always credit
+            // final isCredit = true; // Since we filtered, it's always credit
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFF1F1B2E),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: isCredit ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                      color: Colors.green.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      isCredit ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
-                      color: isCredit ? Colors.green : Colors.red,
+                    child: const Icon(
+                      Icons.arrow_downward_rounded,
+                      color: Colors.green,
                       size: 20,
                     ),
                   ),
@@ -149,9 +149,9 @@ class _RewardHistoryScreenState extends State<RewardHistoryScreen> with SingleTi
                     ),
                   ),
                   Text(
-                    '${isCredit ? '+' : '-'}${item['amount']}',
+                    '+${item['amount']}',
                     style: GoogleFonts.poppins(
-                      color: isCredit ? Colors.green : Colors.red,
+                      color: Colors.green,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -200,14 +200,14 @@ class _RewardHistoryScreenState extends State<RewardHistoryScreen> with SingleTi
               decoration: BoxDecoration(
                 color: const Color(0xFF1F1B2E),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
               ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: Colors.amber.withOpacity(0.1),
+                      color: Colors.amber.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.monetization_on_rounded, color: Colors.amber, size: 20),
@@ -249,7 +249,7 @@ class _RewardHistoryScreenState extends State<RewardHistoryScreen> with SingleTi
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.2),
+                          color: statusColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -277,7 +277,7 @@ class _RewardHistoryScreenState extends State<RewardHistoryScreen> with SingleTi
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.history_toggle_off_rounded, size: 64, color: Colors.white.withOpacity(0.2)),
+          Icon(Icons.history_toggle_off_rounded, size: 64, color: Colors.white.withValues(alpha: 0.2)),
           const SizedBox(height: 16),
           Text(
             message,

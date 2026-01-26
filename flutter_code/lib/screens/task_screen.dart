@@ -6,16 +6,12 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../providers/app_provider.dart';
 import '../providers/ad_provider.dart';
 import '../services/ad_manager_service.dart';
-import '../utils/constants.dart';
 import '../dialog/reward_dialog.dart';
 import '../dialog/game_reward_dialog.dart';
 import '../dialog/game_warning_dialog.dart';
-import '../dialog/game_limit_dialog.dart';
-import '../dialog/ad_limit_dialog.dart';
 import '../dialog/limit_reached_sheet.dart';
 import '../widgets/coin_animation_overlay.dart';
 import '../widgets/toast/professional_toast.dart';
@@ -100,7 +96,7 @@ class _TaskScreenState extends State<TaskScreen> {
         coinCount: 10,
         onComplete: () async {
           await provider.addCoins(totalReward, source: 'game_reward', gameId: gameId);
-          print("🎮 [Game Play] Coins Credited: $totalReward | Games Played Today: ${provider.gamesPlayedToday} | Daily Limit: ${provider.gameDailyLimit}");
+          debugPrint("🎮 [Game Play] Coins Credited: $totalReward | Games Played Today: ${provider.gamesPlayedToday} | Daily Limit: ${provider.gameDailyLimit}");
           if (context.mounted) {
             final langProvider = Provider.of<LanguageProvider>(context, listen: false);
             ProfessionalToast.showSuccess(context, message: "${langProvider.getText('you_earned_coins')} $totalReward ${langProvider.getText('coins')}!");
@@ -117,11 +113,11 @@ class _TaskScreenState extends State<TaskScreen> {
     // DEBUG LOGS
     final debugProvider = Provider.of<AppProvider>(context);
     final langProvider = Provider.of<LanguageProvider>(context);
-    print("------- TASK SCREEN DEBUG -------");
-    print("Coins: ${debugProvider.coins}");
-    print("Name: ${debugProvider.userName}");
-    print("Avatar URL: ${debugProvider.userAvatar}");
-    print("---------------------------------");
+    debugPrint("------- TASK SCREEN DEBUG -------");
+    debugPrint("Coins: ${debugProvider.coins}");
+    debugPrint("Name: ${debugProvider.userName}");
+    debugPrint("Avatar URL: ${debugProvider.userAvatar}");
+    debugPrint("---------------------------------");
 
     return Scaffold(
       backgroundColor: AppTheme.darkBackgroundColor, // Deep Purple/Black background
@@ -168,7 +164,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.amber.withOpacity(0.4),
+                              color: Colors.amber.withValues(alpha: 0.4),
                               blurRadius: 6,
                               spreadRadius: 1,
                             )
@@ -211,19 +207,19 @@ class _TaskScreenState extends State<TaskScreen> {
                                  width: 80, 
                                  height: 14, 
                                  decoration: BoxDecoration(
-                                   color: Colors.white.withOpacity(0.1),
+                                   color: Colors.white.withValues(alpha: 0.1),
                                    borderRadius: BorderRadius.circular(4)
                                  )
-                               ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms, color: Colors.white.withOpacity(0.2)),
+                               ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms, color: Colors.white.withValues(alpha: 0.2)),
                                const SizedBox(height: 3),
                                Container(
                                  width: 40, 
                                  height: 10, 
                                  decoration: BoxDecoration(
-                                   color: Colors.white.withOpacity(0.1),
+                                   color: Colors.white.withValues(alpha: 0.1),
                                    borderRadius: BorderRadius.circular(8)
                                  )
-                               ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms, color: Colors.white.withOpacity(0.2)),
+                               ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms, color: Colors.white.withValues(alpha: 0.2)),
                              ],
                            );
                         }
@@ -258,7 +254,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 borderRadius: BorderRadius.circular(10),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.orange.withOpacity(0.4),
+                                    color: Colors.orange.withValues(alpha: 0.4),
                                     blurRadius: 1,
                                     offset: const Offset(0, 1),
                                   )
@@ -291,12 +287,12 @@ class _TaskScreenState extends State<TaskScreen> {
                   Container(
                     padding: const EdgeInsets.fromLTRB(8, 3, 3, 3),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.black.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFFFD700).withOpacity(0.5), width: 1.0),
+                      border: Border.all(color: const Color(0xFFFFD700).withValues(alpha: 0.5), width: 1.0),
                       boxShadow: [
                          BoxShadow(
-                           color: Colors.black.withOpacity(0.3),
+                           color: Colors.black.withValues(alpha: 0.3),
                            blurRadius: 2,
                            offset: const Offset(0, 1),
                          )
@@ -316,7 +312,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 fontWeight: FontWeight.bold,
                                 color: const Color(0xFFFFD700),
                                 shadows: [
-                                  Shadow(color: Colors.amber.withOpacity(0.5), blurRadius: 2)
+                                  Shadow(color: Colors.amber.withValues(alpha: 0.5), blurRadius: 2)
                                 ]
                               ),
                             );
@@ -425,18 +421,18 @@ class _TaskScreenState extends State<TaskScreen> {
                                     context,
                                     adProvider.adPriorities.isNotEmpty ? adProvider.adPriorities : ['admob', 'facebook', 'unity'],
                                     () async {
-                                       print("💎 Ad Callback Triggered");
+                                       debugPrint("💎 Ad Callback Triggered");
                                        
                                        // 1. Add Coins (Source of Truth) - Do this first!
                                        try {
                                           await provider.addCoins(provider.watchAdsReward, source: 'ad_watch');
-                                          print("💎 Coins Added to Provider");
+                                          debugPrint("💎 Coins Added to Provider");
                                           
                                           if (context.mounted) {
                                               ProfessionalToast.showSuccess(context, message: "${langProvider.getText('earned_coins_msg')} ${provider.watchAdsReward} ${langProvider.getText('coins')}!");
                                           }
                                        } catch (e) {
-                                          print("❌ Error adding coins: $e");
+                                          debugPrint("❌ Error adding coins: $e");
                                        }
 
                                        // 2. Play Animation (Visual Only)
@@ -444,17 +440,17 @@ class _TaskScreenState extends State<TaskScreen> {
                                        await Future.delayed(const Duration(milliseconds: 300));
                                        
                                        if (context.mounted) {
-                                          print("💎 Starting Coin Animation");
+                                          debugPrint("💎 Starting Coin Animation");
                                           CoinAnimationOverlay.show(
                                             context, 
                                             _coinIconKey, 
                                             coinCount: 10,
                                             onComplete: () {
-                                              print("💎 Coin Animation Complete");
+                                              debugPrint("💎 Coin Animation Complete");
                                             }
                                           );
                                        } else {
-                                           print("⚠️ Context not mounted for animation");
+                                           debugPrint("⚠️ Context not mounted for animation");
                                        }
                                     }, 
                                   );
@@ -570,10 +566,12 @@ class _TaskScreenState extends State<TaskScreen> {
        if (await canLaunchUrl(uri)) {
           await launchUrl(uri, mode: LaunchMode.externalApplication);
        } else {
+          if (!mounted) return;
           ProfessionalToast.showError(context, message: langProvider.getText('offer_wall_launch_failed'));
        }
      } catch (e) {
        debugPrint("Error launching PubScale: $e");
+       if (!mounted) return;
        ProfessionalToast.showError(context, message: langProvider.getText('offer_wall_error'));
      }
   }
@@ -589,13 +587,13 @@ class _TaskScreenState extends State<TaskScreen> {
         // Enhanced Neon Glow
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFB026FF).withOpacity(0.6), // Neon Violet Glow
+            color: const Color(0xFFB026FF).withValues(alpha: 0.6), // Neon Violet Glow
             blurRadius: 25,
             spreadRadius: 1,
             offset: const Offset(0, 10),
           ),
           BoxShadow(
-            color: const Color(0xFF4A00E0).withOpacity(0.5), // Deep Purple Glow
+            color: const Color(0xFF4A00E0).withValues(alpha: 0.5), // Deep Purple Glow
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -632,7 +630,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      Colors.white.withOpacity(0.2),
+                      Colors.white.withValues(alpha: 0.2),
                       Colors.transparent,
                     ],
                   ),
@@ -647,10 +645,10 @@ class _TaskScreenState extends State<TaskScreen> {
                 height: 150,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.08),
+                  color: Colors.white.withValues(alpha: 0.08),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       blurRadius: 30,
                     ),
                   ],
@@ -663,14 +661,14 @@ class _TaskScreenState extends State<TaskScreen> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   width: 1.5,
                 ),
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.white.withOpacity(0.2),
+                    Colors.white.withValues(alpha: 0.2),
                     Colors.transparent,
                   ],
                 ),
@@ -682,8 +680,8 @@ class _TaskScreenState extends State<TaskScreen> {
               color: Colors.transparent,
               child: InkWell(
                 onTap: _launchPubScaleOfferWall,
-                splashColor: Colors.white.withOpacity(0.2),
-                highlightColor: Colors.white.withOpacity(0.1),
+                splashColor: Colors.white.withValues(alpha: 0.2),
+                highlightColor: Colors.white.withValues(alpha: 0.1),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Row(
@@ -700,7 +698,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 borderRadius: BorderRadius.circular(20),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFFFD700).withOpacity(0.6),
+                                    color: const Color(0xFFFFD700).withValues(alpha: 0.6),
                                     blurRadius: 12,
                                     offset: const Offset(0, 2),
                                   )
@@ -734,7 +732,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 fontWeight: FontWeight.w800,
                                 shadows: [
                                   Shadow(
-                                    color: Colors.black.withOpacity(0.3),
+                                    color: Colors.black.withValues(alpha: 0.3),
                                     offset: const Offset(0, 2),
                                     blurRadius: 4,
                                   ),
@@ -747,7 +745,7 @@ class _TaskScreenState extends State<TaskScreen> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: GoogleFonts.poppins(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -765,7 +763,7 @@ class _TaskScreenState extends State<TaskScreen> {
                           color: Colors.white,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.white.withOpacity(0.5),
+                              color: Colors.white.withValues(alpha: 0.5),
                               blurRadius: 15,
                               spreadRadius: 2,
                             ),
@@ -786,7 +784,7 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
       ),
     ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-    .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.2)) // Constant subtle shimmer
+    .shimmer(duration: 2000.ms, color: Colors.white.withValues(alpha: 0.2)) // Constant subtle shimmer
     .animate().fadeIn().slideX();
   }
 
@@ -810,7 +808,7 @@ class _TaskScreenState extends State<TaskScreen> {
                   Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(Icons.gamepad_rounded, color: Colors.white, size: 18),
@@ -833,9 +831,9 @@ class _TaskScreenState extends State<TaskScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 30),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.05),
+                  color: Colors.white.withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 ),
                 child: Column(
                   children: [
@@ -880,17 +878,17 @@ class _TaskScreenState extends State<TaskScreen> {
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(0xFF6C63FF).withOpacity(0.2),
-                                    const Color(0xFF6C63FF).withOpacity(0.1),
+                                    const Color(0xFF6C63FF).withValues(alpha: 0.2),
+                                    const Color(0xFF6C63FF).withValues(alpha: 0.1),
                                   ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
                                 borderRadius: BorderRadius.circular(18),
-                                border: Border.all(color: const Color(0xFF6C63FF).withOpacity(0.3)),
+                                border: Border.all(color: const Color(0xFF6C63FF).withValues(alpha: 0.3)),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF6C63FF).withOpacity(0.1),
+                                    color: const Color(0xFF6C63FF).withValues(alpha: 0.1),
                                     blurRadius: 8,
                                     offset: const Offset(0, 4),
                                   ),
@@ -900,7 +898,7 @@ class _TaskScreenState extends State<TaskScreen> {
                                 child: Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF6C63FF).withOpacity(0.2),
+                                    color: const Color(0xFF6C63FF).withValues(alpha: 0.2),
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
@@ -938,19 +936,23 @@ class _TaskScreenState extends State<TaskScreen> {
                       
                       // Check Daily Limit
                       if (provider.gamesPlayedToday >= provider.gameDailyLimit) {
-                         showModalBottomSheet(
-                           context: context,
-                           backgroundColor: Colors.transparent,
-                           isScrollControlled: true,
-                           builder: (_) => LimitReachedSheet(
-                             title: langProvider.getText('daily_game_limit'),
-                             message: langProvider.getText('game_limit_msg'),
-                             icon: Icons.timer_off_outlined,
-                             color: Colors.orange,
-                           ),
-                         );
+                         if (context.mounted) {
+                           showModalBottomSheet(
+                             context: context,
+                             backgroundColor: Colors.transparent,
+                             isScrollControlled: true,
+                             builder: (_) => LimitReachedSheet(
+                               title: langProvider.getText('daily_game_limit'),
+                               message: langProvider.getText('game_limit_msg'),
+                               icon: Icons.timer_off_outlined,
+                               color: Colors.orange,
+                             ),
+                           );
+                         }
                          return;
                       }
+
+                      if (!context.mounted) return;
 
                       final result = await Navigator.push(
                         context,
@@ -971,17 +973,21 @@ class _TaskScreenState extends State<TaskScreen> {
                         final int requiredSeconds = game.playTime > 0 ? game.playTime : 60;
                         
                         if (isTimerComplete && !rewardClaimed) {
-                           _showGameRewardDialog(context, game.winReward > 0 ? game.winReward : 50, game.id.toString());
+                           if (context.mounted) {
+                             _showGameRewardDialog(context, game.winReward > 0 ? game.winReward : 50, game.id.toString());
+                           }
                         } else if (!rewardClaimed && !isTimerComplete && playedSeconds < requiredSeconds) {
-                          showDialog(
-                            context: context,
-                            builder: (context) => GameWarningDialog(
-                              playedSeconds: playedSeconds,
-                              requiredSeconds: requiredSeconds,
-                              rewardAmount: game.winReward > 0 ? game.winReward : 50,
-                              onClose: () => Navigator.pop(context),
-                            ),
-                          );
+                          if (context.mounted) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => GameWarningDialog(
+                                playedSeconds: playedSeconds,
+                                requiredSeconds: requiredSeconds,
+                                rewardAmount: game.winReward > 0 ? game.winReward : 50,
+                                onClose: () => Navigator.pop(context),
+                              ),
+                            );
+                          }
                         }
                       }
                     },
@@ -993,7 +999,7 @@ class _TaskScreenState extends State<TaskScreen> {
                               borderRadius: BorderRadius.circular(18),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.3),
+                                  color: Colors.black.withValues(alpha: 0.3),
                                   blurRadius: 8,
                                   offset: const Offset(0, 4),
                                 ),
@@ -1120,11 +1126,11 @@ class _TaskScreenState extends State<TaskScreen> {
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFF6C63FF).withOpacity(0.5), width: 1.5), // Neon Border
+            border: Border.all(color: const Color(0xFF6C63FF).withValues(alpha: 0.5), width: 1.5), // Neon Border
             boxShadow: [
               // Neon Glow
               BoxShadow(
-                color: const Color(0xFF6C63FF).withOpacity(0.25),
+                color: const Color(0xFF6C63FF).withValues(alpha: 0.25),
                 blurRadius: 25,
                 spreadRadius: 1,
                 offset: const Offset(0, 4),
@@ -1173,7 +1179,7 @@ class _TaskScreenState extends State<TaskScreen> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: provider.canClaimDailyReward ? [
                           BoxShadow(
-                            color: Colors.orange.withOpacity(0.4),
+                            color: Colors.orange.withValues(alpha: 0.4),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -1215,13 +1221,13 @@ class _TaskScreenState extends State<TaskScreen> {
   Widget _buildDayItem(int day, int coins, String status) {
     final isClaimed = status == 'claimed';
     final isClaimable = status == 'claimable';
-    final isLocked = status == 'locked';
+    // final isLocked = status == 'locked';
 
-    Color bgColor = Colors.white.withOpacity(0.1);
+    Color bgColor = Colors.white.withValues(alpha: 0.1);
     Color borderColor = Colors.transparent;
     
     if (isClaimed) {
-      bgColor = Colors.green.withOpacity(0.2);
+      bgColor = Colors.green.withValues(alpha: 0.2);
       borderColor = Colors.green;
     } else if (isClaimable) {
       bgColor = Colors.amber;
@@ -1280,7 +1286,7 @@ class _TaskScreenState extends State<TaskScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1F1B2E),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Row(
         children: [
@@ -1289,7 +1295,7 @@ class _TaskScreenState extends State<TaskScreen> {
             width: 50,
             height: 50,
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
+              color: iconColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: iconColor, size: 28),
@@ -1351,9 +1357,9 @@ class _TaskScreenState extends State<TaskScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: Colors.amber.withOpacity(0.1),
+                  color: Colors.amber.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(4),
-                  border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                  border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -1385,7 +1391,7 @@ class _TaskScreenState extends State<TaskScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFFF512F).withOpacity(0.4),
+                        color: const Color(0xFFFF512F).withValues(alpha: 0.4),
                         blurRadius: 6,
                         offset: const Offset(0, 3),
                       ),

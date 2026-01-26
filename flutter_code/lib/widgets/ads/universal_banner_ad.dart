@@ -107,7 +107,7 @@ class _UniversalBannerAdState extends State<UniversalBannerAd> {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
-          print("✅ AdMob Banner Loaded");
+          debugPrint("✅ AdMob Banner Loaded");
           if (mounted) {
             setState(() {
               _isAdmobLoaded = true;
@@ -116,7 +116,7 @@ class _UniversalBannerAdState extends State<UniversalBannerAd> {
           }
         },
         onAdFailedToLoad: (ad, error) {
-          print("❌ AdMob Banner Failed: $error");
+          debugPrint("❌ AdMob Banner Failed: $error");
           ad.dispose();
           onFailed();
         },
@@ -151,7 +151,7 @@ class _UniversalBannerAdState extends State<UniversalBannerAd> {
           bannerSize: fb.BannerSize.STANDARD,
           listener: (result, value) {
             if (result == fb.BannerAdResult.ERROR) {
-              print("❌ Facebook Banner Error: $value");
+              debugPrint("❌ Facebook Banner Error: $value");
               _tryLoadNext(_currentIndex + 1);
             }
           },
@@ -164,9 +164,9 @@ class _UniversalBannerAdState extends State<UniversalBannerAd> {
         alignment: Alignment.center,
         child: unity.UnityBannerAd(
           placementId: adProvider.unityBannerId,
-          onLoad: (placementId) => print('✅ Unity Banner Loaded: $placementId'),
+          onLoad: (placementId) => debugPrint('✅ Unity Banner Loaded: $placementId'),
           onFailed: (placementId, error, message) {
-            print('❌ Unity Banner Failed: $placementId, $error, $message');
+            debugPrint('❌ Unity Banner Failed: $placementId, $error, $message');
             _tryLoadNext(_currentIndex + 1);
           },
         ),

@@ -46,7 +46,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
         });
       }
     } catch (e) {
-      print('Error fetching referral data: $e');
+      debugPrint('Error fetching referral data: $e');
       setState(() => _isLoading = false);
     }
   }
@@ -133,7 +133,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF4F46E5).withOpacity(0.4),
+            color: const Color(0xFF4F46E5).withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -144,7 +144,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
             child: const Icon(FontAwesomeIcons.gift, color: Colors.white, size: 40),
@@ -164,7 +164,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
               fontSize: 14,
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
             ),
           ),
           const SizedBox(height: 24),
@@ -173,9 +173,9 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withOpacity(0.3), style: BorderStyle.solid),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.3), style: BorderStyle.solid),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -252,7 +252,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1F1B2E),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -299,7 +299,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
               padding: const EdgeInsets.symmetric(vertical: 40),
               child: Column(
                 children: [
-                  Icon(Icons.person_off_outlined, size: 48, color: Colors.white.withOpacity(0.2)),
+                  Icon(Icons.person_off_outlined, size: 48, color: Colors.white.withValues(alpha: 0.2)),
                   const SizedBox(height: 16),
                   Text(
                     "No referrals yet",
@@ -322,7 +322,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF1F1B2E),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                 ),
                 child: Row(
                   children: [
@@ -371,7 +371,7 @@ class _ReferEarnScreenState extends State<ReferEarnScreen> {
                           "Coins",
                           style: GoogleFonts.poppins(
                             fontSize: 10,
-                            color: Colors.amber.withOpacity(0.7),
+                            color: Colors.amber.withValues(alpha: 0.7),
                           ),
                         ),
                       ],

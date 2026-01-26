@@ -3,12 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
 import '../widgets/toast/professional_toast.dart';
-import '../widgets/coin_animation_overlay.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:flutter/services.dart';
 import '../utils/app_theme.dart';
 
 class GameWebViewScreen extends StatefulWidget {
@@ -33,10 +30,10 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
   late final WebViewController _controller;
   Timer? _timer;
   int _elapsedSeconds = 0;
-  bool _isRewardClaimed = false;
+  final bool _isRewardClaimed = false;
   bool _isTimerComplete = false;
   double _progress = 0.0;
-  final GlobalKey _coinIconKey = GlobalKey();
+  // final GlobalKey _coinIconKey = GlobalKey();
 
   @override
   void initState() {
@@ -90,9 +87,9 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
     });
   }
 
-  Future<bool> _onWillPop() async {
+  Future<void> _onWillPop() async {
     await _handleExit();
-    return false; // Prevent system back, we handled it manually
+    // return false; // Prevent system back, we handled it manually
   }
 
   @override
@@ -112,8 +109,12 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _onWillPop();
+      },
       child: Scaffold(
         backgroundColor: AppTheme.darkBackgroundColor,
         body: SafeArea(
@@ -202,7 +203,7 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(color: Colors.white24),
                           ),

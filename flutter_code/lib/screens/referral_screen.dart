@@ -8,7 +8,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
-import '../utils/constants.dart';
 import '../utils/app_theme.dart';
 import '../widgets/toast/professional_toast.dart';
 
@@ -49,7 +48,7 @@ class ReferralScreen extends StatelessWidget {
                             onPressed: () => Navigator.pop(context),
                             icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
                             style: IconButton.styleFrom(
-                              backgroundColor: Colors.white.withOpacity(0.1),
+                              backgroundColor: Colors.white.withValues(alpha: 0.1),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                           ),
@@ -88,7 +87,7 @@ class ReferralScreen extends StatelessWidget {
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFFD946EF).withOpacity(0.4),
+                                    color: const Color(0xFFD946EF).withValues(alpha: 0.4),
                                     blurRadius: 30,
                                     spreadRadius: 5,
                                   ),
@@ -132,9 +131,9 @@ class ReferralScreen extends StatelessWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.05),
+                                color: Colors.white.withValues(alpha: 0.05),
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.white.withOpacity(0.1)),
+                                border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                               ),
                               child: Column(
                                 children: [
@@ -170,7 +169,7 @@ class ReferralScreen extends StatelessWidget {
                                         },
                                         icon: const Icon(Icons.copy_rounded, color: Colors.white70),
                                         style: IconButton.styleFrom(
-                                          backgroundColor: Colors.white.withOpacity(0.1),
+                                          backgroundColor: Colors.white.withValues(alpha: 0.1),
                                         ),
                                       ),
                                     ],
@@ -231,7 +230,7 @@ class ReferralScreen extends StatelessWidget {
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: AppTheme.darkBackgroundColor,
-                        border: Border(top: BorderSide(color: Colors.white.withOpacity(0.05))),
+                        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.05))),
                       ),
                       child: SizedBox(
                         width: double.infinity,
@@ -249,7 +248,7 @@ class ReferralScreen extends StatelessWidget {
                             backgroundColor: const Color(0xFFD946EF),
                             foregroundColor: Colors.white,
                             elevation: 8,
-                            shadowColor: const Color(0xFFD946EF).withOpacity(0.5),
+                            shadowColor: const Color(0xFFD946EF).withValues(alpha: 0.5),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           ),
                           child: Row(
@@ -292,16 +291,16 @@ class ReferralScreen extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.white.withOpacity(0.1),
-            Colors.white.withOpacity(0.05),
+            Colors.white.withValues(alpha: 0.1),
+            Colors.white.withValues(alpha: 0.05),
           ],
         ),
         borderGradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            Colors.white.withOpacity(0.2),
-            Colors.white.withOpacity(0.05),
+            Colors.white.withValues(alpha: 0.2),
+            Colors.white.withValues(alpha: 0.05),
           ],
         ),
         child: Padding(
@@ -348,7 +347,7 @@ class ReferralScreen extends StatelessWidget {
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Center(

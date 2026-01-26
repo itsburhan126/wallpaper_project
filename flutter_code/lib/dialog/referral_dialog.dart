@@ -44,16 +44,16 @@ class _ReferralDialogState extends State<ReferralDialog> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFFffffff).withOpacity(0.15),
-                const Color(0xFFFFFFFF).withOpacity(0.05),
+                const Color(0xFFffffff).withValues(alpha: 0.15),
+                const Color(0xFFFFFFFF).withValues(alpha: 0.05),
               ],
             ),
             borderGradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                const Color(0xFFffffff).withOpacity(0.6),
-                const Color((0xFFFFFFFF)).withOpacity(0.1),
+                const Color(0xFFffffff).withValues(alpha: 0.6),
+                const Color((0xFFFFFFFF)).withValues(alpha: 0.1),
               ],
             ),
             child: Padding(
@@ -64,11 +64,11 @@ class _ReferralDialogState extends State<ReferralDialog> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                        color: AppColors.accent.withOpacity(0.2),
+                        color: AppColors.accent.withValues(alpha: 0.2),
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.accent.withOpacity(0.3),
+                            color: AppColors.accent.withValues(alpha: 0.3),
                             blurRadius: 20,
                             spreadRadius: 2,
                           )
@@ -99,9 +99,9 @@ class _ReferralDialogState extends State<ReferralDialog> {
                   const SizedBox(height: 30),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withOpacity(0.1)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
                     ),
                     child: TextField(
                       controller: _referralController,
@@ -110,7 +110,7 @@ class _ReferralDialogState extends State<ReferralDialog> {
                       decoration: InputDecoration(
                           hintText: langProvider.getText('enter_code_here'),
                           hintStyle:
-                              TextStyle(color: Colors.white.withOpacity(0.4)),
+                              TextStyle(color: Colors.white.withValues(alpha: 0.4)),
                           border: InputBorder.none,
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 16, horizontal: 20),
@@ -156,22 +156,26 @@ class _ReferralDialogState extends State<ReferralDialog> {
                                     if (mounted) {
                                       setState(() => _isApplying = false);
                                       if (res['success']) {
-                                        Navigator.pop(context);
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                langProvider.getText('referral_bonus_applied')),
-                                            backgroundColor: Colors.green,
-                                          ),
-                                        );
+                                        if (context.mounted) {
+                                          Navigator.pop(context);
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  langProvider.getText('referral_bonus_applied')),
+                                              backgroundColor: Colors.green,
+                                            ),
+                                          );
+                                        }
                                       } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content: Text(res['message'] ??
-                                                langProvider.getText('invalid_referral_code')),
-                                            backgroundColor: Colors.redAccent,
-                                          ),
-                                        );
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(res['message'] ??
+                                                  langProvider.getText('invalid_referral_code')),
+                                              backgroundColor: Colors.redAccent,
+                                            ),
+                                          );
+                                        }
                                       }
                                     }
                                   } else {
@@ -186,7 +190,7 @@ class _ReferralDialogState extends State<ReferralDialog> {
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               elevation: 8,
-                              shadowColor: AppColors.accent.withOpacity(0.5),
+                              shadowColor: AppColors.accent.withValues(alpha: 0.5),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(16))),
                           child: _isApplying

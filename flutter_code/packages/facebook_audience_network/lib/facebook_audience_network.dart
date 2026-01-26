@@ -23,7 +23,7 @@ export 'ad/ad_rewarded.dart';
 /// Initialize the Facebook Audience Network by calling the static [init]
 /// function.
 class FacebookAudienceNetwork {
-  static const _channel = const MethodChannel(MAIN_CHANNEL);
+  static const _channel = MethodChannel(MAIN_CHANNEL);
 
   /// Initializes the Facebook Audience Network. [testingId] can be used to
   /// obtain test Ads.

@@ -87,22 +87,22 @@ class _ToastWidget extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF2A1B4E).withOpacity(0.95),
-            AppTheme.darkBackgroundColor.withOpacity(0.95),
+            const Color(0xFF2A1B4E).withValues(alpha: 0.95),
+            AppTheme.darkBackgroundColor.withValues(alpha: 0.95),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: primaryColor.withOpacity(0.3), width: 1),
+        border: Border.all(color: primaryColor.withValues(alpha: 0.3), width: 1),
         boxShadow: [
           BoxShadow(
-            color: primaryColor.withOpacity(0.1),
+            color: primaryColor.withValues(alpha: 0.1),
             blurRadius: 16,
             offset: const Offset(0, 4),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.4),
+            color: Colors.black.withValues(alpha: 0.4),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -114,9 +114,9 @@ class _ToastWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.1),
+              color: primaryColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
-              border: Border.all(color: primaryColor.withOpacity(0.5)),
+              border: Border.all(color: primaryColor.withValues(alpha: 0.5)),
             ),
             child: Icon(icon, color: primaryColor, size: 24)
                 .animate(onPlay: (c) => c.repeat(reverse: true))

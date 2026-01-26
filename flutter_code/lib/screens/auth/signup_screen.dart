@@ -66,7 +66,7 @@ class _SignupScreenState extends State<SignupScreen> {
         deviceId = iosInfo.identifierForVendor;
       }
     } catch (e) {
-      print('Error getting device ID: $e');
+      debugPrint('Error getting device ID: $e');
     }
     
     final result = await _apiService.register(
@@ -163,7 +163,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withOpacity(0.5),
+                                color: AppColors.primary.withValues(alpha: 0.5),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               ),
@@ -217,7 +217,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             elevation: 5,
-                            shadowColor: AppColors.primary.withOpacity(0.5),
+                            shadowColor: AppColors.primary.withValues(alpha: 0.5),
                           ),
                           child: _isLoading 
                             ? const CircularProgressIndicator(color: Colors.white)
@@ -276,12 +276,12 @@ class _SignupScreenState extends State<SignupScreen> {
       alignment: Alignment.center,
       border: 1,
       linearGradient: LinearGradient(
-        colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.05)],
+        colors: [Colors.white.withValues(alpha: 0.1), Colors.white.withValues(alpha: 0.05)],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       borderGradient: LinearGradient(
-        colors: [Colors.white.withOpacity(0.2), Colors.white.withOpacity(0.1)],
+        colors: [Colors.white.withValues(alpha: 0.2), Colors.white.withValues(alpha: 0.1)],
       ),
       child: TextField(
         controller: controller,

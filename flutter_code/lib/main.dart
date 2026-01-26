@@ -58,7 +58,6 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.dark(
                 primary: AppColors.primary,
                 secondary: AppColors.secondary,
-                background: AppTheme.darkBackgroundColor,
                 surface: AppColors.cardColor,
               ),
               appBarTheme: const AppBarTheme(

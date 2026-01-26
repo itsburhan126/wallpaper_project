@@ -108,7 +108,7 @@ class FacebookNativeAd extends StatefulWidget {
 
   /// This widget can be used to display customizable native ads and native
   /// banner ads.
-  FacebookNativeAd({
+  const FacebookNativeAd({
     Key? key,
     this.placementId = "YOUR_PLACEMENT_ID",
     this.listener,
@@ -149,6 +149,7 @@ class _FacebookNativeAdState extends State<FacebookNativeAd>
     return channel;
   }
 
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     double width = widget.width == double.infinity
@@ -169,7 +170,7 @@ class _FacebookNativeAdState extends State<FacebookNativeAd>
                 ? 0
                 : -(widget.height - containerHeight),
             child: ConstrainedBox(
-              constraints: new BoxConstraints(
+              constraints: BoxConstraints(
                 maxHeight: widget.height,
                 maxWidth: MediaQuery.of(context).size.width,
               ),
@@ -183,7 +184,7 @@ class _FacebookNativeAdState extends State<FacebookNativeAd>
 
   Widget buildPlatformView(double width) {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return Container(
+      return SizedBox(
         width: width,
         height: widget.adType == NativeAdType.NATIVE_AD ||
                 widget.adType == NativeAdType.NATIVE_AD_HORIZONTAL ||
@@ -226,7 +227,7 @@ class _FacebookNativeAdState extends State<FacebookNativeAd>
         ),
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return Container(
+      return SizedBox(
         width: width,
         height: widget.adType == NativeAdType.NATIVE_AD
             ? widget.height
@@ -269,7 +270,7 @@ class _FacebookNativeAdState extends State<FacebookNativeAd>
         ),
       );
     } else {
-      return Container(
+      return SizedBox(
         width: width,
         height: widget.height,
         child: Text("Native Ads for this platform is currently not supported"),
@@ -286,12 +287,14 @@ class _FacebookNativeAdState extends State<FacebookNativeAd>
     channel.setMethodCallHandler((MethodCall call) {
       switch (call.method) {
         case ERROR_METHOD:
-          if (widget.listener != null)
+          if (widget.listener != null) {
             widget.listener!(NativeAdResult.ERROR, call.arguments);
+          }
           break;
         case LOADED_METHOD:
-          if (widget.listener != null)
+          if (widget.listener != null) {
             widget.listener!(NativeAdResult.LOADED, call.arguments);
+          }
 
           if (!isAdReady) {
             setState(() {
@@ -313,16 +316,19 @@ class _FacebookNativeAdState extends State<FacebookNativeAd>
           }
           break;
         case CLICKED_METHOD:
-          if (widget.listener != null)
+          if (widget.listener != null) {
             widget.listener!(NativeAdResult.CLICKED, call.arguments);
+          }
           break;
         case LOGGING_IMPRESSION_METHOD:
-          if (widget.listener != null)
+          if (widget.listener != null) {
             widget.listener!(NativeAdResult.LOGGING_IMPRESSION, call.arguments);
+          }
           break;
         case MEDIA_DOWNLOADED_METHOD:
-          if (widget.listener != null)
+          if (widget.listener != null) {
             widget.listener!(NativeAdResult.MEDIA_DOWNLOADED, call.arguments);
+          }
           break;
       }
 

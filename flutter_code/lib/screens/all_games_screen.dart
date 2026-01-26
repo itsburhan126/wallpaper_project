@@ -3,13 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
 import 'game_webview_screen.dart';
 import '../dialog/game_reward_dialog.dart';
 import '../dialog/game_warning_dialog.dart';
-import '../dialog/game_limit_dialog.dart';
 import '../dialog/limit_reached_sheet.dart';
 import '../widgets/toast/professional_toast.dart';
 import '../widgets/coin_animation_overlay.dart';
@@ -84,7 +82,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
         coinCount: 10,
         onComplete: () async {
            await provider.addCoins(totalReward, source: 'game_play', gameId: gameId.toString());
-           print("🎮 [Game Play] Coins Credited: $totalReward | Games Played Today: ${provider.gamesPlayedToday} | Daily Limit: ${provider.gameDailyLimit}");
+           debugPrint("🎮 [Game Play] Coins Credited: $totalReward | Games Played Today: ${provider.gamesPlayedToday} | Daily Limit: ${provider.gameDailyLimit}");
            if (context.mounted) {
              final lang = Provider.of<LanguageProvider>(context, listen: false);
              ProfessionalToast.showSuccess(context, message: "${lang.getText('earned_coins_msg')} $totalReward ${lang.getText('coins')}!");
@@ -178,6 +176,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                   
                   // Ensure daily limit is reset if it's a new day
                   await provider.checkDailyLimitReset();
+                  if (!context.mounted) return;
                   
                   // Check Daily Limit
                   if (provider.gamesPlayedToday >= provider.gameDailyLimit) {
@@ -210,7 +209,9 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                     ),
                   );
 
-                  if (result != null && result is Map && mounted) {
+                  if (!context.mounted) return;
+
+                  if (result != null && result is Map) {
                     final bool rewardClaimed = result['rewardClaimed'] ?? false;
                     final bool isTimerComplete = result['isTimerComplete'] ?? false;
                     final int playedSeconds = result['playedSeconds'] ?? 0;
@@ -218,17 +219,19 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                     
                     if (!rewardClaimed) {
                         if (isTimerComplete) {
-                            _showGameRewardDialog(context, game.winReward > 0 ? game.winReward : 50, game.id);
+                            if (context.mounted) _showGameRewardDialog(context, game.winReward > 0 ? game.winReward : 50, game.id);
                         } else if (playedSeconds < requiredSeconds) {
-                            showDialog(
-                                context: context,
-                                builder: (context) => GameWarningDialog(
-                                playedSeconds: playedSeconds,
-                                requiredSeconds: requiredSeconds,
-                                rewardAmount: game.winReward > 0 ? game.winReward : 50,
-                                onClose: () => Navigator.pop(context),
-                                ),
-                            );
+                            if (context.mounted) {
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => GameWarningDialog(
+                                  playedSeconds: playedSeconds,
+                                  requiredSeconds: requiredSeconds,
+                                  rewardAmount: game.winReward > 0 ? game.winReward : 50,
+                                  onClose: () => Navigator.pop(context),
+                                  ),
+                              );
+                            }
                         }
                     }
                   }
@@ -241,7 +244,7 @@ class _AllGamesScreenState extends State<AllGamesScreen> {
                           borderRadius: BorderRadius.circular(12),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: Colors.black.withValues(alpha: 0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),

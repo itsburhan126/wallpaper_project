@@ -128,7 +128,7 @@ class _TicketChatScreenState extends State<TicketChatScreen> {
                         padding: const EdgeInsets.all(12),
                         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
                         decoration: BoxDecoration(
-                          color: isUser ? AppTheme.primaryColor : Colors.white.withOpacity(0.1),
+                          color: isUser ? AppTheme.primaryColor : Colors.white.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.only(
                             topLeft: const Radius.circular(16),
                             topRight: const Radius.circular(16),
@@ -167,7 +167,7 @@ class _TicketChatScreenState extends State<TicketChatScreen> {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: AppTheme.darkBackgroundColor,
-              border: Border(top: BorderSide(color: Colors.white.withOpacity(0.1))),
+              border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
             ),
             child: SafeArea(
               child: Row(
@@ -175,7 +175,7 @@ class _TicketChatScreenState extends State<TicketChatScreen> {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: TextField(

@@ -11,7 +11,6 @@ import '../services/ad_manager_service.dart';
 import '../widgets/shimmer_loading.dart';
 import '../widgets/wallpaper_tab.dart';
 import '../models/category_model.dart';
-import '../utils/constants.dart';
 import '../utils/app_theme.dart';
 
 class CategoryScreen extends StatelessWidget {
@@ -108,10 +107,10 @@ class CategoryScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.05),
+                            color: Colors.white.withValues(alpha: 0.05),
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.grid_view_rounded, size: 60, color: Colors.white.withOpacity(0.2)),
+                          child: Icon(Icons.grid_view_rounded, size: 60, color: Colors.white.withValues(alpha: 0.2)),
                         ),
                         const SizedBox(height: 24),
                         Text(
@@ -158,7 +157,7 @@ class CategoryScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
+            color: Colors.black.withValues(alpha: 0.5),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -182,7 +181,7 @@ class CategoryScreen extends StatelessWidget {
                   child: Center(
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                     ),
                   ),
                 ),
@@ -219,7 +218,7 @@ class CategoryScreen extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.8),
+                      Colors.black.withValues(alpha: 0.8),
                     ],
                   ),
                 ),
@@ -238,10 +237,10 @@ class CategoryScreen extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.4),
+                      color: Colors.black.withValues(alpha: 0.4),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withValues(alpha: 0.15),
                         width: 1,
                       ),
                     ),
@@ -263,7 +262,7 @@ class CategoryScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -323,8 +322,8 @@ class CategoryScreen extends StatelessWidget {
                       );
                     }
                   },
-                  splashColor: Colors.white.withOpacity(0.1),
-                  highlightColor: Colors.white.withOpacity(0.05),
+                  splashColor: Colors.white.withValues(alpha: 0.1),
+                  highlightColor: Colors.white.withValues(alpha: 0.05),
                 ),
               ),
             ),

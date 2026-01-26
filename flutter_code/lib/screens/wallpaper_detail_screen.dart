@@ -1,10 +1,8 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:dio/dio.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart'; // Add this for MissingPluginException
@@ -14,7 +12,6 @@ import '../models/wallpaper_model.dart';
 import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
 import '../providers/ad_provider.dart';
-import '../utils/constants.dart';
 import '../utils/app_theme.dart';
 import '../services/ad_manager_service.dart';
 import '../widgets/ads/universal_banner_ad.dart';
@@ -70,7 +67,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
     final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.8),
+      barrierColor: Colors.black.withValues(alpha: 0.8),
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -91,10 +88,10 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
                   ],
                 ),
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                     blurRadius: 30,
                     spreadRadius: 10,
                   ),
@@ -109,11 +106,11 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
                     height: 80,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.amber.withOpacity(0.1),
-                      border: Border.all(color: Colors.amber.withOpacity(0.3), width: 2),
+                      color: Colors.amber.withValues(alpha: 0.1),
+                      border: Border.all(color: Colors.amber.withValues(alpha: 0.3), width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.amber.withOpacity(0.2),
+                          color: Colors.amber.withValues(alpha: 0.2),
                           blurRadius: 20,
                           spreadRadius: 5,
                         ),
@@ -125,7 +122,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
                       color: Colors.amber,
                     ).animate(onPlay: (c) => c.repeat(reverse: true))
                      .scale(duration: 1500.ms, begin: const Offset(1.0, 1.0), end: const Offset(1.1, 1.1))
-                     .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.5)),
+                     .shimmer(duration: 2000.ms, color: Colors.white.withValues(alpha: 0.5)),
                   ),
                   const SizedBox(height: 24),
                   
@@ -165,7 +162,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.amber.withOpacity(0.4),
+                          color: Colors.amber.withValues(alpha: 0.4),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -235,7 +232,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                     ),
                     child: const Icon(Icons.close, color: Colors.white70, size: 20),
                   ),
@@ -276,7 +273,9 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
 
     if (!success) {
       // Optional: Show error dialog or snackbar
+      if (mounted) {
        ProfessionalToast.showError(context, message: languageProvider.getText('ad_load_failed'));
+      }
     }
   }
 
@@ -284,7 +283,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
     final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.8),
+      barrierColor: Colors.black.withValues(alpha: 0.8),
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -305,10 +304,10 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
                   ],
                 ),
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: Colors.green.withOpacity(0.3), width: 1),
+                border: Border.all(color: Colors.green.withValues(alpha: 0.3), width: 1),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.green.withOpacity(0.2),
+                    color: Colors.green.withValues(alpha: 0.2),
                     blurRadius: 30,
                     spreadRadius: 5,
                   ),
@@ -322,11 +321,11 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.green.withOpacity(0.1),
-                      border: Border.all(color: Colors.green.withOpacity(0.5), width: 2),
+                      color: Colors.green.withValues(alpha: 0.1),
+                      border: Border.all(color: Colors.green.withValues(alpha: 0.5), width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.green.withOpacity(0.2),
+                          color: Colors.green.withValues(alpha: 0.2),
                           blurRadius: 20,
                           spreadRadius: 5,
                         ),
@@ -442,7 +441,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
         }
       }
     } catch (e) {
-      print("Download Error: $e");
+      debugPrint("Download Error: $e");
       if (mounted) {
         ProfessionalToast.showError(context, message: "${languageProvider.getText('error_prefix')}$e");
       }
@@ -463,10 +462,14 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
     final adProvider = Provider.of<AdProvider>(context, listen: false);
     if (adProvider.adsEnabled) {
        final fallbacks = adProvider.adPriorities.isNotEmpty ? adProvider.adPriorities : ['admob', 'facebook', 'unity'];
-       await AdManager.showAdWithFallback(context, fallbacks, () {});
+       if (mounted) {
+         await AdManager.showAdWithFallback(context, fallbacks, () {});
+       }
     }
 
-    ProfessionalToast.showLoading(context, message: languageProvider.getText('applying_wallpaper'));
+    if (mounted) {
+      ProfessionalToast.showLoading(context, message: languageProvider.getText('applying_wallpaper'));
+    }
 
     try {
       // Download file first
@@ -475,9 +478,13 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
       bool result = false;
       int wallpaperLocation = AsyncWallpaper.HOME_SCREEN;
       
-      if (location == 1) wallpaperLocation = AsyncWallpaper.HOME_SCREEN;
-      else if (location == 2) wallpaperLocation = AsyncWallpaper.LOCK_SCREEN;
-      else if (location == 3) wallpaperLocation = AsyncWallpaper.BOTH_SCREENS;
+      if (location == 1) {
+        wallpaperLocation = AsyncWallpaper.HOME_SCREEN;
+      } else if (location == 2) {
+        wallpaperLocation = AsyncWallpaper.LOCK_SCREEN;
+      } else if (location == 3) {
+        wallpaperLocation = AsyncWallpaper.BOTH_SCREENS;
+      }
 
       // Use async_wallpaper to set from file
       try {
@@ -513,9 +520,9 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
         }
       } catch (e) {
          // Final fallback if something really weird happens
-         print("Primary Apply Failed: $e");
+         debugPrint("Primary Apply Failed: $e");
          result = false;
-         throw e; 
+         rethrow; 
       }
 
       if (mounted) {
@@ -526,12 +533,12 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
         }
       }
     } on MissingPluginException {
-      print("AsyncWallpaper Plugin Missing");
+      debugPrint("AsyncWallpaper Plugin Missing");
       if (mounted) {
          ProfessionalToast.showError(context, message: "Wallpaper Plugin Error. Please restart the app.");
       }
     } catch (e) {
-      print("Apply Error: $e");
+      debugPrint("Apply Error: $e");
       if (mounted) {
          ProfessionalToast.showError(context, message: "${languageProvider.getText('apply_failed')} $e");
       }
@@ -542,7 +549,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
     final lang = Provider.of<LanguageProvider>(context, listen: false);
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.8),
+      barrierColor: Colors.black.withValues(alpha: 0.8),
       builder: (context) => Dialog(
         backgroundColor: Colors.transparent,
         insetPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -559,10 +566,10 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
               ],
             ),
             borderRadius: BorderRadius.circular(28),
-            border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.5),
+                color: Colors.black.withValues(alpha: 0.5),
                 blurRadius: 30,
                 spreadRadius: 10,
               ),
@@ -603,16 +610,16 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, color: Colors.white, size: 20),
@@ -628,7 +635,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
                 ),
               ),
               const Spacer(),
-              Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withOpacity(0.3), size: 16),
+              Icon(Icons.arrow_forward_ios_rounded, color: Colors.white.withValues(alpha: 0.3), size: 16),
             ],
           ),
         ),
@@ -714,7 +721,7 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
                       shape: BoxShape.circle,
                       color: _isRewardReady ? Colors.amber : Colors.black54,
                       boxShadow: _isRewardReady
-                          ? [BoxShadow(color: Colors.amber.withOpacity(0.6), blurRadius: 15, spreadRadius: 2)]
+                          ? [BoxShadow(color: Colors.amber.withValues(alpha: 0.6), blurRadius: 15, spreadRadius: 2)]
                           : [],
                       border: Border.all(color: Colors.white24, width: 1),
                     ),
@@ -760,12 +767,12 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
           height: 50,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.6),
+            color: Colors.black.withValues(alpha: 0.6),
             borderRadius: BorderRadius.circular(25),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),

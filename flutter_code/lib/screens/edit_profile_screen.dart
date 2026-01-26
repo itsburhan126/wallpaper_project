@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
 import '../utils/app_theme.dart';
@@ -143,7 +142,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
+                  color: Colors.white.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.white),
@@ -223,7 +222,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 border: Border.all(color: Colors.white, width: 3),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
@@ -289,7 +288,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF1F1B2E),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
           ),
           child: TextFormField(
             controller: controller,
@@ -392,7 +391,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.indigoAccent.withOpacity(0.4),
+            color: Colors.indigoAccent.withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

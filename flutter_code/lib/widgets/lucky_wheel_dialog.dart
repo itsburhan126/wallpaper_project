@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:wallpaper_app/providers/app_provider.dart';
 import 'package:wallpaper_app/providers/ad_provider.dart';
 import 'package:wallpaper_app/services/ad_manager_service.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../dialog/reward_dialog.dart';
 import '../widgets/coin_animation_overlay.dart';
 import '../widgets/animated_coin_balance.dart';
@@ -15,7 +14,7 @@ import '../utils/app_theme.dart';
 import '../providers/language_provider.dart';
 
 class LuckyWheelDialog extends StatefulWidget {
-  const LuckyWheelDialog({Key? key}) : super(key: key);
+  const LuckyWheelDialog({super.key});
 
   @override
   State<LuckyWheelDialog> createState() => _LuckyWheelDialogState();
@@ -163,7 +162,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
       builder: (ctx) => RewardDialog(
         rewardAmount: reward,
         onReceive: () async {
-          print("🖱️ Receive button clicked in LuckyWheelDialog");
+          debugPrint("🖱️ Receive button clicked in LuckyWheelDialog");
           final appProvider = Provider.of<AppProvider>(context, listen: false);
           final adProvider = Provider.of<AdProvider>(context, listen: false);
           
@@ -179,7 +178,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
           );
 
           // Always give reward at the end
-          print("� Granting Reward...");
+          debugPrint("� Granting Reward...");
           
           // Close the dialog first
           if (mounted && ctx.mounted) {
@@ -241,7 +240,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              color: Colors.black.withOpacity(0.7), // Standard dialog dimming
+              color: Colors.black.withValues(alpha: 0.7), // Standard dialog dimming
             ),
           ),
           
@@ -371,7 +370,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.purple.withOpacity(0.6),
+                                color: Colors.purple.withValues(alpha: 0.6),
                                 blurRadius: 60,
                                 spreadRadius: 10,
                               ),
@@ -407,7 +406,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
                             ),
                             border: Border.all(color: Colors.white, width: 2),
                             boxShadow: [
-                              BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10, offset: const Offset(0, 5)),
+                              BoxShadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 10, offset: const Offset(0, 5)),
                             ],
                           ),
                           child: const Icon(Icons.casino, color: Colors.white, size: 30),
@@ -418,7 +417,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
                           top: 0,
                           child: Transform.translate(
                             offset: const Offset(0, -10),
-                            child: Container(
+                            child: SizedBox(
                               height: 50,
                               width: 40,
                               child: Stack(
@@ -466,7 +465,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
                           borderRadius: BorderRadius.circular(50),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.greenAccent.withOpacity(0.6),
+                              color: Colors.greenAccent.withValues(alpha: 0.6),
                               blurRadius: 20,
                               spreadRadius: 2,
                               offset: const Offset(0, 5),
@@ -500,7 +499,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
                     margin: const EdgeInsets.symmetric(horizontal: 40),
                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.white24),
                     ),
@@ -547,7 +546,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white24),
                 ),
@@ -616,7 +615,7 @@ class ProfessionalWheelPainter extends CustomPainter {
       // Draw Slice Border
       final borderPaint = Paint()
         ..style = PaintingStyle.stroke
-        ..color = Colors.white.withOpacity(0.3)
+        ..color = Colors.white.withValues(alpha: 0.3)
         ..strokeWidth = 1;
       canvas.drawArc(sliceRect, startAngle, sliceAngle, true, borderPaint);
       
@@ -688,7 +687,7 @@ class ProfessionalWheelPainter extends CustomPainter {
       
       // Add Glow if on
       if (isOn) {
-         canvas.drawCircle(Offset(lx, ly), 6, Paint()..color = Colors.yellow.withOpacity(0.5)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2));
+         canvas.drawCircle(Offset(lx, ly), 6, Paint()..color = Colors.yellow.withValues(alpha: 0.5)..maskFilter = const MaskFilter.blur(BlurStyle.normal, 2));
       }
     }
   }
@@ -734,7 +733,7 @@ class RibbonPainter extends CustomPainter {
     // Add Glossy Highlight
     final highlightPaint = Paint()
       ..style = PaintingStyle.fill
-      ..color = Colors.white.withOpacity(0.1);
+      ..color = Colors.white.withValues(alpha: 0.1);
       
     final highlightPath = Path();
     highlightPath.moveTo(10, 25);

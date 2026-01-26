@@ -4,6 +4,8 @@ import 'package:facebook_audience_network/facebook_audience_network.dart';
 void main() => runApp(AdExampleApp());
 
 class AdExampleApp extends StatelessWidget {
+  const AdExampleApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -70,8 +72,9 @@ class AdsPageState extends State<AdsPage> {
       placementId: "IMG_16_9_APP_INSTALL#2312433698835503_2650502525028617",
       listener: (result, value) {
         print(">> FAN > Interstitial Ad: $result --> $value");
-        if (result == InterstitialAdResult.LOADED)
+        if (result == InterstitialAdResult.LOADED) {
           _isInterstitialAdLoaded = true;
+        }
 
         /// Once an Interstitial Ad has been dismissed and becomes invalidated,
         /// load a fresh Ad by calling this function.
@@ -110,6 +113,8 @@ class AdsPageState extends State<AdsPage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
         Flexible(
+          fit: FlexFit.tight,
+          flex: 2,
           child: Align(
             alignment: Alignment(0, -1.0),
             child: Padding(
@@ -117,8 +122,6 @@ class AdsPageState extends State<AdsPage> {
               child: _getAllButtons(),
             ),
           ),
-          fit: FlexFit.tight,
-          flex: 2,
         ),
         // Column(children: <Widget>[
         //   _nativeAd(),
@@ -126,12 +129,12 @@ class AdsPageState extends State<AdsPage> {
         //   _nativeAd(),
         // ],),
         Flexible(
+          fit: FlexFit.tight,
+          flex: 3,
           child: Align(
             alignment: Alignment(0, 1.0),
             child: _currentAd,
           ),
-          fit: FlexFit.tight,
-          flex: 3,
         )
       ],
     );
@@ -167,21 +170,23 @@ class AdsPageState extends State<AdsPage> {
     );
   }
 
-  _showInterstitialAd() {
-    if (_isInterstitialAdLoaded == true)
+  void _showInterstitialAd() {
+    if (_isInterstitialAdLoaded == true) {
       FacebookInterstitialAd.showInterstitialAd();
-    else
+    } else {
       print("Interstial Ad not yet loaded!");
+    }
   }
 
-  _showRewardedAd() {
-    if (_isRewardedAdLoaded == true)
+  void _showRewardedAd() {
+    if (_isRewardedAdLoaded == true) {
       FacebookRewardedVideoAd.showRewardedVideoAd();
-    else
+    } else {
       print("Rewarded Ad not yet loaded!");
+    }
   }
 
-  _showBannerAd() {
+  void _showBannerAd() {
     setState(() {
       _currentAd = FacebookBannerAd(
         // placementId: "YOUR_PLACEMENT_ID",
@@ -195,7 +200,7 @@ class AdsPageState extends State<AdsPage> {
     });
   }
 
-  _showNativeBannerAd() {
+  void _showNativeBannerAd() {
     setState(() {
       _currentAd = _nativeBannerAd();
     });
@@ -220,7 +225,7 @@ class AdsPageState extends State<AdsPage> {
     );
   }
 
-  _showNativeAd() {
+  void _showNativeAd() {
     setState(() {
       _currentAd = _nativeAd();
     });

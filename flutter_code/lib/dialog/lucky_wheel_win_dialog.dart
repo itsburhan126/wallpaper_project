@@ -69,12 +69,12 @@ class _LuckyWheelWinDialogState extends State<LuckyWheelWinDialog> {
                   border: Border.all(color: const Color(0xFFFFD54F), width: 2), // Gold Border
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
+                      color: Colors.black.withValues(alpha: 0.5),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
                     BoxShadow(
-                      color: Colors.amber.withOpacity(0.2),
+                      color: Colors.amber.withValues(alpha: 0.2),
                       blurRadius: 10,
                       spreadRadius: 2,
                     ),
@@ -112,7 +112,7 @@ class _LuckyWheelWinDialogState extends State<LuckyWheelWinDialog> {
                       decoration: BoxDecoration(
                         color: Colors.black45,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.amber.withOpacity(0.5)),
+                        border: Border.all(color: Colors.amber.withValues(alpha: 0.5)),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -150,7 +150,7 @@ class _LuckyWheelWinDialogState extends State<LuckyWheelWinDialog> {
                           backgroundColor: const Color(0xFFFF6F00), // Amber Dark
                           foregroundColor: Colors.white,
                           elevation: 8,
-                          shadowColor: Colors.amber.withOpacity(0.5),
+                          shadowColor: Colors.amber.withValues(alpha: 0.5),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           padding: EdgeInsets.zero,
                         ),
@@ -193,7 +193,7 @@ class _LuckyWheelWinDialogState extends State<LuckyWheelWinDialog> {
                                         "+${widget.rewardAmount * 2} ${langProvider.getText('coins')}",
                                         style: GoogleFonts.poppins(
                                           fontSize: 12,
-                                          color: Colors.white.withOpacity(0.9),
+                                          color: Colors.white.withValues(alpha: 0.9),
                                           height: 1,
                                         ),
                                       ),
@@ -203,7 +203,7 @@ class _LuckyWheelWinDialogState extends State<LuckyWheelWinDialog> {
                               ),
                       ),
                     ).animate(onPlay: (c) => c.repeat(reverse: true))
-                    .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.4)),
+                    .shimmer(duration: 2000.ms, color: Colors.white.withValues(alpha: 0.4)),
 
                     const SizedBox(height: 16),
 
@@ -247,7 +247,7 @@ class _LuckyWheelWinDialogState extends State<LuckyWheelWinDialog> {
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.withValues(alpha: 0.4),
                         blurRadius: 10,
                         offset: const Offset(0, 5),
                       ),

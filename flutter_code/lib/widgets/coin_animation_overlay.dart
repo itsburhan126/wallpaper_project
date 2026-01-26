@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class CoinAnimationOverlay {
   static void show(BuildContext context, GlobalKey targetKey, {int coinCount = 10, VoidCallback? onComplete}) {

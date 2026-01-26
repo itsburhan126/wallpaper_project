@@ -71,7 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
         deviceId = iosInfo.identifierForVendor;
       }
     } catch (e) {
-      print('Error getting device ID: $e');
+      debugPrint('Error getting device ID: $e');
     }
 
     final result = await _apiService.login(
@@ -87,9 +87,11 @@ class _LoginScreenState extends State<LoginScreen> {
           if (mounted) {
             await Provider.of<AppProvider>(context, listen: false).setUser(result['data']);
           }
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const MainScreen()),
-        );
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const MainScreen()),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -133,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
             deviceId = iosInfo.identifierForVendor;
           }
         } catch (e) {
-          print('Error getting device ID: $e');
+          debugPrint('Error getting device ID: $e');
         }
 
         final result = await _apiService.googleLogin(
@@ -155,9 +157,11 @@ class _LoginScreenState extends State<LoginScreen> {
                await _showReferralDialog();
              }
              
-             Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const MainScreen()),
-             );
+             if (mounted) {
+               Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => const MainScreen()),
+               );
+             }
            }
         } else {
            if (mounted) {
@@ -263,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withOpacity(0.5),
+                                color: AppColors.primary.withValues(alpha: 0.5),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               )
@@ -326,7 +330,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             elevation: 5,
-                            shadowColor: AppColors.primary.withOpacity(0.5),
+                            shadowColor: AppColors.primary.withValues(alpha: 0.5),
                           ),
                           child: _isLoading 
                             ? const CircularProgressIndicator(color: Colors.white)
@@ -433,12 +437,12 @@ class _LoginScreenState extends State<LoginScreen> {
       alignment: Alignment.center,
       border: 1,
       linearGradient: LinearGradient(
-        colors: [Colors.white.withOpacity(0.1), Colors.white.withOpacity(0.05)],
+        colors: [Colors.white.withValues(alpha: 0.1), Colors.white.withValues(alpha: 0.05)],
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
       ),
       borderGradient: LinearGradient(
-        colors: [Colors.white.withOpacity(0.2), Colors.white.withOpacity(0.1)],
+        colors: [Colors.white.withValues(alpha: 0.2), Colors.white.withValues(alpha: 0.1)],
       ),
       child: TextField(
         controller: controller,

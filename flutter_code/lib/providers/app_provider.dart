@@ -318,8 +318,8 @@ class AppProvider with ChangeNotifier {
   }
 
   Future<void> setUser(Map<String, dynamic> data) async {
-    print("------- PROVIDER SET USER DEBUG -------");
-    print("Received Data: $data");
+    debugPrint("------- PROVIDER SET USER DEBUG -------");
+    debugPrint("Received Data: $data");
     
     final prefs = await SharedPreferences.getInstance();
 
@@ -459,7 +459,7 @@ class AppProvider with ChangeNotifier {
         }
       }
     } catch (e) {
-      print("Error fetching user balance: $e");
+      debugPrint("Error fetching user balance: $e");
     } finally {
       _isUserLoading = false;
       notifyListeners();

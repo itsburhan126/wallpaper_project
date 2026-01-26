@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:provider/provider.dart';
+// import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../utils/app_theme.dart';
-import '../../providers/language_provider.dart';
+// import '../../providers/language_provider.dart';
 import '../../services/api_service.dart';
 import '../../widgets/toast/professional_toast.dart';
 import '../../widgets/ads/universal_banner_ad.dart';
@@ -28,7 +28,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
   int? _selectedMethodId;
   
   final _accountController = TextEditingController();
-  final _amountController = TextEditingController();
+  // final _amountController = TextEditingController();
   bool _isSubmitting = false;
 
   @override
@@ -200,7 +200,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final languageProvider = Provider.of<LanguageProvider>(context);
+    // final languageProvider = Provider.of<LanguageProvider>(context);
 
     return Scaffold(
       backgroundColor: AppTheme.darkBackgroundColor,
@@ -257,10 +257,10 @@ class _RedeemScreenState extends State<RedeemScreen> {
                           child: Container(
                             width: 100,
                             decoration: BoxDecoration(
-                              color: isSelected ? Colors.amber.withOpacity(0.2) : const Color(0xFF1F1B2E),
+                              color: isSelected ? Colors.amber.withValues(alpha: 0.2) : const Color(0xFF1F1B2E),
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: isSelected ? Colors.amber : Colors.white.withOpacity(0.1),
+                                color: isSelected ? Colors.amber : Colors.white.withValues(alpha: 0.1),
                                 width: 2,
                               ),
                             ),
@@ -274,8 +274,8 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                     width: 40,
                                     fit: BoxFit.cover,
                                     memCacheHeight: 100,
-                                    errorWidget: (_,__,___) => const Icon(Icons.payment, color: Colors.white),
-                                    placeholder: (_,__) => const SizedBox(width: 40, height: 40),
+                                    errorWidget: (context, url, error) => const Icon(Icons.payment, color: Colors.white),
+                                    placeholder: (context, url) => const SizedBox(width: 40, height: 40),
                                   )
                                 else
                                   const Icon(Icons.account_balance_wallet_rounded, color: Colors.white, size: 32),
@@ -333,10 +333,10 @@ class _RedeemScreenState extends State<RedeemScreen> {
                               onTap: () => setState(() => _selectedMethodId = method['id']),
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: isSelected ? Colors.blueAccent.withOpacity(0.2) : const Color(0xFF1F1B2E),
+                                  color: isSelected ? Colors.blueAccent.withValues(alpha: 0.2) : const Color(0xFF1F1B2E),
                                   borderRadius: BorderRadius.circular(16),
                                   border: Border.all(
-                                    color: isSelected ? Colors.blueAccent : Colors.white.withOpacity(0.1),
+                                    color: isSelected ? Colors.blueAccent : Colors.white.withValues(alpha: 0.1),
                                     width: 2,
                                   ),
                                 ),
@@ -397,7 +397,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                                 elevation: 8,
-                                shadowColor: Colors.amber.withOpacity(0.4),
+                                shadowColor: Colors.amber.withValues(alpha: 0.4),
                               ),
                               child: _isSubmitting
                                   ? const CircularProgressIndicator(color: Colors.black)
@@ -438,7 +438,7 @@ class _RedeemScreenState extends State<RedeemScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF1F1B2E),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.1)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: TextField(

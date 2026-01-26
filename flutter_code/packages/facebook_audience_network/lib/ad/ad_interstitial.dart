@@ -24,7 +24,7 @@ enum InterstitialAdResult {
 class FacebookInterstitialAd {
   static void Function(InterstitialAdResult, dynamic)? _listener;
 
-  static const _channel = const MethodChannel(INTERSTITIAL_AD_CHANNEL);
+  static const _channel = MethodChannel(INTERSTITIAL_AD_CHANNEL);
 
   /// Loads an Interstitial Ad in background. Replace the default [placementId]
   /// with the one which you obtain by signing-up for Facebook Audience Network.
@@ -108,28 +108,34 @@ class FacebookInterstitialAd {
   static Future<dynamic> _interstitialMethodCall(MethodCall call) {
     switch (call.method) {
       case DISPLAYED_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(InterstitialAdResult.DISPLAYED, call.arguments);
+        }
         break;
       case DISMISSED_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(InterstitialAdResult.DISMISSED, call.arguments);
+        }
         break;
       case ERROR_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(InterstitialAdResult.ERROR, call.arguments);
+        }
         break;
       case LOADED_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(InterstitialAdResult.LOADED, call.arguments);
+        }
         break;
       case CLICKED_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(InterstitialAdResult.CLICKED, call.arguments);
+        }
         break;
       case LOGGING_IMPRESSION_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(InterstitialAdResult.LOGGING_IMPRESSION, call.arguments);
+        }
         break;
     }
     return Future.value(true);

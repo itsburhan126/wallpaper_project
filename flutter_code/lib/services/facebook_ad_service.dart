@@ -35,6 +35,7 @@ class FacebookAdService {
 
   Future<bool> loadInterstitialAd(BuildContext context) async {
     await init();
+    if (!context.mounted) return false;
     final adProvider = Provider.of<AdProvider>(context, listen: false);
     if (!adProvider.adsEnabled || adProvider.facebookInterstitialId.isEmpty) {
       return false;
@@ -46,14 +47,14 @@ class FacebookAdService {
       placementId: adProvider.facebookInterstitialId,
       listener: (result, value) {
         if (result == InterstitialAdResult.LOADED) {
-          print("✅ Facebook Interstitial Ad Loaded");
+          debugPrint("✅ Facebook Interstitial Ad Loaded");
           _isInterstitialLoaded = true;
           if (!completer.isCompleted) completer.complete(true);
         } else if (result == InterstitialAdResult.DISMISSED) {
           _isInterstitialLoaded = false;
           _onInterstitialDismissed?.call();
         } else if (result == InterstitialAdResult.ERROR) {
-          print("❌ Facebook Interstitial Ad Failed to Load: $value");
+          debugPrint("❌ Facebook Interstitial Ad Failed to Load: $value");
           _isInterstitialLoaded = false;
           if (!completer.isCompleted) completer.complete(false);
         }
@@ -80,6 +81,7 @@ class FacebookAdService {
 
   Future<bool> loadRewardedAd(BuildContext context) async {
     await init();
+    if (!context.mounted) return false;
     final adProvider = Provider.of<AdProvider>(context, listen: false);
     if (!adProvider.adsEnabled || adProvider.facebookRewardedId.isEmpty) {
        return false;
@@ -91,7 +93,7 @@ class FacebookAdService {
       placementId: adProvider.facebookRewardedId,
       listener: (result, value) {
         if (result == RewardedVideoAdResult.LOADED) {
-          print("✅ Facebook Rewarded Ad Loaded");
+          debugPrint("✅ Facebook Rewarded Ad Loaded");
           _isRewardedLoaded = true;
           if (!completer.isCompleted) completer.complete(true);
         } else if (result == RewardedVideoAdResult.VIDEO_COMPLETE) {
@@ -100,7 +102,7 @@ class FacebookAdService {
            _isRewardedLoaded = false;
            _onRewardedDismissed?.call();
         } else if (result == RewardedVideoAdResult.ERROR) {
-           print("❌ Facebook Rewarded Ad Failed to Load: $value");
+           debugPrint("❌ Facebook Rewarded Ad Failed to Load: $value");
           _isRewardedLoaded = false;
           if (!completer.isCompleted) completer.complete(false);
           _onRewardedFailed?.call();

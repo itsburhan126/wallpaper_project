@@ -27,7 +27,7 @@ class WallpaperCard extends StatelessWidget {
             color: Colors.grey[900],
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -63,8 +63,8 @@ class WallpaperCard extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.0),
-                      Colors.black.withOpacity(0.3),
+                      Colors.black.withValues(alpha: 0.0),
+                      Colors.black.withValues(alpha: 0.3),
                     ],
                     stops: const [0.0, 0.7, 1.0],
                   ),

@@ -10,7 +10,7 @@ class UnityAdService {
   UnityAdService._internal();
 
   bool _isInitialized = false;
-  Map<String, bool> _loadedAds = {};
+  final Map<String, bool> _loadedAds = {};
 
   Future<void> init(BuildContext context) async {
     if (_isInitialized) return;
@@ -21,10 +21,10 @@ class UnityAdService {
     await UnityAds.init(
       gameId: adProvider.unityGameId,
       onComplete: () {
-        print('✅ Unity Ads Initialized');
+        debugPrint('✅ Unity Ads Initialized');
         _isInitialized = true;
       },
-      onFailed: (error, message) => print('❌ Unity Ads Init Failed: $error $message'),
+      onFailed: (error, message) => debugPrint('❌ Unity Ads Init Failed: $error $message'),
     );
   }
 
@@ -42,12 +42,12 @@ class UnityAdService {
     await UnityAds.load(
       placementId: placementId,
       onComplete: (placementId) {
-        print('✅ Unity Ad Loaded: $placementId');
+        debugPrint('✅ Unity Ad Loaded: $placementId');
         _loadedAds[placementId] = true;
         if (!completer.isCompleted) completer.complete(true);
       },
       onFailed: (placementId, error, message) {
-        print('❌ Unity Ad Load Failed: $placementId, $error, $message');
+        debugPrint('❌ Unity Ad Load Failed: $placementId, $error, $message');
         _loadedAds[placementId] = false;
         if (!completer.isCompleted) completer.complete(false);
       },
@@ -64,28 +64,28 @@ class UnityAdService {
     if (!_loadedAds.containsKey(placementId) || !_loadedAds[placementId]!) {
        // Try loading if not ready?
        // For now, fail.
-       print("❌ Unity Ad not ready: $placementId");
+       debugPrint("❌ Unity Ad not ready: $placementId");
        if (onFailed != null) onFailed();
        return false;
     }
 
     await UnityAds.showVideoAd(
       placementId: placementId,
-      onStart: (placementId) => print('🎬 Unity Ad Started: $placementId'),
-      onClick: (placementId) => print('🖱️ Unity Ad Clicked: $placementId'),
+      onStart: (placementId) => debugPrint('🎬 Unity Ad Started: $placementId'),
+      onClick: (placementId) => debugPrint('🖱️ Unity Ad Clicked: $placementId'),
       onSkipped: (placementId) {
-         print('⏭️ Unity Ad Skipped: $placementId');
+         debugPrint('⏭️ Unity Ad Skipped: $placementId');
          _loadedAds[placementId] = false;
          if (onDismissed != null) onDismissed();
       },
       onComplete: (placementId) {
-         print('✅ Unity Ad Completed: $placementId');
+         debugPrint('✅ Unity Ad Completed: $placementId');
          _loadedAds[placementId] = false;
          if (onReward != null) onReward(null);
          if (onDismissed != null) onDismissed();
       },
       onFailed: (placementId, error, message) {
-        print('❌ Unity Ad Failed: $placementId, $error, $message');
+        debugPrint('❌ Unity Ad Failed: $placementId, $error, $message');
         _loadedAds[placementId] = false;
         if (onFailed != null) onFailed();
       },

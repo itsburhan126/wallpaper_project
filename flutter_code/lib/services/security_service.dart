@@ -3,11 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:safe_device/safe_device.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'api_service.dart';
-import '../providers/language_provider.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 
@@ -75,7 +71,7 @@ class SecurityService {
       // This is a placeholder for future implementation where we compare device ID
       
     } catch (e) {
-      print('Security check error: $e');
+      debugPrint('Security check error: $e');
     } finally {
       _isChecking = false;
     }
@@ -87,14 +83,9 @@ class SecurityService {
     try {
       final connectivityResult = await Connectivity().checkConnectivity();
       // connectivity_plus 6.0+ returns List<ConnectivityResult>
-      if (connectivityResult is List) {
-        return connectivityResult.contains(ConnectivityResult.vpn);
-      } else {
-        // Fallback for older versions if any (though we installed 7.0.0)
-        return connectivityResult == ConnectivityResult.vpn;
-      }
-    } catch (e) {
-      print('VPN Check Error: $e');
+      return connectivityResult.contains(ConnectivityResult.vpn);
+        } catch (e) {
+      debugPrint('VPN Check Error: $e');
       return false;
     }
   }
@@ -117,7 +108,7 @@ class SecurityService {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
+                    color: Colors.black.withValues(alpha: 0.5),
                     blurRadius: 24,
                     offset: const Offset(0, 8),
                   ),
@@ -130,9 +121,9 @@ class SecurityService {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
+                      color: Colors.red.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.red.withOpacity(0.5), width: 2),
+                      border: Border.all(color: Colors.red.withValues(alpha: 0.5), width: 2),
                     ),
                     child: const Icon(
                       Icons.gpp_bad_rounded,

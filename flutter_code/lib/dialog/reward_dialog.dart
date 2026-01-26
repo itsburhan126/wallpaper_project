@@ -67,7 +67,7 @@ class _RewardDialogState extends State<RewardDialog> {
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -84,7 +84,7 @@ class _RewardDialogState extends State<RewardDialog> {
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.amber.withOpacity(0.2),
+                        color: Colors.amber.withValues(alpha: 0.2),
                       ),
                       child: const Icon(Icons.monetization_on_rounded, size: 48, color: Colors.amber),
                     )
@@ -133,7 +133,7 @@ class _RewardDialogState extends State<RewardDialog> {
                       disabledBackgroundColor: Colors.deepOrange, // Keep background color when loading
                       disabledForegroundColor: Colors.white, // Keep text color when loading
                       elevation: 4,
-                      shadowColor: Colors.deepOrange.withOpacity(0.4),
+                      shadowColor: Colors.deepOrange.withValues(alpha: 0.4),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                       padding: EdgeInsets.zero,
                     ),
@@ -188,7 +188,7 @@ class _RewardDialogState extends State<RewardDialog> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.orange.withOpacity(0.3),
+                    color: Colors.orange.withValues(alpha: 0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -203,7 +203,7 @@ class _RewardDialogState extends State<RewardDialog> {
                   letterSpacing: 0.5,
                   shadows: [
                     Shadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       offset: const Offset(0, 2),
                       blurRadius: 2,
                     ),
@@ -225,7 +225,7 @@ class _RewardDialogState extends State<RewardDialog> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Colors.black.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
                   border: Border.all(color: Colors.white, width: 2),
                 ),

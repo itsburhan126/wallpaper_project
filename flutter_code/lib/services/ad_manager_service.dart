@@ -114,6 +114,8 @@ class AdManager {
       }
     }
 
+    if (!context.mounted) return false;
+
     // 2. FAST PATH: Check if Interstitial is ready (Skip loading Rewarded)
     if (adService.isInterstitialAdReady()) {
       debugPrint("🔹 AdMob Interstitial Ad is READY. Skipping Rewarded Load.");
@@ -126,6 +128,8 @@ class AdManager {
         return true;
       }
     }
+
+    if (!context.mounted) return false;
 
     // 3. SLOW PATH: Neither ready, try loading Rewarded
     debugPrint("🔹 No ads ready. Attempting to load Rewarded Ad...");
@@ -143,6 +147,8 @@ class AdManager {
        onSuccess();
        return true;
     }
+
+    if (!context.mounted) return false;
 
     // 4. SLOW PATH: Fallback to Interstitial Ad if Rewarded failed
     debugPrint("🔹 Rewarded Ad failed/not ready. Showing AdMob Interstitial Ad as Fallback");
@@ -176,6 +182,8 @@ class AdManager {
       }
     }
 
+    if (!context.mounted) return false;
+
     // 2. Check Interstitial
     if (adService.isInterstitialAdReady()) {
       debugPrint("🔹 Facebook Interstitial Ad is READY.");
@@ -189,9 +197,12 @@ class AdManager {
       }
     }
 
+    if (!context.mounted) return false;
+
     // 3. Load & Show Rewarded
     debugPrint("🔹 Loading Facebook Rewarded Ad...");
     await adService.loadRewardedAd(context);
+    if (!context.mounted) return false;
     if (adService.isRewardedAdReady()) {
        bool success = await adService.showRewardedAd(
          context,
@@ -204,9 +215,12 @@ class AdManager {
        }
     }
 
+    if (!context.mounted) return false;
+
     // 4. Load & Show Interstitial
     debugPrint("🔹 Loading Facebook Interstitial Ad...");
     await adService.loadInterstitialAd(context);
+    if (!context.mounted) return false;
     if (adService.isInterstitialAdReady()) {
        bool success = await adService.showInterstitialAd(
          context,
@@ -245,6 +259,7 @@ class AdManager {
       } else {
         debugPrint("🔹 Loading Unity Rewarded Ad...");
         await adService.loadAd(context, rewardedId);
+        if (!context.mounted) return false;
         if (adService.isAdReady(rewardedId)) {
             bool success = await adService.showAd(
                 context, 
@@ -259,6 +274,8 @@ class AdManager {
         }
       }
     }
+
+    if (!context.mounted) return false;
 
     // 2. Try Interstitial
     String interstitialId = adProvider.unityInterstitialId;
@@ -278,6 +295,7 @@ class AdManager {
         } else {
            debugPrint("🔹 Loading Unity Interstitial Ad...");
            await adService.loadAd(context, interstitialId);
+           if (!context.mounted) return false;
            if (adService.isAdReady(interstitialId)) {
               bool success = await adService.showAd(
                   context, 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart' hide Category;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
@@ -30,7 +31,7 @@ class ApiService {
       }
     } catch (e) {
       _logError('GET', url, e);
-      print('Error fetching general settings: $e');
+      debugPrint('Error fetching general settings: $e');
     }
     return {};
   }
@@ -50,7 +51,7 @@ class ApiService {
       }
     } catch (e) {
       _logError('GET', url, e);
-      print('Error fetching game settings: $e');
+      debugPrint('Error fetching game settings: $e');
     }
     return {};
   }
@@ -70,7 +71,7 @@ class ApiService {
       }
     } catch (e) {
       _logError('GET', url, e);
-      print('Error fetching ad settings: $e');
+      debugPrint('Error fetching ad settings: $e');
     }
     return {};
   }
@@ -90,7 +91,7 @@ class ApiService {
       }
     } catch (e) {
       _logError('GET', url, e);
-      print('Error fetching security settings: $e');
+      debugPrint('Error fetching security settings: $e');
     }
     return {};
   }
@@ -111,7 +112,7 @@ class ApiService {
       }
     } catch (e) {
       _logError('GET', url, e);
-      print('Error fetching page: $e');
+      debugPrint('Error fetching page: $e');
     }
     return null;
   }
@@ -168,20 +169,20 @@ class ApiService {
 
   // Logging Helpers
   void _logRequest(String method, String url, {dynamic body}) {
-    print('🔵 [API Request] $method: $url');
-    if (body != null) print('📦 Body: $body');
+    debugPrint('🔵 [API Request] $method: $url');
+    if (body != null) debugPrint('📦 Body: $body');
   }
 
   void _logResponse(String method, String url, http.Response response) {
-    print(response.statusCode >= 200 && response.statusCode < 300 
+    debugPrint(response.statusCode >= 200 && response.statusCode < 300 
         ? '🟢 [API Success] $method: $url' 
         : '🔴 [API Error ${response.statusCode}] $method: $url');
-    print('📄 Response: ${response.body}');
+    debugPrint('📄 Response: ${response.body}');
   }
 
   void _logError(String method, String url, dynamic error) {
-    print('❌ [API Exception] $method: $url');
-    print('⚠️ Error: $error');
+    debugPrint('❌ [API Exception] $method: $url');
+    debugPrint('⚠️ Error: $error');
   }
 
   Future<List<GameModel>> getGames() async {
@@ -195,24 +196,24 @@ class ApiService {
         final data = json.decode(response.body);
         if (data['status'] == true) {
           // Debugging: Print structure
-          print('🎮 Games Data Structure: ${data['data'].runtimeType}');
+          debugPrint('🎮 Games Data Structure: ${data['data'].runtimeType}');
           
           if (data['data'] is Map && data['data'].containsKey('data')) {
              // Pagination structure
              final List gamesData = data['data']['data'];
-             print('🎮 Found ${gamesData.length} games in pagination');
+             debugPrint('🎮 Found ${gamesData.length} games in pagination');
              return gamesData.map((e) => GameModel.fromJson(e)).toList();
           } else if (data['data'] is List) {
              // Direct list structure
              final List gamesData = data['data'];
-             print('🎮 Found ${gamesData.length} games in list');
+             debugPrint('🎮 Found ${gamesData.length} games in list');
              return gamesData.map((e) => GameModel.fromJson(e)).toList();
           }
         }
       }
     } catch (e, stackTrace) {
       _logError('GET', url, e);
-      print('Stack trace: $stackTrace');
+      debugPrint('Stack trace: $stackTrace');
     }
     return [];
   }
@@ -732,7 +733,7 @@ class ApiService {
       }
     } catch (e) {
       _logError('GET', url, e);
-      print('Error fetching banners: $e');
+      debugPrint('Error fetching banners: $e');
     }
     return [];
   }
@@ -756,7 +757,7 @@ class ApiService {
       }
     } catch (e) {
       _logError('GET', url, e);
-      print('Error fetching categories: $e');
+      debugPrint('Error fetching categories: $e');
     }
     return [];
   }
@@ -790,7 +791,7 @@ class ApiService {
       }
     } catch (e) {
       _logError('GET', url, e);
-      print('Error fetching wallpapers: $e');
+      debugPrint('Error fetching wallpapers: $e');
     }
     return [];
   }

@@ -173,7 +173,7 @@ class _WallpaperTabState extends State<WallpaperTab> with AutomaticKeepAliveClie
                   const SizedBox(height: 16),
                   Text(
                     Provider.of<LanguageProvider>(context).getText('failed_load_wallpapers'),
-                    style: TextStyle(color: Colors.white.withOpacity(0.7)),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                   ),
                   TextButton(
                     onPressed: () => _fetchData(),
@@ -187,7 +187,7 @@ class _WallpaperTabState extends State<WallpaperTab> with AutomaticKeepAliveClie
               child: Center(
                 child: Text(
                   Provider.of<LanguageProvider>(context).getText('no_wallpapers_found'),
-                  style: TextStyle(color: Colors.white.withOpacity(0.5)),
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
                 ),
               ),
             )

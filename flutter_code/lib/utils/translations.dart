@@ -1,5 +1,5 @@
 class AppTranslations {
-  static Map<String, Map<String, String>> _localizedValues = {
+  static final Map<String, Map<String, String>> _localizedValues = {
     'en': {
       // Intro Screen
       'intro_title_1': 'Stunning Wallpapers',

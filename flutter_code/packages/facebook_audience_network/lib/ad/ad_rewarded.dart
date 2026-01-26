@@ -27,7 +27,7 @@ enum RewardedVideoAdResult {
 class FacebookRewardedVideoAd {
   static void Function(RewardedVideoAdResult, dynamic)? _listener;
 
-  static const _channel = const MethodChannel(REWARDED_VIDEO_CHANNEL);
+  static const _channel = MethodChannel(REWARDED_VIDEO_CHANNEL);
 
   /// Loads a rewarded video Ad in background. Replace the default [placementId]
   /// with the one which you obtain by signing-up for Facebook Audience Network.
@@ -54,8 +54,9 @@ class FacebookRewardedVideoAd {
         "id": placementId,
       };
       
-      if(Platform.isIOS)
+      if(Platform.isIOS) {
         return false;
+      }
 
       final result = await _channel.invokeMethod(
         LOAD_REWARDED_VIDEO_METHOD,
@@ -114,28 +115,34 @@ class FacebookRewardedVideoAd {
   static Future<dynamic> _rewardedMethodCall(MethodCall call) {
     switch (call.method) {
       case REWARDED_VIDEO_COMPLETE_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(RewardedVideoAdResult.VIDEO_COMPLETE, call.arguments);
+        }
         break;
       case REWARDED_VIDEO_CLOSED_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(RewardedVideoAdResult.VIDEO_CLOSED, call.arguments);
+        }
         break;
       case ERROR_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(RewardedVideoAdResult.ERROR, call.arguments);
+        }
         break;
       case LOADED_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(RewardedVideoAdResult.LOADED, call.arguments);
+        }
         break;
       case CLICKED_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(RewardedVideoAdResult.CLICKED, call.arguments);
+        }
         break;
       case LOGGING_IMPRESSION_METHOD:
-        if (_listener != null)
+        if (_listener != null) {
           _listener!(RewardedVideoAdResult.LOGGING_IMPRESSION, call.arguments);
+        }
         break;
     }
     return Future.value(true);

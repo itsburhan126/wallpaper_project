@@ -5,8 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/constants.dart';
-import '../config/api_config.dart';
-import 'intro_screen.dart';
 import 'main_screen.dart';
 import '../providers/ad_provider.dart';
 import '../providers/language_provider.dart';
@@ -30,9 +28,9 @@ class _SplashScreenState extends State<SplashScreen> {
     _checkAuthAndNavigate();
   }
 
-  _checkAuthAndNavigate() async {
+  Future<void> _checkAuthAndNavigate() async {
     // Start fetching ad settings immediately
-    final adProvider = Provider.of<AdProvider>(context, listen: false);
+    // final adProvider = Provider.of<AdProvider>(context, listen: false);
     
     // Check Security First
     bool isSafe = await SecurityService().checkSecurity(context);
@@ -59,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
             isTokenValid = false;
           }
         } catch (e) {
-          print("Splash validation error: $e");
+          debugPrint("Splash validation error: $e");
           // If error (e.g. timeout), assume invalid to be safe and force login
           isTokenValid = false;
         }
@@ -104,7 +102,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (mounted) {
        // Trigger Ad Preload
-       print("🚀 Splash: Preloading Ads...");
+       debugPrint("🚀 Splash: Preloading Ads...");
        AdManager.preloadAds(context);
     }
   }
@@ -141,12 +139,12 @@ class _SplashScreenState extends State<SplashScreen> {
                             boxShadow: [
                               // Neon Glow Effect
                               BoxShadow(
-                                color: Colors.cyanAccent.withOpacity(0.6),
+                                color: Colors.cyanAccent.withValues(alpha: 0.6),
                                 blurRadius: 50,
                                 spreadRadius: 10,
                               ),
                               BoxShadow(
-                                color: Colors.purpleAccent.withOpacity(0.4),
+                                color: Colors.purpleAccent.withValues(alpha: 0.4),
                                 blurRadius: 30,
                                 spreadRadius: 5,
                               ),
@@ -161,7 +159,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         ).animate()
                          .scale(duration: 800.ms, curve: Curves.elasticOut)
                          .then()
-                         .shimmer(duration: 1200.ms, color: Colors.white.withOpacity(0.5)),
+                         .shimmer(duration: 1200.ms, color: Colors.white.withValues(alpha: 0.5)),
                         
                         const SizedBox(height: 30),
                         
@@ -174,7 +172,7 @@ class _SplashScreenState extends State<SplashScreen> {
                             letterSpacing: 2,
                             shadows: [
                               Shadow(
-                                color: Colors.cyanAccent.withOpacity(0.8),
+                                color: Colors.cyanAccent.withValues(alpha: 0.8),
                                 blurRadius: 20,
                                 offset: const Offset(0, 0),
                               ),

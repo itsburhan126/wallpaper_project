@@ -63,8 +63,8 @@ class _MainScreenState extends State<MainScreen> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                AppTheme.darkBackgroundColor.withOpacity(0.9),
-                AppTheme.darkBackgroundColor.withOpacity(0.7),
+                AppTheme.darkBackgroundColor.withValues(alpha: 0.9),
+                AppTheme.darkBackgroundColor.withValues(alpha: 0.7),
               ],
             ),
             border: 0,
@@ -73,8 +73,8 @@ class _MainScreenState extends State<MainScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.white.withOpacity(0.1),
-                Colors.white.withOpacity(0.05),
+                Colors.white.withValues(alpha: 0.1),
+                Colors.white.withValues(alpha: 0.05),
               ],
             ),
             child: Theme(

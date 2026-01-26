@@ -86,7 +86,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                   hintText: "Brief summary of the issue",
                   hintStyle: GoogleFonts.poppins(color: Colors.white24),
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.05),
+                  fillColor: Colors.white.withValues(alpha: 0.05),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -108,7 +108,7 @@ class _CreateTicketScreenState extends State<CreateTicketScreen> {
                   hintText: "Describe your issue in detail...",
                   hintStyle: GoogleFonts.poppins(color: Colors.white24),
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.05),
+                  fillColor: Colors.white.withValues(alpha: 0.05),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,

@@ -16,7 +16,6 @@ import '../widgets/ads/shorts_native_ad.dart';
 import '../widgets/user_avatar.dart';
 import '../dialog/reward_dialog.dart';
 import '../widgets/toast/professional_toast.dart';
-import '../dialog/ad_error_dialog.dart';
 import '../utils/app_theme.dart';
 
 import 'package:url_launcher/url_launcher.dart';
@@ -45,7 +44,9 @@ class _ShortsScreenState extends State<ShortsScreen> {
       // Preload Ad Settings and Ads
       final adProvider = Provider.of<AdProvider>(context, listen: false);
       adProvider.fetchAdSettings().then((_) {
-         AdManager.preloadAds(context);
+         if (mounted) {
+           AdManager.preloadAds(context);
+         }
       });
     });
   }
@@ -195,11 +196,11 @@ class ProfessionalRewardButton extends StatelessWidget {
         height: 90,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: Colors.black.withOpacity(0.3),
+          color: Colors.black.withValues(alpha: 0.3),
           boxShadow: isClaimable
               ? [
                   BoxShadow(
-                    color: Colors.amber.withOpacity(0.5),
+                    color: Colors.amber.withValues(alpha: 0.5),
                     blurRadius: 20,
                     spreadRadius: 2,
                   )
@@ -250,7 +251,7 @@ class ProfessionalRewardButton extends StatelessWidget {
               )
               .animate(onPlay: (c) => c.repeat(reverse: true))
               .scale(begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05), duration: 800.ms)
-              .shimmer(duration: 2000.ms, color: Colors.white.withOpacity(0.4))
+              .shimmer(duration: 2000.ms, color: Colors.white.withValues(alpha: 0.4))
             else
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -289,7 +290,7 @@ class RewardProgressPainter extends CustomPainter {
 
     // Background Circle
     final bgPaint = Paint()
-      ..color = Colors.white.withOpacity(0.15)
+      ..color = Colors.white.withValues(alpha: 0.15)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 8;
     
@@ -701,14 +702,17 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
     );
 
     if (!success) {
-      ProfessionalToast.showError(context, message: "Ads not available");
+      if (mounted) {
+        ProfessionalToast.showError(context, message: "Ads not available");
+      }
     }
   }
 
   void _onAdSuccess() {
       // API Call to claim reward
+      if (!mounted) return;
       Provider.of<ShortsProvider>(context, listen: false).claimReward(widget.short.id).then((success) {
-        if (success) {
+        if (success && mounted) {
            Provider.of<AppProvider>(context, listen: false).addCoins(widget.rewardAmount);
             if (mounted) {
               setState(() {
@@ -831,7 +835,7 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
                               icon: const Icon(Icons.refresh_rounded, size: 18),
                               label: Text(Provider.of<LanguageProvider>(context).getText('refresh')),
                                style: ElevatedButton.styleFrom(
-                                 backgroundColor: Colors.white.withOpacity(0.1),
+                                 backgroundColor: Colors.white.withValues(alpha: 0.1),
                                  foregroundColor: Colors.white,
                                  elevation: 0,
                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -979,7 +983,7 @@ class _ShortItemState extends State<ShortItem> with SingleTickerProviderStateMix
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withValues(alpha: 0.4),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 30)
@@ -1195,7 +1199,7 @@ class _CommentsSheetState extends State<_CommentsSheet> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -5),
                   ),
@@ -1235,7 +1239,7 @@ class _CommentsSheetState extends State<_CommentsSheet> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: (_isPosting ? Colors.grey : Colors.indigo).withOpacity(0.3),
+                            color: (_isPosting ? Colors.grey : Colors.indigo).withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),

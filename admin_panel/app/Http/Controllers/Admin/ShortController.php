@@ -29,7 +29,8 @@ class ShortController extends Controller
     {
         $request->validate([
             'title' => 'nullable|string|max:255',
-            'video' => 'required|mimes:mp4,mov,ogg,qt|max:102400', // 100MB max
+            'video' => 'nullable|required_without:youtube_url|mimes:mp4,mov,ogg,qt|max:102400', // 100MB max
+            'youtube_url' => 'nullable|required_without:video|url|max:255',
             'thumbnail' => 'nullable|image|max:10240',
         ]);
 
@@ -37,7 +38,9 @@ class ShortController extends Controller
         $short->title = $request->title;
         $short->is_active = $request->boolean('is_active');
 
-        if ($request->hasFile('video')) {
+        if ($request->filled('youtube_url')) {
+            $short->video_url = $request->youtube_url;
+        } elseif ($request->hasFile('video')) {
             $path = $request->file('video')->store('shorts', 'public');
             $short->video_url = Storage::url($path);
         }

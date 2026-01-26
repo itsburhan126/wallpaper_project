@@ -7,7 +7,223 @@
     <form action="{{ route('admin.settings.ads.update') }}" method="POST" class="space-y-6">
         @csrf
         
+        <!-- Global Ad Configuration -->
+        <div class="bg-white rounded-2xl shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] border border-slate-100 overflow-hidden mb-6">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center text-violet-600 shadow-sm">
+                        <i class="fas fa-sliders-h text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Global Ad Configuration</h3>
+                        <p class="text-sm text-slate-500">Control which ad networks are active</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Banner Ad Network</label>
+                        <div class="relative">
+                            <select name="banner_ad_network" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all font-medium appearance-none">
+                                <option value="none" {{ ($settings['banner_ad_network'] ?? '') == 'none' ? 'selected' : '' }}>None</option>
+                                <option value="admob" {{ ($settings['banner_ad_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
+                                <option value="facebook" {{ ($settings['banner_ad_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                                <option value="unity" {{ ($settings['banner_ad_network'] ?? '') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
 
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Native Ad Network</label>
+                        <div class="relative">
+                            <select name="native_ad_network" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all font-medium appearance-none">
+                                <option value="none" {{ ($settings['native_ad_network'] ?? '') == 'none' ? 'selected' : '' }}>None</option>
+                                <option value="admob" {{ ($settings['native_ad_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
+                                <option value="facebook" {{ ($settings['native_ad_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Interstitial Ad Network</label>
+                        <div class="relative">
+                            <select name="interstitial_ad_network" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all font-medium appearance-none">
+                                <option value="none" {{ ($settings['interstitial_ad_network'] ?? '') == 'none' ? 'selected' : '' }}>None</option>
+                                <option value="admob" {{ ($settings['interstitial_ad_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
+                                <option value="facebook" {{ ($settings['interstitial_ad_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                                <option value="unity" {{ ($settings['interstitial_ad_network'] ?? '') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Page-Level Ad Configuration -->
+        <div class="bg-white rounded-2xl shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] border border-slate-100 overflow-hidden mb-6">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm">
+                        <i class="fas fa-layer-group text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Page-Level Configuration</h3>
+                        <p class="text-sm text-slate-500">Customize ad networks for specific screens</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-8 space-y-8">
+                <!-- Home Screen -->
+                <div>
+                    <h4 class="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4">Home Screen</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Banner Ads</label>
+                            <div class="relative">
+                                <select name="home_banner_network" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium appearance-none">
+                                    <option value="global" {{ ($settings['home_banner_network'] ?? 'global') == 'global' ? 'selected' : '' }}>Use Global Setting</option>
+                                    <option value="none" {{ ($settings['home_banner_network'] ?? '') == 'none' ? 'selected' : '' }}>None (Disable)</option>
+                                    <option value="admob" {{ ($settings['home_banner_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
+                                    <option value="facebook" {{ ($settings['home_banner_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                                    <option value="unity" {{ ($settings['home_banner_network'] ?? '') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Native Ads</label>
+                            <div class="relative">
+                                <select name="home_native_network" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium appearance-none">
+                                    <option value="global" {{ ($settings['home_native_network'] ?? 'global') == 'global' ? 'selected' : '' }}>Use Global Setting</option>
+                                    <option value="none" {{ ($settings['home_native_network'] ?? '') == 'none' ? 'selected' : '' }}>None (Disable)</option>
+                                    <option value="admob" {{ ($settings['home_native_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
+                                    <option value="facebook" {{ ($settings['home_native_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Wallpaper Ad Interval (Items)</label>
+                            <input type="number" name="home_ad_interval" value="{{ $settings['home_ad_interval'] ?? '8' }}" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder-slate-400 font-medium" min="1">
+                            <p class="text-xs text-slate-400 mt-1">Show native ad after every X wallpapers</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wallpaper Details -->
+                <div class="border-t border-slate-100 pt-6">
+                    <h4 class="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4">Wallpaper Details</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Banner Ads</label>
+                            <div class="relative">
+                                <select name="details_banner_network" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium appearance-none">
+                                    <option value="global" {{ ($settings['details_banner_network'] ?? 'global') == 'global' ? 'selected' : '' }}>Use Global Setting</option>
+                                    <option value="none" {{ ($settings['details_banner_network'] ?? '') == 'none' ? 'selected' : '' }}>None (Disable)</option>
+                                    <option value="admob" {{ ($settings['details_banner_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
+                                    <option value="facebook" {{ ($settings['details_banner_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                                    <option value="unity" {{ ($settings['details_banner_network'] ?? '') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Native Ads (if applicable)</label>
+                            <div class="relative">
+                                <select name="details_native_network" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium appearance-none">
+                                    <option value="global" {{ ($settings['details_native_network'] ?? 'global') == 'global' ? 'selected' : '' }}>Use Global Setting</option>
+                                    <option value="none" {{ ($settings['details_native_network'] ?? '') == 'none' ? 'selected' : '' }}>None (Disable)</option>
+                                    <option value="admob" {{ ($settings['details_native_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
+                                    <option value="facebook" {{ ($settings['details_native_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category Screen -->
+                <div class="border-t border-slate-100 pt-6">
+                    <h4 class="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4">Category Screen</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Banner Ads</label>
+                            <div class="relative">
+                                <select name="category_banner_network" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium appearance-none">
+                                    <option value="global" {{ ($settings['category_banner_network'] ?? 'global') == 'global' ? 'selected' : '' }}>Use Global Setting</option>
+                                    <option value="none" {{ ($settings['category_banner_network'] ?? '') == 'none' ? 'selected' : '' }}>None (Disable)</option>
+                                    <option value="admob" {{ ($settings['category_banner_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
+                                    <option value="facebook" {{ ($settings['category_banner_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                                    <option value="unity" {{ ($settings['category_banner_network'] ?? '') == 'unity' ? 'selected' : '' }}>Unity Ads</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Native Ads</label>
+                            <div class="relative">
+                                <select name="category_native_network" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium appearance-none">
+                                    <option value="global" {{ ($settings['category_native_network'] ?? 'global') == 'global' ? 'selected' : '' }}>Use Global Setting</option>
+                                    <option value="none" {{ ($settings['category_native_network'] ?? '') == 'none' ? 'selected' : '' }}>None (Disable)</option>
+                                    <option value="admob" {{ ($settings['category_native_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
+                                    <option value="facebook" {{ ($settings['category_native_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shorts Screen -->
+                <div class="border-t border-slate-100 pt-6">
+                    <h4 class="text-sm font-extrabold text-slate-400 uppercase tracking-widest mb-4">Shorts Screen</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Native Ad Network</label>
+                            <div class="relative">
+                                <select name="shorts_native_network" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all font-medium appearance-none">
+                                    <option value="global" {{ ($settings['shorts_native_network'] ?? 'global') == 'global' ? 'selected' : '' }}>Use Global Setting</option>
+                                    <option value="none" {{ ($settings['shorts_native_network'] ?? '') == 'none' ? 'selected' : '' }}>None (Disable)</option>
+                                    <option value="admob" {{ ($settings['shorts_native_network'] ?? '') == 'admob' ? 'selected' : '' }}>Google AdMob</option>
+                                    <option value="facebook" {{ ($settings['shorts_native_network'] ?? '') == 'facebook' ? 'selected' : '' }}>Facebook Audience Network</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-500">
+                                    <i class="fas fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Ad Interval (Items)</label>
+                            <input type="number" name="shorts_ad_interval" value="{{ $settings['shorts_ad_interval'] ?? '5' }}" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all placeholder-slate-400 font-medium" min="1">
+                            <p class="text-xs text-slate-400 mt-1">Show ad after every X shorts</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         <!-- AdMob Settings -->
         <div class="bg-white rounded-2xl shadow-[0_2px_10px_-4px_rgba(6,81,237,0.1)] border border-slate-100 overflow-hidden mb-6" x-show="activeTab === 'admob'">

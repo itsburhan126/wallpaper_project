@@ -14,6 +14,7 @@ import '../widgets/shimmer_loading.dart';
 import '../models/category_model.dart';
 import 'shorts_screen.dart';
 import 'task_screen.dart';
+import 'all_games_screen.dart';
 import '../utils/app_theme.dart';
 import '../widgets/toast/professional_toast.dart';
 
@@ -50,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
           length: tabs.length,
           child: Scaffold(
             backgroundColor: AppTheme.darkBackgroundColor,
+            bottomNavigationBar: null,
             body: NestedScrollView(
               headerSliverBuilder: (context, innerBoxIsScrolled) {
                   return [
@@ -143,21 +145,32 @@ class _HomeScreenState extends State<HomeScreen> {
                               const SizedBox(width: 15),
                               GestureDetector(
                                 onTap: () {
-                                  ProfessionalToast.showLoading(context, message: languageProvider.getText('coming_soon'));
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const AllGamesScreen()),
+                                  );
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFFDD835),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: Text(
-                                    languageProvider.getText('vip'),
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
+                                    gradient: const LinearGradient(
+                                      colors: [Colors.blue, Colors.blueAccent],
                                     ),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      const Icon(FontAwesomeIcons.gamepad, color: Colors.white, size: 14),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        languageProvider.getText('play_earn'),
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -201,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     // 1. Hot Tab (with Banner)
                     if (tabName == languageProvider.getText('tab_hot')) {
                       return WallpaperTab(
-                        isHot: true,
+                        isHot: false,
                         header: _buildBanner(provider),
                         identifier: "Hot",
                       );

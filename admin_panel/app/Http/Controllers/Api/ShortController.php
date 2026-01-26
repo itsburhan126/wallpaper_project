@@ -17,27 +17,43 @@ class ShortController extends Controller
     {
         $userId = auth('sanctum')->id();
 
-        $shorts = Short::where('is_active', true)
+        $query = Short::where('is_active', true)
             ->withCount(['likes', 'comments'])
-            ->latest()
-            ->get()
-            ->map(function ($short) use ($userId) {
-                // Check if liked by current user
-                $short->is_liked = $userId ? $short->likes()->where('user_id', $userId)->exists() : false;
+            ->latest();
 
-                // Ensure full URL is returned for API consumers
-                if ($short->video_url && !str_starts_with($short->video_url, 'http')) {
-                    $short->video_url = asset($short->video_url);
-                }
-                if ($short->thumbnail_url && !str_starts_with($short->thumbnail_url, 'http')) {
-                    $short->thumbnail_url = asset($short->thumbnail_url);
-                }
-                return $short;
-            });
+        if ($userId) {
+            $query->withExists(['likes as is_liked' => function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            }]);
+        }
+
+        // Use simplePaginate for better performance on large datasets
+        $shorts = $query->simplePaginate(15);
+
+        $shorts->through(function ($short) {
+            // Ensure boolean type for is_liked
+            $short->is_liked = isset($short->is_liked) ? (bool) $short->is_liked : false;
+
+            // Ensure full URL is returned for API consumers
+            if ($short->video_url && !str_starts_with($short->video_url, 'http')) {
+                $short->video_url = asset($short->video_url);
+            }
+            if ($short->thumbnail_url && !str_starts_with($short->thumbnail_url, 'http')) {
+                $short->thumbnail_url = asset($short->thumbnail_url);
+            }
+            return $short;
+        });
             
         return response()->json([
             'success' => true,
-            'data' => $shorts
+            'data' => $shorts->items(),
+            'pagination' => [
+                'current_page' => $shorts->currentPage(),
+                'next_page_url' => $shorts->nextPageUrl(),
+                'prev_page_url' => $shorts->previousPageUrl(),
+                'has_more' => $shorts->hasMorePages(),
+                'per_page' => $shorts->perPage(),
+            ]
         ]);
     }
 
@@ -148,5 +164,21 @@ class ShortController extends Controller
             DB::rollBack();
             return response()->json(['success' => false, 'message' => 'Failed to claim reward: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function incrementView($id)
+    {
+        $short = Short::find($id);
+        if (!$short) {
+            return response()->json(['success' => false, 'message' => 'Short not found'], 404);
+        }
+
+        $short->increment('views');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'View counted',
+            'views' => $short->views
+        ]);
     }
 }

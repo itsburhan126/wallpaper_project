@@ -10,7 +10,7 @@ import 'intro_screen.dart';
 import 'main_screen.dart';
 import '../providers/ad_provider.dart';
 import '../providers/language_provider.dart';
-import '../services/google_ad_service.dart';
+import '../services/ad_manager_service.dart';
 import '../services/api_service.dart';
 import '../services/security_service.dart';
 import 'auth/login_screen.dart';
@@ -105,8 +105,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (mounted) {
        // Trigger Ad Preload
        print("🚀 Splash: Preloading Ads...");
-       GoogleAdService().loadRewardedAd(context);
-       GoogleAdService().loadInterstitialAd(context);
+       AdManager.preloadAds(context);
     }
   }
 

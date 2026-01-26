@@ -141,6 +141,37 @@ class ShortsProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> incrementView(String id) async {
+    final url = '${ApiConfig.apiUrl}/shorts/$id/view';
+    try {
+      _logRequest('POST', url);
+      // Optimistic update
+      final index = _shorts.indexWhere((s) => s.id == id);
+      if (index != -1) {
+         final short = _shorts[index];
+         _shorts[index] = Short(
+          id: short.id,
+          title: short.title,
+          videoUrl: short.videoUrl,
+          thumbnailUrl: short.thumbnailUrl,
+          views: short.views + 1,
+          likes: short.likes,
+          commentsCount: short.commentsCount,
+          isLiked: short.isLiked,
+        );
+        notifyListeners();
+      }
+
+      final response = await http.post(
+        Uri.parse(url),
+        headers: await _getHeaders(),
+      );
+      _logResponse('POST', url, response);
+    } catch (e) {
+      _logError('POST', url, e);
+    }
+  }
+
   Future<bool> likeShort(String id) async {
     final url = '${ApiConfig.apiUrl}/shorts/$id/like';
     try {

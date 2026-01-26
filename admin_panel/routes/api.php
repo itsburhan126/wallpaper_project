@@ -86,6 +86,7 @@ Route::get('/settings/security', [SettingController::class, 'security']);
 // Shorts
 Route::get('/shorts', [\App\Http\Controllers\Api\ShortController::class, 'index']);
 Route::get('/shorts/{id}/comments', [\App\Http\Controllers\Api\ShortController::class, 'getComments']);
+Route::post('/shorts/{id}/view', [\App\Http\Controllers\Api\ShortController::class, 'incrementView']);
 
 // Pages
 Route::get('/pages/{slug}', [PageController::class, 'show']);

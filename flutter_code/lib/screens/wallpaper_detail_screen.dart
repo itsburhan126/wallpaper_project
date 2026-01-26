@@ -13,9 +13,11 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import '../models/wallpaper_model.dart';
 import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
+import '../providers/ad_provider.dart';
 import '../utils/constants.dart';
 import '../utils/app_theme.dart';
 import '../services/ad_manager_service.dart';
+import '../widgets/ads/universal_banner_ad.dart';
 import '../widgets/toast/professional_toast.dart'; // Add this import
 
 class WallpaperDetailScreen extends StatefulWidget {
@@ -255,8 +257,9 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
       builder: (_) => const Center(child: CircularProgressIndicator()),
     );
 
-    // Fallback order - forcing AdMob as per general preference for now
-    final fallbacks = ['admob'];
+    // Use priorities from AdProvider
+    final adProvider = Provider.of<AdProvider>(context, listen: false);
+    final fallbacks = adProvider.adPriorities.isNotEmpty ? adProvider.adPriorities : ['admob', 'facebook', 'unity'];
     
     // Close Loading
     if (mounted) Navigator.pop(context);
@@ -455,6 +458,13 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
   Future<void> _applyWallpaper(int location) async {
     final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     Navigator.pop(context); // Close dialog
+
+    // Show Ad before apply
+    final adProvider = Provider.of<AdProvider>(context, listen: false);
+    if (adProvider.adsEnabled) {
+       final fallbacks = adProvider.adPriorities.isNotEmpty ? adProvider.adPriorities : ['admob', 'facebook', 'unity'];
+       await AdManager.showAdWithFallback(context, fallbacks, () {});
+    }
 
     ProfessionalToast.showLoading(context, message: languageProvider.getText('applying_wallpaper'));
 
@@ -655,9 +665,23 @@ class _WallpaperDetailScreenState extends State<WallpaperDetailScreen> with Sing
             ),
           ),
           
+          // Banner Ad
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              top: false,
+              child: SizedBox(
+                height: 50,
+                child: UniversalBannerAd(screen: 'details'),
+              ),
+            ),
+          ),
+
           // Bottom Actions
           Positioned(
-            bottom: 40,
+            bottom: 100,
             left: 20,
             right: 20,
             child: Row(

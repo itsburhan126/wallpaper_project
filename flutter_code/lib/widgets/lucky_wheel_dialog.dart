@@ -3,7 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wallpaper_app/providers/app_provider.dart';
-import 'package:wallpaper_app/services/google_ad_service.dart';
+import 'package:wallpaper_app/providers/ad_provider.dart';
+import 'package:wallpaper_app/services/ad_manager_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../dialog/reward_dialog.dart';
 import '../widgets/coin_animation_overlay.dart';
@@ -35,7 +36,6 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
   final GlobalKey _coinIconKey = GlobalKey();
 
   bool _isSpinning = false;
-  final GoogleAdService _adService = GoogleAdService();
 
   @override
   void initState() {
@@ -64,8 +64,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
     );
 
     // Preload Ads
-    _adService.loadRewardedAd(context);
-    _adService.loadInterstitialAd(context);
+    AdManager.preloadAds(context);
   }
 
   @override
@@ -97,9 +96,6 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
     }
 
     if (_isSpinning) return;
-
-    // Preload ad while spinning
-    _adService.loadRewardedAd(context);
 
     setState(() {
       _isSpinning = true;
@@ -169,54 +165,18 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
         onReceive: () async {
           print("🖱️ Receive button clicked in LuckyWheelDialog");
           final appProvider = Provider.of<AppProvider>(context, listen: false);
+          final adProvider = Provider.of<AdProvider>(context, listen: false);
           
           // Show Ad before giving reward
-          
-          bool isReady = _adService.isRewardedAdReady();
-          bool isInterstitialReady = _adService.isInterstitialAdReady();
-          print("🧐 Is Ad Ready? Rewarded: $isReady, Interstitial: $isInterstitialReady");
+          List<String> fallbacks = adProvider.adPriorities.isNotEmpty 
+              ? adProvider.adPriorities 
+              : ['admob', 'facebook', 'unity'];
 
-          // 1. Try Rewarded Ad (Best User Experience)
-          if (isReady) {
-             print("✅ Rewarded Ad Ready. Showing...");
-             await _adService.showRewardedAd(
-              context,
-              onReward: (_) => print("💰 Reward Earned"),
-              onFailure: () => print("❌ Failed to show Rewarded Ad"),
-            );
-          }
-          // 2. Fallback to Interstitial Ad (If Rewarded not ready but Interstitial is)
-          else if (isInterstitialReady) {
-             print("⚠️ Rewarded not ready, showing Interstitial fallback...");
-             await _adService.showInterstitialAd(
-               context,
-               onAdDismissed: () => print("✅ Interstitial Dismissed"),
-             );
-          }
-          // 3. Nothing ready? Force Load Rewarded (User is waiting)
-          else {
-            print("⏳ No ads ready. Forcing load (max 15s)...");
-            if (mounted) ProfessionalToast.showLoading(context, message: "Loading Ad...");
-            
-            try {
-               // FORCE LOAD is key here to break stuck states
-               await _adService.loadRewardedAd(context, force: true).timeout(const Duration(seconds: 15));
-            } catch (e) {
-               print("⚠️ Ad load timed out in UI (15s). Proceeding to reward.");
-            }
-
-            // Check again after wait
-            if (_adService.isRewardedAdReady()) {
-                await _adService.showRewardedAd(
-                  context,
-                  onReward: (_) {},
-                  onFailure: () {},
-                );
-            } else {
-               print("❌ Still no ad after wait. Giving reward anyway.");
-               if (mounted) ProfessionalToast.showSuccess(context, message: "${Provider.of<LanguageProvider>(context, listen: false).getText('ad_not_available')}. ${Provider.of<LanguageProvider>(context, listen: false).getText('congratulations')}!");
-            }
-          }
+          await AdManager.showAdWithFallback(
+             context, 
+             fallbacks, 
+             () {}
+          );
 
           // Always give reward at the end
           print("� Granting Reward...");
@@ -251,7 +211,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
           
           if (mounted) {
             // Preload next ad
-            _adService.loadRewardedAd(context);
+            AdManager.preloadAds(context);
           }
         },
         onClose: () {
@@ -260,7 +220,7 @@ class _LuckyWheelDialogState extends State<LuckyWheelDialog> with TickerProvider
           // Or should we? The user instruction implies spin end happens after claim.
           // If they close, they lose the reward but also keep the spin? 
           // Usually better to force claim or auto-claim on close, but for now sticking to "receive click" logic.
-          _adService.loadRewardedAd(context);
+          AdManager.preloadAds(context);
         },
       ),
     );

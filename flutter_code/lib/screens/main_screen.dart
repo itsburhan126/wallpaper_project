@@ -5,6 +5,7 @@ import 'package:glassmorphism/glassmorphism.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../utils/constants.dart';
+import '../widgets/ads/universal_banner_ad.dart';
 import 'home_screen.dart';
 import 'shorts_screen.dart';
 import 'category_screen.dart';
@@ -43,10 +44,21 @@ class _MainScreenState extends State<MainScreen> {
             index: _currentIndex,
             children: _screens,
           ),
-          bottomNavigationBar: GlassmorphicContainer(
-            width: double.infinity,
-            height: 100, // Increased height to prevent overflow
-            borderRadius: 0,
+          bottomNavigationBar: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_currentIndex != 1) // Hide on Shorts
+                UniversalBannerAd(
+                  screen: _currentIndex == 0 
+                      ? 'home' 
+                      : _currentIndex == 2 
+                          ? 'category' 
+                          : 'global',
+                ),
+              GlassmorphicContainer(
+                width: double.infinity,
+                height: 100, // Increased height to prevent overflow
+                borderRadius: 0,
             linearGradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -124,7 +136,9 @@ class _MainScreenState extends State<MainScreen> {
                 ],
               ),
             ),
-          ).animate().fadeIn(delay: 1000.ms).slideY(begin: 1, end: 0),
+          ),
+          ],
+        ),
         );
       }
     );

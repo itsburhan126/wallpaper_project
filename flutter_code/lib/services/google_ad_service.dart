@@ -25,7 +25,7 @@ class GoogleAdService {
 
   Future<bool> loadRewardedAd(BuildContext context, {bool force = false}) async {
     final adProvider = Provider.of<AdProvider>(context, listen: false);
-    if (!adProvider.adsEnabled || adProvider.admobRewardedId == null) {
+    if (!adProvider.adsEnabled || adProvider.admobRewardedId.isEmpty) {
       print("⚠️ Ads disabled or ID missing in loadRewardedAd");
       return false;
     }
@@ -56,7 +56,7 @@ class GoogleAdService {
     });
 
     await RewardedAd.load(
-      adUnitId: adProvider.admobRewardedId!,
+      adUnitId: adProvider.admobRewardedId,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
         onAdLoaded: (ad) {

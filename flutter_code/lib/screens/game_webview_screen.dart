@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
-import '../services/google_ad_service.dart';
 import '../widgets/toast/professional_toast.dart';
 import '../widgets/coin_animation_overlay.dart';
 import 'package:share_plus/share_plus.dart';
@@ -214,7 +213,7 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
                               Text(
                                 "${widget.durationSeconds - _elapsedSeconds}${Provider.of<LanguageProvider>(context).getText('seconds_short')}",
                                 style: GoogleFonts.roboto(
-                                  color: Colors.black87,
+                                  color: Colors.white,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -229,7 +228,7 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
 
                       // Share Button
                       IconButton(
-                        icon: const Icon(Icons.share_outlined, color: Colors.black87, size: 22),
+                        icon: const Icon(Icons.share_outlined, color: Colors.white, size: 22),
                         onPressed: () {
                           Share.share(widget.url);
                         },
@@ -237,7 +236,7 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
 
                       // Menu Button (Visual only for now)
                       IconButton(
-                        icon: const Icon(Icons.more_vert, color: Colors.black87, size: 24),
+                        icon: const Icon(Icons.more_vert, color: Colors.white, size: 24),
                         onPressed: () {
                           // Show menu if needed, for now just a toast
                         },

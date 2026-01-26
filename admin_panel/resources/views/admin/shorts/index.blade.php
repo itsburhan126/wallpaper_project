@@ -120,10 +120,10 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                <form action="{{ route('admin.shorts.destroy', $short->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this short?');">
+                                <form action="{{ route('admin.shorts.destroy', $short->id) }}" method="POST" class="inline-block" onsubmit="return confirm('আপনি কি নিশ্চিত যে আপনি এই শর্টটি মুছতে চান?');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all transform hover:scale-110" title="Delete Short">
+                                    <button type="submit" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all transform hover:scale-110" title="মুছুন">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>

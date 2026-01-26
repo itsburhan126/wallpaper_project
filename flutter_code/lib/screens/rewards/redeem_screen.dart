@@ -7,6 +7,7 @@ import '../../utils/app_theme.dart';
 import '../../providers/language_provider.dart';
 import '../../services/api_service.dart';
 import '../../widgets/toast/professional_toast.dart';
+import '../../widgets/ads/universal_banner_ad.dart';
 
 class RedeemScreen extends StatefulWidget {
   const RedeemScreen({super.key});
@@ -202,6 +203,12 @@ class _RedeemScreenState extends State<RedeemScreen> {
 
     return Scaffold(
       backgroundColor: AppTheme.darkBackgroundColor,
+      bottomNavigationBar: const SafeArea(
+        child: SizedBox(
+          height: 50,
+          child: UniversalBannerAd(),
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

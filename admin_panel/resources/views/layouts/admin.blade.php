@@ -233,17 +233,14 @@
                         <i class="fas fa-wallet w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.redeem.gateways.*') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
                         <span>Payment Gateways</span>
                     </a>
+                    <a href="{{ route('admin.settings.referral') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.settings.referral') ? 'nav-item-active' : '' }}">
+                        <i class="fas fa-users-cog w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.referral') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
+                        <span>Referral System</span>
+                    </a>
                 </div>
             </div>
 
-            <!-- Section: System --><a href="{{ route('admin.settings.referral') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.settings.referral') ? 'nav-item-active' : '' }}">
-                    <i class="fas fa-users-cog w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.referral') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
-                    <span>Referral System</span>
-                </a>
-            </div>
-        </div>
-
-        <div>
+            <div>
             <p class="px-4 text-[11px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">System</p>
                 <div class="space-y-1">
                     <a href="{{ route('admin.support.index') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.support.*') ? 'nav-item-active' : '' }}">
@@ -266,32 +263,52 @@
                         <i class="fas fa-shield-alt w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.security') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
                         <span>Security</span>
                     </a>
+                    
+                    <!-- Feature Settings -->
+                    <div class="my-2 border-t border-slate-100 mx-4"></div>
+                    
+                    <a href="{{ route('admin.settings.lucky_wheel') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.settings.lucky_wheel') ? 'nav-item-active' : '' }}">
+                        <i class="fas fa-dharmachakra w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.lucky_wheel') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
+                        <span>Lucky Wheel</span>
+                    </a>
+                    <a href="{{ route('admin.settings.game') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.settings.game') ? 'nav-item-active' : '' }}">
+                        <i class="fas fa-gamepad w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.game') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
+                        <span>Game Settings</span>
+                    </a>
+                    <a href="{{ route('admin.settings.shorts') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.settings.shorts') ? 'nav-item-active' : '' }}">
+                        <i class="fas fa-video w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.shorts') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
+                        <span>Shorts Settings</span>
+                    </a>
+                    <a href="{{ route('admin.settings.watch_ads') }}" class="nav-item flex items-center px-4 py-3.5 text-sm font-medium group {{ request()->routeIs('admin.settings.watch_ads') ? 'nav-item-active' : '' }}">
+                        <i class="fas fa-play-circle w-5 mr-3 transition-transform group-hover:scale-110 {{ request()->routeIs('admin.settings.watch_ads') ? 'text-indigo-600' : 'text-slate-400' }}"></i>
+                        <span>Watch Ads</span>
+                    </a>
                 </div>
             </div>
             @endif
 
-        </div>
-
-        <!-- User Profile (Bottom Sidebar) -->
-        <div class="p-4 border-t border-slate-100 bg-slate-50/50">
-            <div class="flex items-center gap-3 p-2.5 rounded-xl transition-all hover:bg-white hover:shadow-md group cursor-pointer border border-transparent hover:border-slate-100">
-                <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm group-hover:border-indigo-100 transition-colors">
-                     <img src="https://ui-avatars.com/api/?name={{ Auth::guard('admin')->user()->name ?? 'Admin' }}&background=6366f1&color=fff" alt="Admin" class="w-full h-full object-cover">
-                </div>
-                <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">{{ Auth::guard('admin')->user()->name ?? 'Administrator' }}</p>
-                    <div class="flex items-center gap-1.5 mt-0.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <p class="text-[10px] text-slate-500 truncate font-medium">Online</p>
+            <!-- User Profile (Moved to Scroll Area) -->
+            <div class="pt-4 mt-4 border-t border-slate-100">
+                <div class="flex items-center gap-3 p-2.5 rounded-xl transition-all hover:bg-slate-50 hover:shadow-sm group cursor-pointer border border-transparent hover:border-slate-100">
+                    <div class="w-10 h-10 rounded-full bg-slate-200 overflow-hidden border-2 border-white shadow-sm group-hover:border-indigo-100 transition-colors">
+                         <img src="https://ui-avatars.com/api/?name={{ Auth::guard('admin')->user()->name ?? 'Admin' }}&background=6366f1&color=fff" alt="Admin" class="w-full h-full object-cover">
                     </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-slate-800 truncate group-hover:text-indigo-600 transition-colors">{{ Auth::guard('admin')->user()->name ?? 'Administrator' }}</p>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <p class="text-[10px] text-slate-500 truncate font-medium">Online</p>
+                        </div>
+                    </div>
+                    <form action="{{ route('admin.logout') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="p-2 text-slate-400 hover:text-rose-500 transition-colors rounded-lg hover:bg-rose-50" title="Logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </form>
                 </div>
-                <form action="{{ route('admin.logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="p-2 text-slate-400 hover:text-rose-500 transition-colors rounded-lg hover:bg-rose-50" title="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </form>
             </div>
+
         </div>
     </aside>
 

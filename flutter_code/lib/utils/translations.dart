@@ -75,6 +75,7 @@ class AppTranslations {
       'tab_hot': 'Hot',
       'tab_new': 'New',
       'tab_rankings': 'Rankings',
+      'play_earn': 'Play & Earn',
       'banner_featured': 'Featured',
       'banner_check_out': 'Check This Out',
       

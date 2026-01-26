@@ -18,7 +18,6 @@ import '../dialog/game_limit_dialog.dart';
 import '../dialog/ad_limit_dialog.dart';
 import '../dialog/limit_reached_sheet.dart';
 import '../widgets/coin_animation_overlay.dart';
-import '../services/google_ad_service.dart';
 import '../widgets/toast/professional_toast.dart';
 import 'game_webview_screen.dart';
 import 'all_games_screen.dart';
@@ -49,8 +48,7 @@ class _TaskScreenState extends State<TaskScreen> {
       appProvider.fetchGames();
       
       // Preload Ads for smoother experience
-      GoogleAdService().loadRewardedAd(context);
-      GoogleAdService().loadInterstitialAd(context);
+      AdManager.preloadAds(context);
     });
   }
 
@@ -421,9 +419,10 @@ class _TaskScreenState extends State<TaskScreen> {
                                 });
 
                                 try {
+                                  final adProvider = Provider.of<AdProvider>(context, listen: false);
                                   bool success = await AdManager.showAdWithFallback(
                                     context,
-                                    provider.watchAdsPriorities,
+                                    adProvider.adPriorities.isNotEmpty ? adProvider.adPriorities : ['admob', 'facebook', 'unity'],
                                     () async {
                                        print("💎 Ad Callback Triggered");
                                        
@@ -1059,59 +1058,40 @@ class _TaskScreenState extends State<TaskScreen> {
         currencySymbol: provider.currencySymbol,
         coinRate: provider.coinRate,
         onReceive: () async {
-            final adService = GoogleAdService();
+            if (context.mounted) Navigator.pop(ctx);
             
-            // 1. INSTANT CHECK (Fast Path)
-            // If ANY ad is ready, proceed immediately.
-            if (adService.isRewardedAdReady() || adService.isInterstitialAdReady()) {
-               if (context.mounted) {
-                 Navigator.pop(ctx);
-                 _handleClaimReward(context, provider, coins, showLoading: false);
-               }
-               return;
-            }
+            // Show Loading
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => const Center(child: CircularProgressIndicator()),
+            );
 
-            // 2. PARALLEL LOAD (Smart Wait)
-            // If no ads ready, try loading BOTH in parallel and wait for the first one.
-            debugPrint("⏳ No ads ready. Racing Rewarded vs Interstitial...");
+            // Wait a bit to ensure UI updates
+            await Future.delayed(const Duration(milliseconds: 500));
             
-            try {
-              // Trigger both loads
-              final rewardFuture = adService.loadRewardedAd(context);
-              final interFuture = adService.loadInterstitialAd(context);
-              
-              // Wait max 5 seconds for EITHER to be ready
-              // We check periodically to return as soon as ONE is ready
-              int checkCount = 0;
-              bool foundAd = false;
-              
-              while (checkCount < 10) { // 10 * 500ms = 5 seconds max
-                await Future.delayed(const Duration(milliseconds: 500));
-                if (adService.isRewardedAdReady() || adService.isInterstitialAdReady()) {
-                  foundAd = true;
-                  break;
+            // Close Loading
+            if (context.mounted) Navigator.pop(context);
+
+            if (!context.mounted) return;
+
+            // Show Ad
+            bool adShown = await AdManager.showAdWithFallback(
+              context,
+              provider.dailyRewardAdPriorities.isNotEmpty ? provider.dailyRewardAdPriorities : ['admob', 'facebook', 'unity'],
+              () async {
+                // On Ad Success
+                final success = await provider.claimDailyReward();
+                if (success && context.mounted) {
+                   // Show Animations
+                   CoinAnimationOverlay.show(context, _coinIconKey);
+                   ProfessionalToast.show(context, coinAmount: coins);
                 }
-                checkCount++;
               }
-              
-              if (foundAd) {
-                 debugPrint("✅ Ad found during wait!");
-              } else {
-                 debugPrint("⚠️ Timed out waiting for ads (5s).");
-              }
-            } catch (e) {
-              debugPrint("❌ Error waiting for ads: $e");
-            }
+            );
 
-            // 3. FINAL CHECK
-            if (context.mounted) {
-              if (adService.isRewardedAdReady() || adService.isInterstitialAdReady()) {
-                  Navigator.pop(ctx); // Close RewardDialog
-                  _handleClaimReward(context, provider, coins, showLoading: false);
-              } else {
-                  ProfessionalToast.showError(context, message: "Ads not available");
-                  debugPrint("❌ Final Status: No Ads ready after wait.");
-              }
+            if (!adShown && context.mounted) {
+               ProfessionalToast.showError(context, message: Provider.of<LanguageProvider>(context, listen: false).getText('ads_unavailable'));
             }
           },
         onClose: () => Navigator.pop(ctx),
@@ -1119,41 +1099,7 @@ class _TaskScreenState extends State<TaskScreen> {
     );
   }
 
-  void _handleClaimReward(BuildContext context, AppProvider provider, int rewardAmount, {bool showLoading = true}) async {
-    // Show Loading only if requested
-    if (showLoading) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (_) => const Center(child: CircularProgressIndicator()),
-      );
-      // Wait a bit to ensure UI updates
-      await Future.delayed(const Duration(milliseconds: 500));
-      // Close Loading
-      if (context.mounted) Navigator.pop(context);
-    }
 
-    if (!context.mounted) return;
-
-    // Show Ad
-    bool adShown = await AdManager.showAdWithFallback(
-      context,
-      provider.dailyRewardAdPriorities,
-      () async {
-        // On Ad Success
-        final success = await provider.claimDailyReward();
-        if (success && context.mounted) {
-           // Show Animations
-           CoinAnimationOverlay.show(context, _coinIconKey);
-           ProfessionalToast.show(context, coinAmount: rewardAmount);
-        }
-      }
-    );
-
-    if (!adShown && context.mounted) {
-      ProfessionalToast.showError(context, message: "Ads not available");
-    }
-  }
 
   Widget _buildDailyCheckIn(BuildContext context) {
     return Consumer<AppProvider>(

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.gms.ads.nativead.NativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000">
+
+        <com.google.android.gms.ads.nativead.MediaView
+            android:id="@+id/mv_shorts_native_ad_media"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Dark overlay at bottom for text readability -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#99000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="@id/iv_shorts_native_ad_icon"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <!-- Attribution (Ad label) -->
+        <TextView
+            android:id="@+id/tv_shorts_native_ad_attribution"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="#FFCC66"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="Ad"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toTopOf="@id/iv_shorts_native_ad_icon"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Icon -->
+        <ImageView
+            android:id="@+id/iv_shorts_native_ad_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@id/tv_shorts_native_ad_headline"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Headline -->
+        <TextView
+            android:id="@+id/tv_shorts_native_ad_headline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" 
+            android:layout_marginBottom="8dp"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/tv_shorts_native_ad_body"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Body -->
+        <TextView
+            android:id="@+id/tv_shorts_native_ad_body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="24dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textColor="#DDDDDD"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@id/btn_shorts_native_ad_call_to_action"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Call To Action -->
+        <Button
+            android:id="@+id/btn_shorts_native_ad_call_to_action"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:backgroundTint="#3366CC"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.gms.ads.nativead.NativeAdView>

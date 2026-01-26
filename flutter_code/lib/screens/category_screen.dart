@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../providers/app_provider.dart';
 import '../providers/language_provider.dart';
+import '../providers/ad_provider.dart';
+import '../services/ad_manager_service.dart';
 import '../widgets/shimmer_loading.dart';
 import '../widgets/wallpaper_tab.dart';
 import '../models/category_model.dart';
@@ -19,6 +21,7 @@ class CategoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.darkBackgroundColor, // Ultra dark background
+      bottomNavigationBar: null,
       body: Consumer2<AppProvider, LanguageProvider>(
         builder: (context, provider, langProvider, _) {
           return RefreshIndicator(
@@ -281,32 +284,44 @@ class CategoryScreen extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Scaffold(
-                          backgroundColor: const Color(0xFF050505),
-                          appBar: AppBar(
+                  onTap: () async {
+                    // Show Ad before navigation
+                    final adProvider = Provider.of<AdProvider>(context, listen: false);
+                    if (adProvider.adsEnabled) {
+                       await AdManager.showAdWithFallback(
+                         context, 
+                         adProvider.adPriorities, 
+                         () {}
+                       );
+                    }
+
+                    if (context.mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Scaffold(
                             backgroundColor: const Color(0xFF050505),
-                            iconTheme: const IconThemeData(color: Colors.white),
-                            elevation: 0,
-                            centerTitle: true,
-                            title: Text(
-                              category.name,
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                            appBar: AppBar(
+                              backgroundColor: const Color(0xFF050505),
+                              iconTheme: const IconThemeData(color: Colors.white),
+                              elevation: 0,
+                              centerTitle: true,
+                              title: Text(
+                                category.name,
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                          body: WallpaperTab(
-                            categoryId: category.id,
-                            withSliverOverlap: false,
+                            body: WallpaperTab(
+                              categoryId: category.id,
+                              withSliverOverlap: false,
+                            ),
                           ),
                         ),
-                      ),
-                    );
+                      );
+                    }
                   },
                   splashColor: Colors.white.withOpacity(0.1),
                   highlightColor: Colors.white.withOpacity(0.05),

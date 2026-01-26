@@ -7,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../utils/app_theme.dart';
 import '../../providers/language_provider.dart';
 import '../../services/api_service.dart';
+import '../../widgets/ads/universal_banner_ad.dart';
 
 class RewardHistoryScreen extends StatefulWidget {
   const RewardHistoryScreen({super.key});
@@ -37,6 +38,12 @@ class _RewardHistoryScreenState extends State<RewardHistoryScreen> with SingleTi
 
     return Scaffold(
       backgroundColor: AppTheme.darkBackgroundColor,
+      bottomNavigationBar: const SafeArea(
+        child: SizedBox(
+          height: 50,
+          child: UniversalBannerAd(),
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

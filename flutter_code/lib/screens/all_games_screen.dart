@@ -11,7 +11,6 @@ import '../dialog/game_reward_dialog.dart';
 import '../dialog/game_warning_dialog.dart';
 import '../dialog/game_limit_dialog.dart';
 import '../dialog/limit_reached_sheet.dart';
-import '../services/google_ad_service.dart';
 import '../widgets/toast/professional_toast.dart';
 import '../widgets/coin_animation_overlay.dart';
 import '../providers/ad_provider.dart';

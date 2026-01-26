@@ -3,6 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/api_service.dart';
 import '../utils/app_theme.dart';
+import '../widgets/ads/universal_banner_ad.dart';
 
 class PageViewerScreen extends StatefulWidget {
   final String slug;
@@ -91,6 +92,12 @@ class _PageViewerScreenState extends State<PageViewerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.darkBackgroundColor,
+      bottomNavigationBar: SafeArea(
+        child: SizedBox(
+          height: 50,
+          child: UniversalBannerAd(screen: 'page_viewer'),
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,

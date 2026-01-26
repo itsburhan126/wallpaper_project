@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 import 'package:flutter/services.dart';
 import 'package:facebook_audience_network/constants.dart';
 

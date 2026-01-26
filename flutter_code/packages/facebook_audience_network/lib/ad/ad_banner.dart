@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,9 +40,6 @@ enum BannerAdResult {
 }
 
 class FacebookBannerAd extends StatefulWidget {
-  @override
-  final Key? key;
-
   /// Replace the default one with your placement ID for the release build.
   final String placementId;
 
@@ -70,7 +68,7 @@ class FacebookBannerAd extends StatefulWidget {
   /// }
   /// ```
   const FacebookBannerAd({
-    this.key,
+    Key? key,
     this.placementId = "YOUR_PLACEMENT_ID",
     this.bannerSize = BannerSize.STANDARD,
     this.listener,
@@ -78,7 +76,7 @@ class FacebookBannerAd extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _FacebookBannerAdState createState() => _FacebookBannerAdState();
+  State<FacebookBannerAd> createState() => _FacebookBannerAdState();
 }
 
 class _FacebookBannerAdState extends State<FacebookBannerAd>

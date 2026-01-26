@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 const String MAIN_CHANNEL = "fb.audience.network.io";
 const String BANNER_AD_CHANNEL = "$MAIN_CHANNEL/bannerAd";
 const String INTERSTITIAL_AD_CHANNEL = "$MAIN_CHANNEL/interstitialAd";

@@ -1,3 +1,4 @@
+// ignore_for_file: constant_identifier_names
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -130,7 +131,7 @@ class FacebookNativeAd extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _FacebookNativeAdState createState() => _FacebookNativeAdState();
+  State<FacebookNativeAd> createState() => _FacebookNativeAdState();
 }
 
 class _FacebookNativeAdState extends State<FacebookNativeAd>
@@ -279,7 +280,7 @@ class _FacebookNativeAdState extends State<FacebookNativeAd>
   }
 
   String _getHexStringFromColor(Color color) =>
-      '#${color.value.toRadixString(16)}';
+      '#${color.value.toRadixString(16)}'; // ignore: deprecated_member_use
 
   void _onNativeAdViewCreated(int id) {
     final channel = MethodChannel('${NATIVE_AD_CHANNEL}_$id');
